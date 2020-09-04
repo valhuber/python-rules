@@ -1,5 +1,3 @@
-# logic-explore
-
 Explore sqlalchemy, events, and declarative logic with a running example.   Focus:
 * db-generated keys
 * update logic (specifically multi-level rollups and old value)
@@ -68,10 +66,10 @@ Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
 (a *chained* aggregate).
 
 ## Explore
-The [by-code](https://github.com/valhuber/logic-explore/wiki/by-code)
-and [by-rules](https://github.com/valhuber/logic-explore/wiki/by-code)
+The [by-code](https://github.com/valhuber/python-rules/wiki/by-code)
+and [by-rules](https://github.com/valhuber/python-rules/wiki/by-code)
 approaches are described in the 
-[wiki](https://github.com/valhuber/logic-explore/wiki).
+[wiki](https://github.com/valhuber/python-rules/wiki).
 
 
 ## Flask App Builder
