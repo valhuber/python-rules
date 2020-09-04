@@ -7,8 +7,12 @@ using sqlalchemy events
 * web app using Flask AppBuilder's Quickstart
 
 ## Installation
-Use pycharm, and `pip install -f requirements.txt`.
-
+Use pycharm, and 
+```
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 ## Background
 The subject database is an adaption of nw,
 with a few rollup columns added.

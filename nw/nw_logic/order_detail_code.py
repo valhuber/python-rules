@@ -1,0 +1,45 @@
+import nw.nw_logic.models as models
+from sqlalchemy.orm import session
+from logic_engine.util import get_old_row, row_prt, row2dict, ObjectView
+from nw.nw_logic.order_code import order_update
+
+
+def order_detail_flush_new(a_row, a_session: session):
+    """
+    OrderDetail before_flush, new rows
+    compute amount, adjust Order.AmountTotal
+    .. which adjusts Customer.balance)
+    """
+    # no "old" in inserts...  old_row = get_old_row(a_row)
+    row_prt(a_row, "\norder_detail_flush_new")  # readable log: curr/old values
+    # nice try.. product = row.Product
+    product = a_session.query(models.Product).\
+        filter(models.Product.Id == a_row.ProductId).one()
+    a_row.UnitPrice = product.UnitPrice
+    a_row.Amount = a_row.Quantity * a_row.UnitPrice
+    order = a_row.OrderHeader
+    """
+        2 issues make this a little more complicated than expected:
+            1. can't just alter AmountTotal - does not trigger Order's before_flush
+            2. can't just call Order's before_flush - old values not available
+    """
+    old_order = ObjectView(row2dict(order))  # hmm... key ShippedDate vs. "ShippedDate"
+    order.AmountTotal += a_row.Amount
+    order_update(order, old_order, a_session)
+    row_prt(order, "order_detail_flush_new adjusted to: " +
+            str(order.AmountTotal))
+
+
+def order_detail_flush_dirty(a_row, a_session: session):
+    # LOTS (!) ToDo - check qty, fk
+    raise Exception("\norder_detail_flush_dirty not implemented")
+
+
+# happens before flush
+def order_detail_commit_dirty(a_row, a_session: session):
+    old_row = get_old_row(a_row)
+    row_prt(a_row, "\norder_detail_commit_dirty")
+
+
+def order_detail_modified(object):
+    print("order_detail_modified")
