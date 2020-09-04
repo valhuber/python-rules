@@ -23,17 +23,14 @@ and `OrderDetail`.
 
 ### Logic Specifications
 The logic requirements can be summarized in the
-following rule-based specification:
-```
-Constraint: Customer.Balance <= Customer.CreditLimit
-
-Customer.Balance = sum(OrderList.AmountTotal where ShippedDate is empty)
-
-Order.AmountTotal = sum(OrderDetails.Amount)
-
-OrderDetails.Amount = UnitPrice * Quantity
-
-OrderDetails.UnitPrice = copy(Product.UnitPrice)
+following rule-based executable specification:
+```python
+Logic.constraint_rule(validate="Customer", calling='check_balance')
+Logic.sum_rule(derive="Customer.balance", as_sum_of="Order.AmountTotal", where="ShippedDate not None")
+Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
+Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetails.Amount")
+Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
+Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="Product.UnitPrice")
 ```
 The specification addresses around a
 dozen transactions.  Here we look at:

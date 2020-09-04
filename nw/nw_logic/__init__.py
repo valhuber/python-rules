@@ -4,7 +4,6 @@ import sqlalchemy
 from sqlalchemy import event
 from sqlalchemy.orm import session
 
-import logic_engine
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_bank import rule_bank_withdraw
 from logic_engine.rule_bank import rule_bank_setup
@@ -19,8 +18,6 @@ from nw.nw_logic.models import Order
 from nw.nw_logic.listeners import nw_before_commit, nw_before_flush
 from nw.nw_logic.order_code import order_modified
 '''
-
-
 
 
 def nw_before_commit(a_session: session):
@@ -76,7 +73,7 @@ db = None
 if do_logic:
     rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
-    from .nw_rules_bank import NwLogic
+    from nw.nw_logic import nw_rules_bank
     rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
     copies = rule_bank_withdraw.copy_rules("OrderDetail")
     aggregates = rule_bank_withdraw.aggregate_rules("Customer")
