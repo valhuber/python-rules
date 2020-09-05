@@ -51,10 +51,10 @@ class RowLogicExec:
 
     def adjust_parent_aggregates(self):
         self.log("adjust_parent_aggregates")
-        aggregate_rules = rule_bank_withdraw.aggregate_rules(self.logic_row.name)
+        aggregate_rules = rule_bank_withdraw.aggregate_rules(child_table_name=self.logic_row.name)
         for each_parent_role, each_aggr_list in aggregate_rules.items():
             print(each_parent_role)
-            parent_adjuster = ParentRoleAdjuster(child_logic_row=self,
+            parent_adjuster = ParentRoleAdjuster(child_logic_row=self.logic_row,
                                                  parent_role_name=each_parent_role)
             for each_aggregate in each_aggr_list:
                 each_aggregate.adjust_parent(parent_adjuster)  # adjusts each_parent iff req'd

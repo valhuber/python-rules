@@ -19,3 +19,7 @@ class ParentRoleAdjuster:
     def save_altered_parents(self):
         print(str(self))  # more on this later
         # save *only altered* parents (often does nothing)
+        if self.parent_logic_row is not None:
+            print("save adjusted parent_logic_row: " + str(self))
+        if self.previous_parent_logic_row is not None:
+            print("save adjusted previous_parent_logic_row: " + str(self))

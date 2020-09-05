@@ -9,14 +9,18 @@ class Formula(Derivation):
 
     def __init__(self, derive: str,
                  calling: Callable = None,
-                 as_expression: Callable = None):
+                 as_expression: Callable = None,
+                 as_exp: str = None):
         super(Formula, self).__init__(derive)
         self._function = calling
         self._as_expression = as_expression
+        self._as_exp = lambda row: eval(as_exp)
+        """  TODO decide on exp vs expression, and activate these validations
         if self._function is None and self._as_expression is None:
             raise Exception(f'Formula {str} requires calling or as_expression')
         if self._function is not None and self._as_expression is not None:
             raise Exception(f'Formula {str} either calling or as_expression')
+        """
         rb = RuleBank()
         rb.deposit_rule(self)
 
@@ -25,8 +29,10 @@ class Formula(Derivation):
         if self._function is not None:
             value = self._function(row=logic_row.row,
                                    old_row=logic_row.old_row, logic_row=logic_row)
-        else:
+        elif self._as_expression is not None:
             value = self._as_expression(row=logic_row.row)
+        else:
+            value = self._as_exp(row=logic_row.row)
         setattr(logic_row.row, self._column, value)
         print(f'Formula END {str(self)} on {str(logic_row)}')
 

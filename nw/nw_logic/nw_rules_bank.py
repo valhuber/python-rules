@@ -14,9 +14,10 @@ Logic.constraint_rule(validate="Customer",
 Logic.sum_rule(derive="Customer.balance", as_sum_of="Order.AmountTotal",
                where="ShippedDate not None")
 Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
-Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetails.Amount")
+Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetail.Amount")
 Logic.formula_rule(derive="OrderDetail.Amount",
-                   as_expression=lambda row: row.UnitPrice * row.Quantity)
+                   as_exp="row.UnitPrice * row.Quantity")
+                 # as_expression=lambda row: row.UnitPrice * row.Quantity)
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="Product.UnitPrice")
 
 """

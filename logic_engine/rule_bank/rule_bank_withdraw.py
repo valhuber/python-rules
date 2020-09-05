@@ -36,13 +36,29 @@ def copy_rules(a_table_name: str) -> CopyRulesForTable:
             role_rules_list[role_name].append(each_rule)
     return role_rules_list
 
+"""
+Rule Bank is a dict of <table><rule-list>, e.g.:
 
-def aggregate_rules(a_table_name: str) -> dict:
-    """dict(<role_name>, sum/count_rules[]
+Table[Customer] rules:
+  Constraint Function: None 
+  Derive Customer.balance as Sum(Order.AmountTotal Where ShippedDate not None)
+  Derive Customer.OrderCount as Count(Order Where ShippedDate not None)
+Table[Order] rules:
+  Derive Order.AmountTotal as Sum(OrderDetail.Amount Where None)
+Table[OrderDetail] rules:
+  Derive OrderDetail.Amount as Formula Function: None 
+  Derive OrderDetail.UnitPrice as Copy(Product.UnitPrice)
+"""
+
+
+def aggregate_rules(child_table_name: str) -> dict:
+    """returns dict(<role_name>, sum/count_rules[] for given child_table_name
+    This requires we **invert** the RuleBank, to find sums that reference child_table_name
+    e.g., for child_table_name "Order", we return the Customer.balance rule
     """
     rule_bank = RuleBank()
     role_rules_list = {}  # dict of RoleRules
-    for each_rule in rule_bank._tables[a_table_name]:
+    for each_rule in rule_bank._tables[child_table_name]:
         if isinstance(each_rule, (Sum, Count)):
             role_name = each_rule._from_parent_role
             if role_name not in role_rules_list:

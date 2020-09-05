@@ -42,7 +42,7 @@ class LogicRow:
         my_mapper = object_mapper(self.row)
         role_def = my_mapper.relationships.get(role_name)
         if role_def is None:
-            raise Exception("FIXME invalid role name")
+            raise Exception(f"FIXME invalid role name {role_name}")
         parent_key = {}
         for each_child_col, each_parent_col in role_def.local_remote_pairs:
             parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)

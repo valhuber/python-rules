@@ -27,7 +27,7 @@ class Logic:
     """
 
     @staticmethod
-    def sum_rule(derive: str, as_sum_of: str, where: str = ""):
+    def sum_rule(derive: str, as_sum_of: str, where: str = None):
         """
         Sums declare parent column as sum of designated child column
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
@@ -50,12 +50,13 @@ class Logic:
         Constraint(validate, calling, as_condition)  # --> load_logic
 
     @staticmethod
-    def formula_rule(derive: str, calling: Callable = None, as_expression: Callable = None):
+    def formula_rule(derive: str, calling: Callable = None,
+                     as_expression: Callable = None, as_exp: str = None):
         """
         Formulas declare column value, based on current and parent rows
         Parent changes are propagated to child row(s)
         """
-        Formula(derive=derive, calling=calling, as_expression=as_expression)
+        Formula(derive=derive, calling=calling, as_expression=as_expression, as_exp=as_exp)
 
     @staticmethod
     def copy_rule(derive: str, from_parent: str):
