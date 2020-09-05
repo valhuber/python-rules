@@ -7,6 +7,9 @@ from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
 from logic_engine.rule_type.sum import Sum
 
+"""
+There really want to be instance methods on RuleBank, but circular imports...
+"""
 
 class RoleRules:
     """returns list of rules grouped by role, so logic can access related row only once

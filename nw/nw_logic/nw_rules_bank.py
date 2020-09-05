@@ -1,4 +1,5 @@
 from logic_engine.logic import Logic
+from logic_engine.rule_bank.rule_bank import RuleBank
 
 
 def check_balance(row, old_row, logic_row) -> bool:
@@ -19,6 +20,13 @@ Logic.formula_rule(derive="OrderDetail.Amount",
                    as_exp="row.UnitPrice * row.Quantity")
                  # as_expression=lambda row: row.UnitPrice * row.Quantity)
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="Product.UnitPrice")
+
+
+Logic.constraint_rule(validate="AbUser",  # table is ab_user
+                      as_condition=lambda row: row.username != "noname")
+
+rule_bank = RuleBank()
+rule_bank.validate()
 
 """
 alternate form for formulas, constraints:

@@ -38,10 +38,18 @@ class RuleBank(metaclass=Singleton):
     def __str__(self):
         result = f"Rule Bank[{str(hex(id(self)))}] (loaded {self._at})"
         for each_key in self._tables:
-            result += f"\nTable[{each_key}] rules:"
+            result += f"\nMapped Class[{each_key}] rules:"
             for each_rule in self._tables[each_key]:
                 result += f'\n  {str(each_rule)}'
         return result
 
+    def validate(self) -> bool:
+        result = f"Validate Rule Bank[{str(hex(id(self)))}] (loaded {self._at})"
+        for each_key in self._tables:
+            result += f"\nMapped Class[{each_key}] rules:"
+            for each_rule in self._tables[each_key]:
+                result += f'\n  {str(each_rule)}'
+        print(result)
+        return True
 
 

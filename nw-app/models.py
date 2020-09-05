@@ -3,6 +3,8 @@ from sqlalchemy import Boolean, Column, DECIMAL, DateTime, Float, ForeignKey, In
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
+# WARNING - must be sync'd with primary copy in nw_logic - change there, copy to here
+
 Base = declarative_base()
 metadata = Base.metadata
 
