@@ -75,10 +75,6 @@ if do_logic:
     rule_bank_setup.setup(session, engine)
     from nw.nw_logic import nw_rules_bank
     rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
-    copies = rule_bank_withdraw.copy_rules("OrderDetail")
-    aggregates = rule_bank_withdraw.aggregate_rules("Customer")
-    constraints = rule_bank_withdraw.rules_of_class("Customer", Constraint)
-    formulas = rule_bank_withdraw.rules_of_class("OrderDetail", Formula)
     print("\n\nlogic loaded:\n" + str(rule_bank))
 
 # target, modifier, function

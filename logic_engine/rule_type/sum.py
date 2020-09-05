@@ -6,13 +6,13 @@ from logic_engine.rule_type.aggregate import Aggregate
 class Sum(Aggregate):
 
     _as_sum_of = ""
-    _from_parent_role = ""
+    _child_role_name = ""
     _where = ""
 
     def __init__(self, derive: str, as_sum_of: str, where: str):
         super(Sum, self).__init__(derive)
         self._as_sum_of = as_sum_of  # could probably super-ize parent accessor
-        self._from_parent_role = self._as_sum_of.split(".")[0]
+        self._child_role_name = self._as_sum_of.split(".")[0]  # child role retrieves children
         self._where = where
         if where is None:
             self._where_cond = lambda row: True
@@ -37,11 +37,11 @@ class Sum(Aggregate):
             if where and delta != 0.0:
                 parent_role_name = self.get_parent_role_from_child_role_name(
                     child_logic_row = parent_adjustor.child_logic_row,
-                    child_role_name = self._from_parent_role
+                    child_role_name = self._child_role_name
                 )
                 parent_adjustor.parent_logic_row =\
                     parent_adjustor.child_logic_row.get_parent_logic_row(
-                        role_name=self._from_parent_role)
+                        role_name=self._child_role_name)
                 print(f'sum adjusts {str(self)}')
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "dlt":
             raise Exception("sum / delete child not implemented")

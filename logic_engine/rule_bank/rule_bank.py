@@ -44,12 +44,9 @@ class RuleBank(metaclass=Singleton):
         return result
 
     def validate(self) -> bool:
-        result = f"Validate Rule Bank[{str(hex(id(self)))}] (loaded {self._at})"
-        for each_key in self._tables:
-            result += f"\nMapped Class[{each_key}] rules:"
-            for each_rule in self._tables[each_key]:
-                result += f'\n  {str(each_rule)}'
-        print(result)
+        list_rules = "\n\nValidate Rule Bank"
+        list_rules += self.__str__()
+        print(list_rules)
         return True
 
 

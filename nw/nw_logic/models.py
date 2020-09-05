@@ -38,6 +38,8 @@ class Customer(Base):
     Balance = Column(DECIMAL)
     CreditLimit = Column(DECIMAL)
 
+    OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
+
 
 class CustomerDemographic(Base):
     __tablename__ = 'CustomerDemographic'
@@ -222,12 +224,27 @@ class Order(Base):
     ShipCountry = Column(String(8000))
     AmountTotal = Column(DECIMAL)
 
-    Customer = relationship('Customer', lazy='noload')
+    Customer = relationship('Customer', lazy='noload',  back_populates="OrderList")
     Employee = relationship('Employee')
 
     OrderDetailList = relationship("OrderDetail",
                                    backref="OrderHeader",
                                    cascade_backrefs=True)
+
+
+class OrderDetail(Base):
+    __tablename__ = 'OrderDetail'
+
+    Id = Column(Integer, primary_key=True)  #, autoincrement=True)
+    OrderId = Column(ForeignKey('Order.Id'), nullable=False)
+    ProductId = Column(ForeignKey('Product.Id'), nullable=False)
+    UnitPrice = Column(DECIMAL, nullable=False)
+    Quantity = Column(Integer, nullable=False)
+    Discount = Column(Float, nullable=False)
+    Amount = Column(DECIMAL)
+
+    Order = relationship('Order', back_populates="OrderDetailList")
+    Product = relationship('Product')
 
 
 class AbPermissionView(Base):
@@ -256,21 +273,6 @@ class AbUserRole(Base):
 
     role = relationship('AbRole')
     user = relationship('AbUser')
-
-
-class OrderDetail(Base):
-    __tablename__ = 'OrderDetail'
-
-    Id = Column(Integer, primary_key=True)  #, autoincrement=True)
-    OrderId = Column(ForeignKey('Order.Id'), nullable=False)
-    ProductId = Column(ForeignKey('Product.Id'), nullable=False)
-    UnitPrice = Column(DECIMAL, nullable=False)
-    Quantity = Column(Integer, nullable=False)
-    Discount = Column(Float, nullable=False)
-    Amount = Column(DECIMAL)
-
-    Order = relationship('Order', back_populates="OrderDetailList")
-    Product = relationship('Product')
 
 
 class AbPermissionViewRole(Base):

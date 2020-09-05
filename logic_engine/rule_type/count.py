@@ -5,7 +5,7 @@ from logic_engine.rule_type.aggregate import Aggregate
 class Count(Aggregate):
 
     _as_count_of = ""
-    _from_parent_role = ""
+    _child_role_name = ""
     _where = ""
 
     def __init__(self, derive: str, as_count_of: str, where: str):

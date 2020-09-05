@@ -1,5 +1,3 @@
-from sqlalchemy.orm import object_mapper
-
 from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
 from logic_engine.rule_bank import rule_bank_withdraw
@@ -23,7 +21,7 @@ class RowLogicExec:
 
     def copy_rules(self):
         self.log("copy_rules")
-        copy_rules = rule_bank_withdraw.copy_rules(self.logic_row.name)
+        copy_rules = rule_bank_withdraw.copy_rules(self.logic_row)
         for role_name, copy_rules_for_table in copy_rules.items():
             logic_row = self.logic_row
             if logic_row.ins_upd_dlt == "ins" or logic_row.is_different_parent(role_name):
@@ -33,7 +31,7 @@ class RowLogicExec:
 
     def formula_rules(self):
         self.log("formula_rules")  # TODO (big) execute in dependency order
-        formula_rules = rule_bank_withdraw.rules_of_class(self.logic_row.name, Formula)
+        formula_rules = rule_bank_withdraw.rules_of_class(self.logic_row, Formula)
         for each_formula in formula_rules:
             each_formula.execute(self.logic_row)
 
@@ -42,7 +40,7 @@ class RowLogicExec:
 
     def constraints(self):
         self.log("constraints")
-        constraint_rules = rule_bank_withdraw.rules_of_class(self.logic_row.name, Constraint)
+        constraint_rules = rule_bank_withdraw.rules_of_class(self.logic_row, Constraint)
         for each_constraint in constraint_rules:
             each_constraint.execute(self.logic_row)
 
@@ -51,7 +49,7 @@ class RowLogicExec:
 
     def adjust_parent_aggregates(self):
         self.log("adjust_parent_aggregates")
-        aggregate_rules = rule_bank_withdraw.aggregate_rules(child_table_name=self.logic_row.name)
+        aggregate_rules = rule_bank_withdraw.aggregate_rules(child_logic_row=self.logic_row)
         for each_parent_role, each_aggr_list in aggregate_rules.items():
             print(each_parent_role)
             parent_adjuster = ParentRoleAdjuster(child_logic_row=self.logic_row,
