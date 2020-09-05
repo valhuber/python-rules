@@ -21,6 +21,11 @@ class LogicContext:
 
 
 class Logic:
+    """Invoke these functions to *define* rules.
+    Rules are *not* run as they are defined,
+    they are run when you issue `session.commit()'.
+    """
+
     @staticmethod
     def sum_rule(derive: str, as_sum_of: str, where: str = ""):
         """
@@ -38,19 +43,19 @@ class Logic:
         Count(derive, as_count_of, where)
 
     @staticmethod
-    def constraint_rule(validate: str, calling: str):
+    def constraint_rule(validate: str, calling: Callable = None, as_condition: Callable= None):
         """
         Constraints declare condition that must be true for all commits
         """
-        Constraint(validate, calling)  # --> load_logic
+        Constraint(validate, calling, as_condition)  # --> load_logic
 
     @staticmethod
-    def formula_rule(derive: str, calling: Callable):
+    def formula_rule(derive: str, calling: Callable = None, as_expression: Callable = None):
         """
         Formulas declare column value, based on current and parent rows
         Parent changes are propagated to child row(s)
         """
-        Formula(derive=derive, calling=calling)
+        Formula(derive=derive, calling=calling, as_expression=as_expression)
 
     @staticmethod
     def copy_rule(derive: str, from_parent: str):

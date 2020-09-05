@@ -25,11 +25,14 @@ and `OrderDetail`.
 The logic requirements can be summarized in the
 following rule-based executable specification:
 ```python
-Logic.constraint_rule(validate="Customer", calling='check_balance')
+Logic.constraint_rule(validate="Customer",
+                      as_condition=lambda row: row.balance <= row.creditLimit)
 Logic.sum_rule(derive="Customer.balance", as_sum_of="Order.AmountTotal",
                where="ShippedDate not None")
+Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
 Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetails.Amount")
-Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
+Logic.formula_rule(derive="OrderDetail.Amount",
+                   as_expression=lambda row: row.UnitPrice * row.Quantity)
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="Product.UnitPrice")
 ```
 The specification addresses around a

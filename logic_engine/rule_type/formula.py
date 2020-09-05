@@ -7,18 +7,29 @@ from logic_engine.rule_type.derivation import Derivation
 
 class Formula(Derivation):
 
-    def __init__(self, derive: str, calling: Callable):
+    def __init__(self, derive: str,
+                 calling: Callable = None,
+                 as_expression: Callable = None):
         super(Formula, self).__init__(derive)
         self._function = calling
+        self._as_expression = as_expression
+        if self._function is None and self._as_expression is None:
+            raise Exception(f'Formula {str} requires calling or as_expression')
+        if self._function is not None and self._as_expression is not None:
+            raise Exception(f'Formula {str} either calling or as_expression')
         rb = RuleBank()
         rb.deposit_rule(self)
 
     def execute(self, logic_row: LogicRow):
         print(f'Formula BEGIN {str(self)} on {str(logic_row)}')
-        value = self._function(row=logic_row.row, old_row=logic_row.old_row, logic_row=logic_row)
+        if self._function is not None:
+            value = self._function(row=logic_row.row,
+                                   old_row=logic_row.old_row, logic_row=logic_row)
+        else:
+            value = self._as_expression(row=logic_row.row)
         setattr(logic_row.row, self._column, value)
         print(f'Formula END {str(self)} on {str(logic_row)}')
 
-    def __str__(self):
+    def __str__(self):  # TODO get text of as_expression
         return super().__str__() + \
                f'Formula Function: {self._function} '
