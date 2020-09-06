@@ -15,7 +15,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
         table_name = each_instance.__tablename__
         print("logic.logic_exec.listeners>before_flush flushing New! "
               + str(table_name) + "]--> " + str(each_instance))
-        logic_row = LogicRow(row=each_instance, old_row=None, nest_level=0, ins_upd_dlt="ins")
+        logic_row = LogicRow(row=each_instance, old_row=None, nest_level=0, ins_upd_dlt="ins", a_session=a_session)
         row_logic_exec = RowLogicExec(logic_row=logic_row)
         row_logic_exec.insert()
 

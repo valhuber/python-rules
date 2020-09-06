@@ -3,6 +3,7 @@ import sqlalchemy_utils
 from sqlalchemy.ext.declarative import base
 from sqlalchemy.engine.reflection import inspection, Inspector
 from sqlalchemy.orm import object_mapper
+from sqlalchemy.orm import session
 
 from logic_engine.rule_bank.rule_bank import RuleBank
 from sqlalchemy.ext.declarative import declarative_base
@@ -14,7 +15,8 @@ class LogicRow:
     State for row logic execution
     """
 
-    def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int):
+    def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int, a_session: session):
+        self.session = a_session
         self.row = row
         self.old_row = old_row
         self.ins_upd_dlt = ins_upd_dlt
@@ -52,7 +54,9 @@ class LogicRow:
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
         old_parent = self.make_copy(parent_row)
-        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, nest_level=0, ins_upd_dlt="*")
+        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
+                                    a_session=self.session,
+                                    nest_level=1+self.nest_level, ins_upd_dlt="*")
         return parent_logic_row
 
     def is_different_parent(self, role_name: str) -> bool:

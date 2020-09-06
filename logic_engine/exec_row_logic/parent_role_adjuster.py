@@ -21,8 +21,12 @@ class ParentRoleAdjuster:
             print("adjust not required for parent_logic_row: " + str(self))
         else:
             print("adjust required for parent_logic_row: " + str(self))
+            current_session = self.child_logic_row.row.session
+            self.parent_logic_row.ins_upd_dlt = "upd"
+            current_session.add(self.parent_logic_row)
+            self.parent_logic_row.update()
 
         if self.previous_parent_logic_row is None:
             print("save adjusted not required for previous_parent_logic_row: " + str(self))
         else:
-            raise Exception("Not Implemented - adjust required for parent_logic_row: " + str(self))
+            raise Exception("Not Implemented - adjust required for previous_parent_logic_row: " + str(self))
