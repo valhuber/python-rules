@@ -38,7 +38,7 @@ class LogicRow:
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
-    def get_parent_logic_row(self, role_name: str):  # FIXME why not -> LogicRow?
+    def get_parent_logic_row(self, role_name: str):  # FIXME "-> LogicRow" fails to compile
         my_mapper = object_mapper(self.row)
         role_def = my_mapper.relationships.get(role_name)
         if role_def is None:

@@ -9,6 +9,7 @@ class Aggregate(Derivation):
 
     def __init__(self, derive: str):
         super(Aggregate, self).__init__(derive)
+        self._parent_role_name = "set in rule_blank_withdraw"
 
     def adjust_parent(self, a_parent_adjustor: ParentRoleAdjuster):
         raise Exception("Not implemented - subclass responsibility")
@@ -16,7 +17,6 @@ class Aggregate(Derivation):
     def get_parent_role_from_child_role_name(self,
                                              child_logic_row: LogicRow,
                                              child_role_name: str) -> str:
-        my_mapper = object_mapper(child_logic_row.row)
-        role_def = my_mapper.relationships.get(child_role_name)
+        return self._parent_role_name
 
 

@@ -88,6 +88,7 @@ def aggregate_rules(child_logic_row: LogicRow) -> dict:
                             if parent_role_name not in result_role_rules_list:
                                 result_role_rules_list[parent_role_name] = []
                             result_role_rules_list[parent_role_name].append(each_parent_rule)
+                            each_parent_rule._parent_role_name = parent_role_name
     return result_role_rules_list
 
 
