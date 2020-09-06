@@ -13,7 +13,7 @@ def compute_amount(row, old_row, logic_row):
 Logic.constraint_rule(validate="Customer",
                       as_condition=lambda row: row.balance <= row.creditLimit)
 Logic.sum_rule(derive="Customer.balance", as_sum_of="OrderList.AmountTotal",
-               where="ShippedDate not None")
+               where="row.ShippedDate is None")
 Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
 Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetail.Amount")
 Logic.formula_rule(derive="OrderDetail.Amount",

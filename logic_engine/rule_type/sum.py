@@ -13,6 +13,7 @@ class Sum(Aggregate):
         super(Sum, self).__init__(derive)
         self._as_sum_of = as_sum_of  # could probably super-ize parent accessor
         self._child_role_name = self._as_sum_of.split(".")[0]  # child role retrieves children
+        self._child_summed_field = self._as_sum_of.split(".")[1]
         self._where = where
         if where is None:
             self._where_cond = lambda row: True
@@ -33,7 +34,7 @@ class Sum(Aggregate):
         delta = 0.0
         if parent_adjustor.child_logic_row.ins_upd_dlt == "ins":
             where = self._where_cond(parent_adjustor.child_logic_row.row)
-            delta = getattr(parent_adjustor.child_logic_row.row, self._column)
+            delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
             if where and delta != 0.0:
                 parent_role_name = self.get_parent_role_from_child_role_name(
                     child_logic_row = parent_adjustor.child_logic_row,

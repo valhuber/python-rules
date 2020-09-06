@@ -60,9 +60,13 @@ Table[OrderDetail] rules:
 
 
 def aggregate_rules(child_logic_row: LogicRow) -> dict:
-    """returns dict(<role_name>, sum/count_rules[] for given child_table_name
-    This requires we **invert** the RuleBank, to find sums that reference child_table_name
-    e.g., for child_table_name "Order", we return the Customer.balance rule
+    """returns dict(<parent_role_name>, sum/count_rules[] for given child_table_name
+
+    This requires we **invert** the RuleBank,
+      to find sums that reference child_table_name, grouped by parent_role
+    e.g., for child_logic_row "Order", we return
+      ["Order", (Customer.balance, Customer.order_count...)
+      ["Employee, (Employee.order_count)]
     """
     result_role_rules_list = {}  # dict of RoleRules
 
@@ -85,16 +89,6 @@ def aggregate_rules(child_logic_row: LogicRow) -> dict:
                                 result_role_rules_list[parent_role_name] = []
                             result_role_rules_list[parent_role_name].append(each_parent_rule)
     return result_role_rules_list
-
-
-"""    rule_bank = RuleBank()
-    for each_rule in rule_bank._tables[child_table_name]:
-        if isinstance(each_rule, (Sum, Count)):
-            role_name = each_rule._from_parent_role
-            if role_name not in role_rules_list:
-                role_rules_list[role_name] = []
-            role_rules_list[role_name].append(each_rule)
-"""
 
 
 def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint)) -> list:
