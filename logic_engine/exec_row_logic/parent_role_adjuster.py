@@ -1,7 +1,7 @@
 from logic_engine.exec_row_logic.logic_row import LogicRow
 
 
-class ParentRoleAdjuster:
+class ParentRoleAdjusterZZ:
     """
     Passed to <aggregate>.adjust_parent who will set parent row(s) values
     iff adjustment is required (e.g., summed value changes, where changes, fk changes, etc)
@@ -24,6 +24,7 @@ class ParentRoleAdjuster:
             current_session = self.child_logic_row.session
             self.parent_logic_row.ins_upd_dlt = "upd"
             current_session.add(self.parent_logic_row.row)
+            self.parent_logic_row.update()  # grr... circular imports require LogicRow += RowLogicExec
             # row_logic_exec = RowLogicExec(logic_row=self.parent_logic_row)  grr... circular imports
             # row_logic_exec.update()
 

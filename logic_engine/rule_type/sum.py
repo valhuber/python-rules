@@ -1,4 +1,4 @@
-from logic_engine.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
+from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.aggregate import Aggregate
 
@@ -37,7 +37,7 @@ class Sum(Aggregate):
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "dlt":
             self.adjust_from_deleted_child(parent_adjustor)
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "upd":
-            raise Exception("sum / update child not implemented")
+            self.adjust_from_updated_child(parent_adjustor)
         else:
             self.adjust_from_updated_child(parent_adjustor)
 
@@ -76,7 +76,7 @@ class Sum(Aggregate):
 
     def adjust_from_updated_child(self, parent_adjustor: ParentRoleAdjuster):
         delta = 0.0
-        if not parent_adjustor.child_logic_row.is_different_parent() is False:
+        if parent_adjustor.child_logic_row.is_different_parent("FIXME ROLENAME") is False:
             where = self._where_cond(parent_adjustor.child_logic_row.row)
             old_where = self._where_cond(parent_adjustor.child_logic_row.old_row)
             delta = 0.0

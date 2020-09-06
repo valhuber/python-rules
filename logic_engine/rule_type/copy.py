@@ -1,4 +1,4 @@
-from logic_engine.exec_row_logic.logic_row import LogicRow
+import logic_engine.exec_row_logic.logic_row as LogicRow
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.derivation import Derivation
 

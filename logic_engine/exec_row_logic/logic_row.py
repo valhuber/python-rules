@@ -8,6 +8,12 @@ from sqlalchemy.orm import session
 from logic_engine.rule_bank.rule_bank import RuleBank
 from sqlalchemy.ext.declarative import declarative_base
 
+# from logic_engine.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
+from logic_engine.rule_bank import rule_bank_withdraw
+from logic_engine.rule_type.constraint import Constraint
+from logic_engine.rule_type.formula import Formula
+
+
 
 class LogicRow:
     """
@@ -99,3 +105,98 @@ class LogicRow:
             else:
                 result += str(value)
         return result  # str(my_dict)
+
+    def log(self, msg: str):
+        print(msg + ": " + str(self))  # more on this later
+
+    def early_actions(self):
+        self.log("early_actions")
+
+    def copy_rules(self):
+        self.log("copy_rules")
+        copy_rules = rule_bank_withdraw.copy_rules(self)
+        for role_name, copy_rules_for_table in copy_rules.items():
+            logic_row = self
+            if logic_row.ins_upd_dlt == "ins" or logic_row.is_different_parent(role_name):
+                parent_logic_row = logic_row.get_parent_logic_row(role_name)
+                for each_copy_rule in copy_rules_for_table:
+                    each_copy_rule.execute(logic_row, parent_logic_row)
+
+    def formula_rules(self):
+        self.log("formula_rules")  # TODO (big) execute in dependency order
+        formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
+        for each_formula in formula_rules:
+            each_formula.execute(self)
+
+    def early_actions(self):
+        self.log("early_actions - not impl")
+
+    def constraints(self):
+        self.log("constraints")
+        constraint_rules = rule_bank_withdraw.rules_of_class(self, Constraint)
+        for each_constraint in constraint_rules:
+            each_constraint.execute(self)
+
+    def cascade_to_children(self):
+        self.log("cascades")
+
+    def adjust_parent_aggregates(self):
+        self.log("adjust_parent_aggregates")
+        aggregate_rules = rule_bank_withdraw.aggregate_rules(child_logic_row=self)
+        for each_parent_role, each_aggr_list in aggregate_rules.items():
+            print(each_parent_role)
+            parent_adjuster = ParentRoleAdjuster(child_logic_row=self,
+                                                 parent_role_name=each_parent_role)
+            for each_aggregate in each_aggr_list:
+                each_aggregate.adjust_parent(parent_adjuster)  # adjusts each_parent iff req'd
+            parent_adjuster.save_altered_parents()
+
+    def update(self):
+        self.early_actions()
+        self.copy_rules()
+        self.formula_rules()
+        self.adjust_parent_aggregates()
+        self.constraints()
+        self.cascade_to_children()
+
+    def insert(self):
+        self.early_actions()
+        self.copy_rules()
+        self.formula_rules()
+        self.adjust_parent_aggregates()
+        self.constraints()
+        # self.cascade_to_children()
+
+
+
+class ParentRoleAdjuster:
+    """
+    Passed to <aggregate>.adjust_parent who will set parent row(s) values
+    iff adjustment is required (e.g., summed value changes, where changes, fk changes, etc)
+    This ensures only 1 update per set of aggregates along a given role
+    """
+
+    def __init__(self, parent_role_name: str, child_logic_row: LogicRow):
+
+        self.child_logic_row = child_logic_row  # the child (curr, old values)
+
+        self.parent_role_name = parent_role_name  # which parent are we dealing with?
+        self.parent_logic_row = None
+        self.previous_parent_logic_row = None
+
+    def save_altered_parents(self):
+        if self.parent_logic_row is None:  # save *only altered* parents (often does nothing)
+            print("adjust not required for parent_logic_row: " + str(self))
+        else:
+            print("adjust required for parent_logic_row: " + str(self))
+            current_session = self.child_logic_row.session
+            self.parent_logic_row.ins_upd_dlt = "upd"
+            current_session.add(self.parent_logic_row.row)
+            self.parent_logic_row.update()  # grr... circular imports require LogicRow += RowLogicExec
+            # row_logic_exec = RowLogicExec(logic_row=self.parent_logic_row)  grr... circular imports
+            # row_logic_exec.update()
+
+        if self.previous_parent_logic_row is None:
+            print("save adjusted not required for previous_parent_logic_row: " + str(self))
+        else:
+            raise Exception("Not Implemented - adjust required for previous_parent_logic_row: " + str(self))

@@ -1,6 +1,7 @@
 from typing import Callable
 
-from logic_engine.exec_row_logic.logic_row import LogicRow
+import logic_engine.exec_row_logic.logic_row as LogicRow
+
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.rule import Rule
 
@@ -11,7 +12,7 @@ class Constraint(Rule):
 
     def __init__(self, validate: str,
                  calling: Callable = None,
-                 as_condition: Callable = None):
+                 as_condition: str = None):
         super(Constraint, self).__init__(validate)
         # self.table = validate  # setter finds object
         self._function = calling

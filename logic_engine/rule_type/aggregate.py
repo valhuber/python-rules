@@ -1,7 +1,7 @@
 from sqlalchemy.orm import object_mapper
 
 from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
+from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
 from logic_engine.rule_type.derivation import Derivation
 
 

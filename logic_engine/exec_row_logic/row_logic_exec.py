@@ -5,7 +5,7 @@ from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
 
 
-class RowLogicExec:
+class ZRowLogicExec:
 
     def __init__(self, logic_row: LogicRow):
         self.logic_row = logic_row
