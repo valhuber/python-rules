@@ -27,6 +27,7 @@ class Sum(Aggregate):
             result = super().__str__() + f'Sum({self._as_sum_of} Where {self._where})'
         else:
             result = super().__str__() + f'Sum({self._as_sum_of})'
+        result += "  (adjust using parent_role_name: " + self._parent_role_name + ")"
         return result
 
     def adjust_parent(self, parent_adjustor: ParentRoleAdjuster):
@@ -42,7 +43,9 @@ class Sum(Aggregate):
                 )
                 parent_adjustor.parent_logic_row =\
                     parent_adjustor.child_logic_row.get_parent_logic_row(
-                        role_name=self._child_role_name)
+                        role_name=self._parent_role_name)
+                curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
+                setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
                 print(f'sum adjusts {str(self)}')
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "dlt":
             raise Exception("sum / delete child not implemented")

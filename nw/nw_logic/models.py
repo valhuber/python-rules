@@ -38,7 +38,8 @@ class Customer(Base):
     Balance = Column(DECIMAL)
     CreditLimit = Column(DECIMAL)
 
-    OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
+    #  OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
+    OrderList = relationship("Order", cascade_backrefs=True, backref="Customer")
 
 
 class CustomerDemographic(Base):
@@ -69,8 +70,8 @@ class Employee(Base):
     Notes = Column(String(8000))
     ReportsTo = Column(Integer)
     PhotoPath = Column(String(8000))
-    OrderList = relationship("Order", cascade_backrefs=True)
-# not sure about this... adding backref="Order" causes this failure:
+    OrderList = relationship("Order", cascade_backrefs=True, backref="SalesRep")
+# not sure about this... adding backref="Order" causes this failure:  FIXME cleanup
 # "Error creating backref 'Employee' on relationship 'Employee.OrderList':
 #   property of that name exists on mapper 'mapped class Order->Order'"
 
@@ -87,6 +88,9 @@ class Product(Base):
     UnitsOnOrder = Column(Integer, nullable=False)
     ReorderLevel = Column(Integer, nullable=False)
     Discontinued = Column(Integer, nullable=False)
+
+    OrderList = relationship("OrderDetail", cascade_backrefs=True, backref="ProductOrdered")
+
 
 
 class Region(Base):
@@ -224,8 +228,8 @@ class Order(Base):
     ShipCountry = Column(String(8000))
     AmountTotal = Column(DECIMAL)
 
-    Customer = relationship('Customer', lazy='noload',  back_populates="OrderList")
-    Employee = relationship('Employee')
+    # Customer = relationship('Customer', lazy='noload',  back_populates="OrderList")  FIXME cleanup
+    # Employee = relationship('Employee')
 
     OrderDetailList = relationship("OrderDetail",
                                    backref="OrderHeader",
@@ -243,8 +247,8 @@ class OrderDetail(Base):
     Discount = Column(Float, nullable=False)
     Amount = Column(DECIMAL)
 
-    Order = relationship('Order', back_populates="OrderDetailList")
-    Product = relationship('Product')
+    # Order = relationship('Order', back_populates="OrderDetailList")  FIXME cleanup
+    # Product = relationship('Product')
 
 
 class AbPermissionView(Base):

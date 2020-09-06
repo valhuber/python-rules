@@ -33,22 +33,24 @@ class LogicRow:
     def make_copy(self, a_row: base) -> base:
         result_class = a_row.__class__
         result = result_class()
-        row_mapper = object_mapper(result)
+        row_mapper = object_mapper(a_row)
         for each_attr in row_mapper.attrs:  # TODO skip object references
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
     def get_parent_logic_row(self, role_name: str):  # FIXME "-> LogicRow" fails to compile
-        my_mapper = object_mapper(self.row)
-        role_def = my_mapper.relationships.get(role_name)
-        if role_def is None:
-            raise Exception(f"FIXME invalid role name {role_name}")
-        parent_key = {}
-        for each_child_col, each_parent_col in role_def.local_remote_pairs:
-            parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)
-        parent_class = role_def.entity.class_
-        # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
-        parent_row = self.session.query(parent_class).get(parent_key)
+        parent_row = getattr(self.row, role_name)
+        if parent_row is None:
+            my_mapper = object_mapper(self.row)
+            role_def = my_mapper.relationships.get(role_name)
+            if role_def is None:
+                raise Exception(f"FIXME invalid role name {role_name}")
+            parent_key = {}
+            for each_child_col, each_parent_col in role_def.local_remote_pairs:
+                parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)
+            parent_class = role_def.entity.class_
+            # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
+            parent_row = self.session.query(parent_class).get(parent_key)
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, nest_level=0, ins_upd_dlt="*")
         return parent_logic_row
