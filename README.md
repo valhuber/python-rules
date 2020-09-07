@@ -29,7 +29,6 @@ Logic.constraint_rule(validate="Customer",
                       as_condition="row.Balance <= row.CreditLimit")
 Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
                where="row.ShippedDate is None")
-Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
 
 Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 

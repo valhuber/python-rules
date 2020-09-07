@@ -14,7 +14,6 @@ Logic.constraint_rule(validate="Customer",
                       as_condition="row.Balance <= row.CreditLimit")
 Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
                where="row.ShippedDate is None")
-Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
 
 Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
@@ -25,6 +24,9 @@ Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.Unit
 
 Logic.constraint_rule(validate="AbUser",  # table is ab_user
                       as_condition=lambda row: row.username != "noname")
+
+Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
+                 where="ShippedDate not None")
 
 rule_bank = RuleBank()
 rule_bank.validate()
