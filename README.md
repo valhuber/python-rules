@@ -2,7 +2,7 @@ Using rules for
 typical transaction logic (multi-table derivations, constraints)
 provides several advantages in building backed database logic:
 
-| Rule-based Logic is | Because |
+| Rule-based<br>Logic is | Because |
 | ------------- | ------------- |
 | **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [200 hundred](by-code) of lines of code|
 | **Performant** | SQLs are pruned and minimized |
@@ -15,7 +15,7 @@ This can represent a meaningful reduction in project delivery:
 a typical transactional database system.
 
 * Experience has shown that such rules can address over 90% of
-the backend logic, reducing such logic by 40X.
+the backend logic, reducing such logic by 40X (200 vs. 5).
 
 ### Installation
 Using your IDE or command line: 
