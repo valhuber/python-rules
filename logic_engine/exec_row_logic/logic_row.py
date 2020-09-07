@@ -14,7 +14,6 @@ from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
 
 
-
 class LogicRow:
     """
     Wraps row, with mold_row, ins_upd_dlt, nest_level, etc
@@ -69,7 +68,10 @@ class LogicRow:
         return False # FIXME placeholder, implementation required
 
     def __str__(self):
-        result = self.row.__tablename__ + "["
+        result = ""
+        for x in range(self.nest_level):
+            result += ".."
+        result += self.row.__tablename__ + "["
         my_meta = self.table_meta
         key_cols = my_meta.primary_key.columns.keys()
         is_first = True
@@ -82,7 +84,7 @@ class LogicRow:
                 result += value
             else:
                 result += str(value)
-        result += "] "
+        result += "]: "
         cols = self.row.__table__.columns
         sorted_cols = sorted(cols, key=lambda col: col.name)
         is_first = True
@@ -99,15 +101,18 @@ class LogicRow:
             if self.old_row is not None:
                 old_value = getattr(self.old_row, each_col_name)
             if value != old_value:
-                result += ' [' + str(old_value) + '-->]'
+                result += ' [' + str(old_value) + '-->] '
             if isinstance(value, str):
                 result += value
             else:
                 result += str(value)
+        result += f'  row@: {str(hex(id(self.row)))}'
         return result  # str(my_dict)
 
     def log(self, msg: str):
-        print(msg + ": " + str(self))  # more on this later
+        output = str(self)
+        output = output.replace("]:", "]: " + msg, 1)
+        print(output)  # more on this later
 
     def early_actions(self):
         self.log("early_actions")
@@ -144,7 +149,7 @@ class LogicRow:
         self.log("adjust_parent_aggregates")
         aggregate_rules = rule_bank_withdraw.aggregate_rules(child_logic_row=self)
         for each_parent_role, each_aggr_list in aggregate_rules.items():
-            print(each_parent_role)
+            # print(each_parent_role)
             parent_adjuster = ParentRoleAdjuster(child_logic_row=self,
                                                  parent_role_name=each_parent_role)
             for each_aggregate in each_aggr_list:
@@ -168,7 +173,6 @@ class LogicRow:
         # self.cascade_to_children()
 
 
-
 class ParentRoleAdjuster:
     """
     Passed to <aggregate>.adjust_parent who will set parent row(s) values
@@ -186,17 +190,15 @@ class ParentRoleAdjuster:
 
     def save_altered_parents(self):
         if self.parent_logic_row is None:  # save *only altered* parents (often does nothing)
-            print("adjust not required for parent_logic_row: " + str(self))
+            self.child_logic_row.log("adjust not required for parent_logic_row: " + str(self))
         else:
-            print("adjust required for parent_logic_row: " + str(self))
+            self.child_logic_row.log("adjust required for parent_logic_row: " + str(self))
             current_session = self.child_logic_row.session
             self.parent_logic_row.ins_upd_dlt = "upd"
             current_session.add(self.parent_logic_row.row)
             self.parent_logic_row.update()  # grr... circular imports require LogicRow += RowLogicExec
-            # row_logic_exec = RowLogicExec(logic_row=self.parent_logic_row)  grr... circular imports
-            # row_logic_exec.update()
 
         if self.previous_parent_logic_row is None:
-            print("save adjusted not required for previous_parent_logic_row: " + str(self))
+            self.child_logic_row.log("save-adjusted not required for previous_parent_logic_row: " + str(self))
         else:
             raise Exception("Not Implemented - adjust required for previous_parent_logic_row: " + str(self))

@@ -31,7 +31,7 @@ class Constraint(Rule):
         return f'Constraint Function: {str(self._function)} '
 
     def execute(self, logic_row: LogicRow):
-        print(f'Constraint BEGIN {str(self)} on {str(logic_row)}')
+        logic_row.log(f'Constraint BEGIN {str(self)} on {str(logic_row)}')
         if self._function is not None:
             value = self._function(row=logic_row.row, old_row=logic_row.old_row, logic_row=logic_row)
         else:

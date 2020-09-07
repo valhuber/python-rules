@@ -30,7 +30,7 @@ class Sum(Aggregate):
         return result
 
     def adjust_parent(self, parent_adjustor: ParentRoleAdjuster):
-        print(str(self))  # this is where the work is
+        parent_adjustor.child_logic_row.log(str(self))  # this is where the work is
         delta = 0.0
         if parent_adjustor.child_logic_row.ins_upd_dlt == "ins":
             self.adjust_from_inserted_child(parent_adjustor)
@@ -55,7 +55,7 @@ class Sum(Aggregate):
                     role_name=self._parent_role_name)
             curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
             setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
-            print(f'adjust_from_inserted/adopted_child adjusts {str(self)}')
+            parent_adjustor.child_logic_row.log(f'adjust_from_inserted/adopted_child adjusts {str(self)}')
 
     def adjust_from_deleted_child(self, parent_adjustor: ParentRoleAdjuster):
         raise Exception("sum / update deleted child not implemented")
@@ -100,6 +100,6 @@ class Sum(Aggregate):
                         role_name=self._parent_role_name)
                 curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
                 setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
-                print(f'adjust_from_updated_child adjusts {str(self)}')
+                parent_adjustor.child_logic_row.log(f'adjust_from_updated_child adjusts {str(self)}')
         else:
             raise Exception("sum / re-parent not implemented")

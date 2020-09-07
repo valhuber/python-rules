@@ -25,7 +25,7 @@ class Formula(Derivation):
         rb.deposit_rule(self)
 
     def execute(self, logic_row: LogicRow):
-        print(f'Formula BEGIN {str(self)} on {str(logic_row)}')
+        # logic_row.log(f'Formula BEGIN {str(self)} on {str(logic_row)}')
         if self._function is not None:
             value = self._function(row=logic_row.row,
                                    old_row=logic_row.old_row, logic_row=logic_row)
@@ -33,8 +33,10 @@ class Formula(Derivation):
             value = self._as_expression(row=logic_row.row)
         else:
             value = self._as_exp(row=logic_row.row)
-        setattr(logic_row.row, self._column, value)
-        print(f'Formula END {str(self)} on {str(logic_row)}')
+        old_value = getattr(logic_row.row, self._column)
+        if value != old_value:
+            setattr(logic_row.row, self._column, value)
+            logic_row.log(f'Formula {str(self)}')
 
     def __str__(self):  # TODO get text of as_expression
         return super().__str__() + \

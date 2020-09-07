@@ -67,7 +67,7 @@ session_maker = sqlalchemy.orm.sessionmaker()
 session_maker.configure(bind=engine)
 session = session_maker()
 
-do_logic = True
+do_logic = True  # True => rules, False => code
 rule_list = None
 db = None
 if do_logic:
@@ -76,10 +76,10 @@ if do_logic:
     from nw.nw_logic import nw_rules_bank
     rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
     print("\n\nlogic loaded:\n" + str(rule_bank))
-
-# target, modifier, function
-event.listen(session, "before_commit", nw_before_commit)
-event.listen(session, "before_flush", nw_before_flush)
+else:
+    # target, modifier, function
+    event.listen(session, "before_commit", nw_before_commit)
+    event.listen(session, "before_flush", nw_before_flush)
 
 # event.listen(Order.ShippedDate, "set", order_modified)
 print("session created, listeners registered")
