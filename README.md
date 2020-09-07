@@ -4,10 +4,15 @@ provides several advantages in building backed database logic:
 
 | Rule-based Logic is | Because |
 | ------------- | ------------- |
-| **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [hundreds](by-code) of lines of code|
+| **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [200 hundred](by-code) of lines of code|
 | **Performant** | SQLs are pruned and minimized |
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
 | **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles |
+
+This can represent a meaningful reduction in project delivery.
+Backend logic often represents nearly half the effort.
+Experience has shown that such rules can address over 90% of
+the backend logic, reducing such logic by 40X.
 
 ### Installation
 Using your IDE or command line: 
@@ -97,8 +102,11 @@ For example, we need to adjust the Customers balance
 if the Orders `ShippedDate` is changed.
 
 ##### DB-generated Keys
-Observe the use of db-generated keys in `Order`
-and `OrderDetail`.
+DB-generated keys are often tricky (how do you insert
+items if you don't know the db-generated orderId?), shown here in `Order`
+and `OrderDetail`.  These were well-handled by sqlalchemy,
+where adding OrderDetail rows into the Orders' collection automatically
+set the foreign keys.
 
 ### Explore
 The [by-code](https://github.com/valhuber/python-rules/wiki/by-code)
