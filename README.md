@@ -5,7 +5,7 @@ provides several advantages in building backed database logic:
 | Rule-based<br>Logic is | Because |
 | ------------- | ------------- |
 | **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [200 hundred](by-code) of lines of code|
-| **Performant** | SQLs are pruned and minimized |
+| **Performant** | SQLs are pruned and minimized (example below)|
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
 | **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles |
 
@@ -53,7 +53,8 @@ Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
 
 #### Logic Specifications
-Logic is expressed as spreadsheet-like rules as shown below.  
+Logic is expressed as spreadsheet-like rules as shown below
+from  [nw_rules_bank.py](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py).  
 ```python
 Logic.constraint_rule(validate="Customer",
                       as_condition="row.Balance <= row.CreditLimit")
