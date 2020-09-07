@@ -9,9 +9,12 @@ provides several advantages in building backed database logic:
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
 | **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles |
 
-This can represent a meaningful reduction in project delivery.
-Backend logic often represents nearly half the effort.
-Experience has shown that such rules can address over 90% of
+This can represent a meaningful reduction in project delivery:
+
+* Backend logic often represents nearly half the effort of
+a typical transactional database system.
+
+* Experience has shown that such rules can address over 90% of
 the backend logic, reducing such logic by 40X.
 
 ### Installation
@@ -23,20 +26,31 @@ virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+The project includes:
+* the logic engine that executes the rules
+* the sample database (sqlite, so no db install is required)
+* business logic, both by code an by rules,
+to facilitate comparison
+   * select by-hand vs. rules logic in the `nw_logic/__init__.py` file
+* a test folder that runs various sample transactions
+
+You can run the programs in the `nw/trans-tests` folder,
+and/or review this readme and the wiki.
+
 ### Background
-The subject database is an adaption of nw,
+The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
 For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 #### Architecture
-The logic engine is based on sqlalchemy `before_flush` events on
+The logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables.`  Logging shows which rules execute,
 and you can set breakpoints in formula/constraint/action rules
 expressed in Python.
 
-Logic does not apply to updates outside 
-sqlalchemy, or to sqlalchemy batch updates or unmapped tables.
+Logic does not apply to updates outside sqlalchemy,
+or to sqlalchemy batch updates or unmapped sql updates.
 
 #### Logic Specifications
 Logic is expressed as spreadsheet-like rules as shown below.  
@@ -54,10 +68,12 @@ Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.Unit
 ```
 The specification addresses around a
 dozen transactions.  Here we look at 2 simple examples:
+
 * **Add Order (Check Credit) -** enter an order/orderdetails,
 and rollup to AmountTotal / Balance to check CreditLimit
-* **Ship / Unship an Order (Adjust Balance) -** when an Order's DateShippped
-is changed, adjust the Customers balance
+
+* **Ship / Unship an Order (Adjust Balance) -** when an Order's `DateShippped`
+is changed, adjust the Customers 'Balance`
 
 These representatively complex transactions illustrate common patterns:
 
