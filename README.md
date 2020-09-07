@@ -26,14 +26,16 @@ The logic requirements can be summarized in the
 following rule-based executable specification:
 ```python
 Logic.constraint_rule(validate="Customer",
-                      as_condition=lambda row: row.balance <= row.creditLimit)
-Logic.sum_rule(derive="Customer.balance", as_sum_of="Order.AmountTotal",
-               where="ShippedDate not None")
+                      as_condition="row.Balance <= row.CreditLimit")
+Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
+               where="row.ShippedDate is None")
 Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order", where="ShippedDate not None")
-Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetails.Amount")
+
+Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
+
 Logic.formula_rule(derive="OrderDetail.Amount",
-                   as_expression=lambda row: row.UnitPrice * row.Quantity)
-Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="Product.UnitPrice")
+                   as_exp="row.UnitPrice * row.Quantity")
+Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 ```
 The specification addresses around a
 dozen transactions.  Here we look at:

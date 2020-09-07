@@ -27,7 +27,7 @@ logic_logger = logging.getLogger('logic_logger')  # for users
 logic_logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
 handler.setFormatter(formatter)
 logic_logger.addHandler(handler)
 
@@ -35,7 +35,7 @@ engine_logger = logging.getLogger('engine_logger')  # for internals
 engine_logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
+formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
 handler.setFormatter(formatter)
 engine_logger.addHandler(handler)
 

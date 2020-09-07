@@ -36,7 +36,7 @@ class Formula(Derivation):
         old_value = getattr(logic_row.row, self._column)
         if value != old_value:
             setattr(logic_row.row, self._column, value)
-            logic_row.log(f'Formula {str(self)}')
+            logic_row.log(f'Formula {self._column}')
 
     def __str__(self):  # TODO get text of as_expression
         return super().__str__() + \

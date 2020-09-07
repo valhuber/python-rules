@@ -20,7 +20,6 @@ Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
 Logic.formula_rule(derive="OrderDetail.Amount",
                    as_exp="row.UnitPrice * row.Quantity")
-                 # as_expression=lambda row: row.UnitPrice * row.Quantity)
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 
 
