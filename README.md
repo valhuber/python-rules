@@ -24,8 +24,8 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 #### Architecture
-The logic engine handles sqlalchemy `before_flush` events on
-Mapped Tables.  Logging shows which rules execute,
+The logic engine is based on sqlalchemy `before_flush` events on
+`Mapped Tables.`  Logging shows which rules execute,
 and you can set breakpoints in formula/constraint/action rules
 expressed in Python.
 
@@ -65,18 +65,30 @@ or sum things on the fly.  There are cases for both:
    
    - **Stored Aggregates** - a good choice when data volumes are large, and / or chain,
    since the application can **adjust** (make a 1 row update) the aggregate based on the
-   *delta* of the children.  Imagine, for example, a customer might have
-   thousands of Orders, each with thousands of OrderDetails.
+   *delta* of the children.
 
 This design decision can dominate application coding.  It's nefarious,
 since data volumes may not be known whn coding begins.  (Ideally, this can be
 a "late binding" decision, like a sql index.)
 
-In this example, we use the **Stored Aggregate** approach, in order
-to investigate multi-table update logic chaining, where updates to 1 row
-trigger updates to others rows, which further chain to still more rows.
+The logic engine uses the **Stored Aggregate** approach.  This optimizes
+multi-table update logic chaining, where updates to 1 row
+trigger updates to other rows, which further chain to still more rows.
+
 Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
-(a *chained* aggregate).
+(a *chained* aggregate).  Consider the **ship / unship order** example:
+* if `ShippedDate` *is not* altered, nothing is dependent on that,
+so the rule is **pruned** from the logic execution.
+The logic engine issues a 1-row update to the Order
+
+* if `ShippedDate` *is* altered, the logic engine **adjusts** the `Customer.Balance`
+with a 1 row update.
+  * Contrast this to approaches in other systems where
+the balance is recomputed with expensive aggregate queries over *all*
+the customers' orders, and *all* their OrderDetails.
+
+  *   Imagine, for example, a customer might have
+   thousands of Orders, each with thousands of OrderDetails.
 
 ##### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
