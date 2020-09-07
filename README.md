@@ -1,5 +1,6 @@
 Using rules for
-typical transaction logic (multi-table derivations, constraints) is
+typical transaction logic (multi-table derivations, constraints)
+provides several advantages in building backed database logic:
 
 | Rule-based Logic is | Because |
 | ------------- | ------------- |
