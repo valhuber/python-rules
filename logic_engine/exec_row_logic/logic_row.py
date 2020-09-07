@@ -17,8 +17,9 @@ from logic_engine.rule_type.formula import Formula
 
 class LogicRow:
     """
-    Wraps row, with mold_row, ins_upd_dlt, nest_level, etc
-    State for row logic execution
+    Wraps row, with old_row, ins_upd_dlt, nest_level, etc - passed to user logic.
+    Methods for insert(), update and delete - called from before_flush listeners, to execute rules
+    Helper Methods (log etc)
     """
 
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int, a_session: session):
