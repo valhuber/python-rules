@@ -44,11 +44,12 @@ class Logic:
         Count(derive, as_count_of, where)
 
     @staticmethod
-    def constraint_rule(validate: str, calling: Callable = None, as_condition: Callable= None):
+    def constraint_rule(validate: str, error_msg: str = "(error_msg not provided)",
+                        calling: Callable = None, as_condition: Callable = None):
         """
         Constraints declare condition that must be true for all commits
         """
-        Constraint(validate, calling, as_condition)  # --> load_logic
+        Constraint(validate=validate, calling=calling, as_condition=as_condition, error_msg=error_msg)  # --> load_logic
 
     @staticmethod
     def early_row_event_rule(on_class: str, calling: Callable = None):
@@ -64,7 +65,7 @@ class Logic:
         Formulas declare column value, based on current and parent rows
         Parent changes are propagated to child row(s)
         """
-        Formula(derive=derive, calling=calling, as_expression=as_expression, as_exp=as_exp)
+        Formula(derive=derive, calling=calling, as_exp=as_exp)
 
     @staticmethod
     def copy_rule(derive: str, from_parent: str):

@@ -11,10 +11,12 @@ class Constraint(Rule):
     _function = None
 
     def __init__(self, validate: str,
+                 error_msg: str,
                  calling: Callable = None,
                  as_condition: str = None):
         super(Constraint, self).__init__(validate)
         # self.table = validate  # setter finds object
+        self._error_msg = error_msg
         self._as_condition = as_condition
         if self._function is None and self._as_condition is None:
             raise Exception(f'Constraint {str} requires calling or as_expression')
@@ -39,7 +41,9 @@ class Constraint(Rule):
         if value:
             pass
         elif not value:
-            raise Exception(f'Constraint fails: {str(self)}')
+            row = logic_row.row
+            msg = eval(f'f"""{self._error_msg}"""')
+            raise Exception("Constraint failed: " + msg)
         else:
             raise Exception(f'Constraint did not return boolean: {str(self)}')
         print(f'Constraint END {str(self)} on {str(logic_row)}')

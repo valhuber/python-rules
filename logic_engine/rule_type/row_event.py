@@ -23,7 +23,7 @@ class RowEvent(Rule):
     def execute(self, logic_row: LogicRow):
         # logic_row.log(f'Event BEGIN {str(self)} on {str(logic_row)}')
         value = self._function(row=logic_row.row, old_row=logic_row.old_row, logic_row=logic_row)
-        print(f'Event END {str(self)} on {str(logic_row)}')
+        # print(f'Event END {str(self)} on {str(logic_row)}')
 
 
 class EarlyRowEvent(RowEvent):

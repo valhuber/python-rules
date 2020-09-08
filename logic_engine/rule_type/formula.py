@@ -1,3 +1,4 @@
+import inspect
 from typing import Callable
 
 import logic_engine.exec_row_logic.logic_row as LogicRow
@@ -9,18 +10,21 @@ class Formula(Derivation):
 
     def __init__(self, derive: str,
                  calling: Callable = None,
-                 as_expression: Callable = None,
                  as_exp: str = None):
         super(Formula, self).__init__(derive)
         self._function = calling
-        self._as_expression = as_expression
-        self._as_exp = lambda row: eval(as_exp)
-        """  TODO decide on exp vs expression, and activate these validations
-        if self._function is None and self._as_expression is None:
-            raise Exception(f'Formula {str} requires calling or as_expression')
-        if self._function is not None and self._as_expression is not None:
-            raise Exception(f'Formula {str} either calling or as_expression')
-        """
+        self._as_exp = None
+        if as_exp is not None:
+            self._as_exp = lambda row: eval(as_exp)
+        if self._function is None and self._as_exp is None:
+            raise Exception(f'Formula {str} requires calling or as_exp')
+        if self._function is not None and self._as_exp is not None:
+            raise Exception(f'Formula {str} requires *eithe*r calling or as_expression')
+        self._dependencies = []
+        text = as_exp
+        if as_exp is None:
+            text = inspect.getsource(self._function)
+        self.parse_dependencies(rule_text=text)
         rb = RuleBank()
         rb.deposit_rule(self)
 
@@ -29,8 +33,8 @@ class Formula(Derivation):
         if self._function is not None:
             value = self._function(row=logic_row.row,
                                    old_row=logic_row.old_row, logic_row=logic_row)
-        elif self._as_expression is not None:
-            value = self._as_expression(row=logic_row.row)
+        elif self._as_exp is not None:
+            value = self._as_exp(row=logic_row.row)
         else:
             value = self._as_exp(row=logic_row.row)
         old_value = getattr(logic_row.row, self._column)
