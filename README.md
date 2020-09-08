@@ -37,6 +37,9 @@ to facilitate comparison
 You can run the programs in the `nw/trans-tests` folder,
 and/or review this readme and the wiki.
 
+#### Status
+Minimally running on 9/6/2020: able to save order (certain paths of copy, formula and sum rules).
+
 ### Background
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
