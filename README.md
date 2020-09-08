@@ -7,7 +7,7 @@ provides several advantages in building backed database logic:
 | **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [200 hundred](by-code) of lines of code|
 | **Performant** | SQLs are pruned and minimized (example below)|
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
-| **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate |
+| **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate (see also Fab-QuickStart below |
 
 This can represent a meaningful reduction in project delivery:
 
