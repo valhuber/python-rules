@@ -13,6 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from logic_engine.rule_bank import rule_bank_withdraw
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
+from logic_engine.rule_type.row_event import EarlyRowEvent
 
 
 class LogicRow:
@@ -121,8 +122,14 @@ class LogicRow:
         output = output.replace("]:", "] {" + msg + "}", 1)
         logic_engine.engine_logger.debug(output)  # more on this later
 
-    def early_actions(self):
-        self.log("early_actions")
+    def early_row_events(self):
+        self.log_engine("early_events")
+        early_row_events = rule_bank_withdraw.generic_rules_of_class(EarlyRowEvent)
+        for each_row_event in early_row_events:
+            each_row_event.execute(self)
+        early_row_events = rule_bank_withdraw.rules_of_class(self, EarlyRowEvent)
+        for each_row_event in early_row_events:
+            each_row_event.execute(self)
 
     def copy_rules(self):
         copy_rules = rule_bank_withdraw.copy_rules(self)
@@ -139,10 +146,6 @@ class LogicRow:
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
         for each_formula in formula_rules:
             each_formula.execute(self)
-
-    def early_actions(self):
-        pass
-        # self.log("early_actions - not impl")
 
     def constraints(self):
         # self.log("constraints")
@@ -166,7 +169,7 @@ class LogicRow:
 
     def update(self, reason: str = None):
         self.log("Update - " + reason)
-        self.early_actions()
+        self.early_row_events()
         self.copy_rules()
         self.formula_rules()
         self.adjust_parent_aggregates()
@@ -175,7 +178,7 @@ class LogicRow:
 
     def insert(self, reason: str = None):
         self.log("Insert - " + reason)
-        self.early_actions()
+        self.early_row_events()
         self.copy_rules()
         self.formula_rules()
         self.adjust_parent_aggregates()

@@ -9,6 +9,7 @@ from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.copy import Copy
 from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
+from logic_engine.rule_type.row_event import EarlyRowEvent
 from logic_engine.rule_type.sum import Sum
 
 """
@@ -92,7 +93,7 @@ def aggregate_rules(child_logic_row: LogicRow) -> dict:
     return result_role_rules_list
 
 
-def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint)) -> list:
+def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint, EarlyRowEvent)) -> list:
     """withdraw rules of designated a_class
     """
     rule_bank = RuleBank()
@@ -101,4 +102,17 @@ def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint)) -> list:
     for each_rule in rule_bank._tables[logic_row.name]:
         if isinstance(each_rule, a_class):
             rules_list.append(each_rule)
+    return rules_list
+
+
+def generic_rules_of_class(a_class: (Formula, Constraint, EarlyRowEvent)) -> list:
+    """withdraw rules of the "*" (any) class
+    """
+    rule_bank = RuleBank()
+    rules_list = []
+    role_rules_list = {}  # dict of RoleRules
+    if "*" in rule_bank._tables:
+        for each_rule in rule_bank._tables["*"]:
+            if isinstance(each_rule, a_class):
+                rules_list.append(each_rule)
     return rules_list

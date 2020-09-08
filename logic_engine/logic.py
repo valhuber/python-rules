@@ -6,6 +6,7 @@ from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.copy import Copy
 from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
+from logic_engine.rule_type.row_event import EarlyRowEvent
 from logic_engine.rule_type.sum import Sum
 
 Base = declarative_base()
@@ -48,6 +49,13 @@ class Logic:
         Constraints declare condition that must be true for all commits
         """
         Constraint(validate, calling, as_condition)  # --> load_logic
+
+    @staticmethod
+    def early_row_event_rule(on_class: str, calling: Callable = None):
+        """
+        Row Events are Python functions called before/after logic
+        """
+        EarlyRowEvent(on_class, calling)  # --> load_logic
 
     @staticmethod
     def formula_rule(derive: str, calling: Callable = None,

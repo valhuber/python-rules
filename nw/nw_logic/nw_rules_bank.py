@@ -10,6 +10,10 @@ def compute_amount(row, old_row, logic_row):
     return row.UnitPrice * row.Quantity
 
 
+def my_early_event(row, old_row, logic_row):
+    print("early event - good breakpoint, time/date stamping, etc")
+
+
 Logic.constraint_rule(validate="Customer",
                       as_condition="row.Balance <= row.CreditLimit")
 Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
@@ -27,6 +31,8 @@ Logic.constraint_rule(validate="AbUser",  # table is ab_user
 
 Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
                  where="ShippedDate not None")
+
+Logic.early_row_event_rule(on_class="*", calling=my_early_event)
 
 rule_bank = RuleBank()
 rule_bank.validate()

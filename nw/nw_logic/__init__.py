@@ -5,11 +5,19 @@ from sqlalchemy import event
 from sqlalchemy.orm import session
 
 from logic_engine.rule_bank.rule_bank import RuleBank
+from logic_engine.rule_bank import rule_bank_withdraw
 from logic_engine.rule_bank import rule_bank_setup
-from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
-from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_flush_delete
+from logic_engine.rule_type.constraint import Constraint
+from logic_engine.rule_type.formula import Formula
+from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new
+from nw.nw_logic.order_detail_code import order_detail_flush_new
 
 from nw.nw_logic.models import Order
+
+'''
+from nw.nw_logic.listeners import nw_before_commit, nw_before_flush
+from nw.nw_logic.order_code import order_modified
+'''
 
 
 def nw_before_commit(a_session: session):
@@ -46,10 +54,14 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
     for each_instance in a_session.deleted:
         print("nw_before_flush flushing New! --> " + str(each_instance))
         obj_class = each_instance.__tablename__
+        """ fix me
         if obj_class == "OrderDetail":
             order_detail_flush_delete(each_instance, a_session)
         elif obj_class == "Order":
             order_flush_delete(each_instance, a_session)
+        """
+
+    print("nw_before_flush  EXIT")
 
     print("nw_before_flush  EXIT")
 
@@ -67,7 +79,7 @@ session_maker = sqlalchemy.orm.sessionmaker()
 session_maker.configure(bind=engine)
 session = session_maker()
 
-do_logic = True  # True => use rules, False => code
+do_logic = True  # True => rules, False => code
 rule_list = None
 db = None
 if do_logic:
