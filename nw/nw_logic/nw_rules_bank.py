@@ -1,5 +1,6 @@
 from logic_engine.logic import Logic
 from logic_engine.rule_bank.rule_bank import RuleBank
+from nw.nw_logic import models
 
 
 def check_balance(row, old_row, logic_row) -> bool:
@@ -12,6 +13,11 @@ def compute_amount(row, old_row, logic_row):
 
 def my_early_event(row, old_row, logic_row):
     print("early event - good breakpoint, time/date stamping, etc")
+    """You can get parent rows, like this
+    emp_id = row.EmployeeId
+    test_rep = logic_row.session.query(models.Employee).filter(models.Employee.Id == emp_id).one()
+    print("can we assign the SalesRep??")
+    """
 
 
 Logic.constraint_rule(validate="Customer",

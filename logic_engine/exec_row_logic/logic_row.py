@@ -18,9 +18,9 @@ from logic_engine.rule_type.row_event import EarlyRowEvent
 
 class LogicRow:
     """
-    Wraps row, with old_row, ins_upd_dlt, nest_level, etc - passed to user logic.
+    Wraps row, with old_row, ins_upd_dlt, nest_level, session, etc - passed to user logic.
     Methods for insert(), update and delete - called from before_flush listeners, to execute rules
-    Helper Methods (log etc)
+    Helper Methods (get_parent_logic_row(role_name), log, etc)
     """
 
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int, a_session: session):
@@ -61,6 +61,7 @@ class LogicRow:
             parent_class = role_def.entity.class_
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
+            setattr(self.row, role_name, parent_row)
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
                                     a_session=self.session,
