@@ -43,10 +43,4 @@ class RuleBank(metaclass=Singleton):
                 result += f'\n  {str(each_rule)}'
         return result
 
-    def validate(self) -> bool:
-        list_rules = "\n\nValidate Rule Bank"
-        list_rules += self.__str__()
-        print(list_rules)
-        return True
-
 

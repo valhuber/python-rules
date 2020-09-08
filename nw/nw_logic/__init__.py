@@ -12,6 +12,8 @@ from logic_engine.rule_type.formula import Formula
 from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
 from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_flush_delete
 
+from logic_engine.util import prt
+
 from nw.nw_logic.models import Order
 
 '''
@@ -85,15 +87,16 @@ if do_logic:
     rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
     from nw.nw_logic import nw_rules_bank
-    rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
-    print("\n\nlogic loaded:\n" + str(rule_bank))
+    rule_bank_setup.validate(session, engine)
+    # rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
+    # print("\n\nlogic loaded:\n" + str(rule_bank))
 else:
     # target, modifier, function
     event.listen(session, "before_commit", nw_before_commit)
     event.listen(session, "before_flush", nw_before_flush)
 
 # event.listen(Order.ShippedDate, "set", order_modified)
-print("session created, listeners registered")
+print(prt("session created, listeners registered"))
 
 
 '''

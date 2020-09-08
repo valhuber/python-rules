@@ -41,8 +41,6 @@ Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
 
 Logic.early_row_event_rule(on_class="*", calling=my_early_event)
 
-rule_bank = RuleBank()
-rule_bank.validate()
 
 """
 alternate form for formulas, constraints:

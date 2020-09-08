@@ -105,6 +105,18 @@ def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint, EarlyRowE
     return rules_list
 
 
+def get_formula_rules(class_name: str) -> list:
+    """withdraw rules of designated a_class
+    """
+    rule_bank = RuleBank()
+    rules_list = []
+    role_rules_list = {}  # dict of RoleRules
+    for each_rule in rule_bank._tables[class_name]:
+        if isinstance(each_rule, Formula):
+            rules_list.append(each_rule)
+    return rules_list
+
+
 def generic_rules_of_class(a_class: (Formula, Constraint, EarlyRowEvent)) -> list:
     """withdraw rules of the "*" (any) class
     """
