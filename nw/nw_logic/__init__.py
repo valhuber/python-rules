@@ -9,8 +9,8 @@ from logic_engine.rule_bank import rule_bank_withdraw
 from logic_engine.rule_bank import rule_bank_setup
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
-from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new
-from nw.nw_logic.order_detail_code import order_detail_flush_new
+from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
+from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_flush_delete
 
 from nw.nw_logic.models import Order
 
@@ -54,12 +54,11 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
     for each_instance in a_session.deleted:
         print("nw_before_flush flushing New! --> " + str(each_instance))
         obj_class = each_instance.__tablename__
-        """ fix me
         if obj_class == "OrderDetail":
             order_detail_flush_delete(each_instance, a_session)
         elif obj_class == "Order":
             order_flush_delete(each_instance, a_session)
-        """
+
 
     print("nw_before_flush  EXIT")
 
