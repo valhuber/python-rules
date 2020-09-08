@@ -7,7 +7,7 @@ provides several advantages in building backed database logic:
 | **Concise**  | [5 spreadsheet-like rules](by-rules) represent the same logic as [200 hundred](by-code) of lines of code|
 | **Performant** | SQLs are pruned and minimized (example below)|
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
-| **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles |
+| **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate |
 
 This can represent a meaningful reduction in project delivery:
 
@@ -67,7 +67,7 @@ Logic.formula_rule(derive="OrderDetail.Amount",
                    as_exp="row.UnitPrice * row.Quantity")
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 ```
-The specification addresses around a
+The specification is fully executable, and governs around a
 dozen transactions.  Here we look at 2 simple examples:
 
 * **Add Order (Check Credit) -** enter an order/orderdetails,
