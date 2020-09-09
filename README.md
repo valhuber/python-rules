@@ -4,7 +4,7 @@ provides several advantages in building backed database logic:
 
 | Rule-based<br>Logic is | Because |
 | ------------- | ------------- |
-| **Concise**  | 5 spreadsheet-like rules (shown below) represent the same logic as 200 hundred of lines of code (see explore, below|
+| **Concise**  | 5 spreadsheet-like rules (shown below) represent the same logic as 200 hundred of lines of code (see explore, below)|
 | **Performant** | SQLs are pruned and minimized (example below)|
 | **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
 | **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate<br>Collaboration is further supported by running screens - see also Fab-QuickStart below |
