@@ -25,6 +25,7 @@ class Formula(Derivation):
         if as_exp is None:
             text = inspect.getsource(self._function)
         self.parse_dependencies(rule_text=text)
+        self._exec_order = -1
         rb = RuleBank()
         rb.deposit_rule(self)
 
@@ -44,4 +45,4 @@ class Formula(Derivation):
 
     def __str__(self):  # TODO get text of as_expression
         return super().__str__() + \
-               f'Formula Function: {self._function} '
+               f'Formula ({self._exec_order}) Function: {self._function} '

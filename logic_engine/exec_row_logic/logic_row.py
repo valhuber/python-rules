@@ -145,6 +145,7 @@ class LogicRow:
     def formula_rules(self):
         self.log_engine("formula_rules")  # TODO (big) execute in dependency order
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
+        formula_rules.sort(key=lambda f: f._exec_order)
         for each_formula in formula_rules:
             each_formula.execute(self)
 

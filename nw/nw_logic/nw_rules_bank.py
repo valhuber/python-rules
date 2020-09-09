@@ -41,8 +41,26 @@ Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
 
 Logic.early_row_event_rule(on_class="*", calling=my_early_event)
 
-
 """
+
+Dependency Graph test:
+
+Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
+                   as_exp="row.ColB + row.ColC")
+
+Logic.formula_rule(derive="Tbl.ColB",  # or, calling=compute_amount)
+                   as_exp="row.ColC")
+
+Logic.formula_rule(derive="Tbl.ColC",  # or, calling=compute_amount)
+                   as_exp="row.ColD")
+
+Logic.formula_rule(derive="Tbl.ColD",  # or, calling=compute_amount)
+                   as_exp="row.ColE")
+
+Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
+                   as_exp="xxx")
+
+
 alternate form for formulas, constraints:
     Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
 """

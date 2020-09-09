@@ -123,7 +123,7 @@ def row_prt(obj: object, a_msg: str = ""):
 
 
 def prt(a_msg: str) -> str:
-    """Returns file>method + a_msg
+    """Returns file#method + a_msg
     (debug tracing)
     """
     cur_frame = inspect.currentframe()
@@ -131,5 +131,5 @@ def prt(a_msg: str) -> str:
     function_name = call_frame[1][3]
     file_name = call_frame[1][1]
     file_name = os.path.basename(file_name)
-    result = f'@{file_name}>{function_name}(): {a_msg}'
+    result = f'@{file_name}#{function_name}(): {a_msg}'
     return result
