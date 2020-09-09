@@ -48,6 +48,7 @@ Customers, Orders, OrderDetails and Products.
 
 #### Architecture
 Python rule architecture is depicted below:
+
 ![architecture](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
 
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes
