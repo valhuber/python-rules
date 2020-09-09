@@ -46,7 +46,7 @@ with a few rollup columns added.
 For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
-
+#### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
