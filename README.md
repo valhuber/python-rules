@@ -48,7 +48,7 @@ Customers, Orders, OrderDetails and Products.
 
 #### Architecture
 Python rule architecture is depicted below:
-<img src="https://github.com/favicon.ico" width="48">
+<img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 ![architecture](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
 
 <img src="https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV" width="500">
