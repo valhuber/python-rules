@@ -48,6 +48,8 @@ Customers, Orders, OrderDetails and Products.
 
 #### Architecture
 ![generated page](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
+![generated page](https://drive.google.com/uc?export=view&id=1Q3cG-4rQ6Q6RdZppvkrQzCDhDYHnk-F6)
+
 The logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables.`  Logging shows which rules execute,
 and you can set breakpoints in formula/constraint/action rules
