@@ -47,7 +47,6 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 #### Architecture
-Python rule architecture is depicted below:
 
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
