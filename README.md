@@ -62,8 +62,8 @@ expressed in Python.
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
 
-#### Logic Specifications
-Logic is expressed as spreadsheet-like rules as shown below
+#### Declaring Logic
+Logic is declared as spreadsheet-like rules as shown below
 from  [nw_rules_bank.py](\https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py).  
 ```python
 Logic.constraint_rule(validate="Customer",
