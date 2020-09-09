@@ -54,10 +54,11 @@ Python rule architecture is depicted below:
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes
 * This code can be hand-written, or via generators such as Flask AppBuilder
 2. The logic engine handles sqlalchemy `before_flush` events on
-`Mapped Tables.`  Logging shows which rules execute,
-and you can set breakpoints in formula/constraint/action rules
-expressed in Python.
+`Mapped Tables.`
 3. Your logic is expressed as Python functions (see example below)
+* Debug logic with logs that show which rules execute,
+and breakpoints in formula/constraint/action rules
+expressed in Python.
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
