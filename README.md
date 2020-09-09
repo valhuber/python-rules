@@ -47,18 +47,15 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 #### Architecture
-Python rule architecture is depicted below:
 
-![architecture](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
+<img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
-<img src="https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV" width="500">
-
-1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes
-* This code can be hand-written, or via generators such as Flask AppBuilder
+1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
+This code can be hand-written, or via generators such as Flask AppBuilder
 2. The logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables.`
-3. Your logic is expressed as Python functions (see example below)
-* Debug logic with logs that show which rules execute,
+3. Your logic is expressed as Python functions (see example below).
+Debug your logic with logs that show which rules execute,
 and breakpoints in formula/constraint/action rules
 expressed in Python.
 
