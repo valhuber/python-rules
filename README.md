@@ -1,6 +1,6 @@
 Using rules for
 typical transaction logic (multi-table derivations, constraints)
-provides several advantages in building backed database logic:
+provides several advantages in building backend database logic:
 
 | Rule-based<br>Logic is | Because |
 | ------------- | ------------- |
