@@ -38,7 +38,7 @@ You can run the programs in the `nw/trans-tests` folder,
 and/or review this readme and the wiki.
 
 #### Status: Running, Under Development
-Minimally running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).
+Essential functions running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).  Not complete, under active development.
 
 ### Background
 The subject database is an adaption of the Northwind database,
