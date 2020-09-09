@@ -47,13 +47,16 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 #### Architecture
-![generated page](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
-![generated page](https://drive.google.com/uc?export=view&id=1Q3cG-4rQ6Q6RdZppvkrQzCDhDYHnk-F6)
+Python rule architecture is depicted below:
+![architecture](https://drive.google.com/uc?export=view&id=1YQ3FRiCOd2DnA3fbt6T0bQ1zTTj_tJuV)
 
-The logic engine handles sqlalchemy `before_flush` events on
+1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes
+* This code can be hand-written, or via generators such as Flask AppBuilder
+2. The logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables.`  Logging shows which rules execute,
 and you can set breakpoints in formula/constraint/action rules
 expressed in Python.
+3. Your logic is expressed as Python functions (see example below)
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
