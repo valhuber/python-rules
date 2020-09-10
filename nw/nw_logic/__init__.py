@@ -82,12 +82,10 @@ do_logic = True  # True => use rules, False => use hand code (for comparison)
 rule_list = None
 db = None
 if do_logic:
-    rule_bank = RuleBank()
+    # rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
-    from nw.nw_logic import nw_rules_bank
-    rule_bank_setup.validate(session, engine)
-    # rule_bank = RuleBank()  # FIXME - unclear why this returns the *correct* singleton, vs 2 lines above
-    # print("\n\nlogic loaded:\n" + str(rule_bank))
+    from nw.nw_logic import nw_rules_bank      # ** activate the rules **
+    rule_bank_setup.validate(session, engine)  # checks for cycles, etc
 else:
     # target, modifier, function
     event.listen(session, "before_commit", nw_before_commit)
