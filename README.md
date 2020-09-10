@@ -23,6 +23,9 @@ This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address over 90% of
 the backend logic, reducing such logic by 40X (200 vs. 5).
 
+Importantly, the rules are complemented by Python events,
+so you can address the last 10%.
+
 ### Background
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
