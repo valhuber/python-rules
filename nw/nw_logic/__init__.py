@@ -9,6 +9,8 @@ from logic_engine.rule_bank import rule_bank_withdraw
 from logic_engine.rule_bank import rule_bank_setup
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
+from nw.nw_logic.nw_rules_bank import activate_basic_check_credit_rules
+
 from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
 from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_flush_delete
 
@@ -84,7 +86,7 @@ db = None
 if by_rules:
     # rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
-    from nw.nw_logic import nw_rules_bank      # ** activate the rules **
+    activate_basic_check_credit_rules()
     rule_bank_setup.validate(session, engine)  # checks for cycles, etc
 else:
     # target, modifier, function
