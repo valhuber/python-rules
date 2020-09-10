@@ -26,29 +26,6 @@ a typical transactional database system.
 * Experience has shown that such rules can address over 90% of
 the backend logic, reducing such logic by 40X (200 vs. 5).
 
-### Installation
-Using your IDE or command line: 
-```
-git clone
-cd python-rules
-virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-The project includes:
-* the logic engine that executes the rules
-* the sample database (sqlite, so no db install is required)
-* business logic, both by code an by rules,
-to facilitate comparison
-   * select by-hand vs. rules logic in the `nw_logic/__init__.py` file
-* a test folder that runs various sample transactions
-
-You can run the programs in the `nw/trans-tests` folder,
-and/or review this readme and the wiki.
-
-#### Status: Running, Under Development
-Essential functions running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).  Not complete, under active development.
-
 ### Background
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
@@ -142,6 +119,29 @@ items if you don't know the db-generated orderId?), shown here in `Order`
 and `OrderDetail`.  These were well-handled by sqlalchemy,
 where adding OrderDetail rows into the Orders' collection automatically
 set the foreign keys.
+
+### Installation
+Using your IDE or command line: 
+```
+git clone
+cd python-rules
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+The project includes:
+* the logic engine that executes the rules
+* the sample database (sqlite, so no db install is required)
+* business logic, both by code an by rules,
+to facilitate comparison
+   * select by-hand vs. rules logic in the `nw_logic/__init__.py` file
+* a test folder that runs various sample transactions
+
+You can run the programs in the `nw/trans-tests` folder,
+and/or review this readme and the wiki.
+
+#### Status: Running, Under Development
+Essential functions running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).  Not complete, under active development.
 
 ### Explore
 The [by-code](https://github.com/valhuber/python-rules/wiki/by-code)
