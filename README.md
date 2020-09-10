@@ -11,8 +11,8 @@ rules, which are then executed by a plugin to sqlalchemy.
 This rule-oriented approach confers several advantages
 over hand-coding:
 
-| Consideration | Rules | Hand-code
-| ------------- | ------------- |
+| Consideration |      Rules    | Hand-code |
+| ------------- | ------------- | --------- |
 | **Conciseness**  | 5 spreadsheet-like rules (shown below) represent the same logic as 200 hundred of lines of code (see explore, below)| xx|
 | **Performance** | SQLs are pruned and minimized (example below)| xx |
 | **Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases| xx |
