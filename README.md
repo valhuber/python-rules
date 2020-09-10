@@ -5,7 +5,7 @@ and actions such as sending mail or messages.
 
 The prevailing assumption is that such *domain-specific logic must surely be 
 domain-specfic code.*  This project introduces a declarative
-approach to such logic, wherein you specify a set of spreadsheet-like
+alternative to such logic, wherein you specify a set of spreadsheet-like
 rules, which are then executed by a plugin to sqlalchemy.
 
 This rule-oriented approach confers several advantages
