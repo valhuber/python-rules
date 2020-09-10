@@ -38,11 +38,11 @@ Customers, Orders, OrderDetails and Products.
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 This code can be hand-written, or via generators such as Flask AppBuilder
 2. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
-`Mapped Tables.`
+`Mapped Tables`
 3. Your logic is expressed as Python functions (see example below).
 Debug your logic with logs that show which rules execute,
 and breakpoints in formula/constraint/action rules
-expressed in Python.
+expressed in Python
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
