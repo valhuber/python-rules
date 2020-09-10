@@ -1,3 +1,4 @@
+### Rules vs. Code
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort, typically nearly half.
 This includes multi-table derivation and constraint logic,
