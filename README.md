@@ -81,7 +81,7 @@ These representatively complex transactions illustrate common patterns:
 ##### Adjustments
 Rollups provoke an important design choice: store the aggregate,
 or sum things on the fly.  There are cases for both:
-   - **Sum** - use sql `select sum` queries to add child data as required.
+   - **Sum** - use sql `select sum` queries to aggregate child data as required.
    This eliminates consistency risks with storing redundant data
    (i.e, the aggregate becomes invalid if an application fails to
    adjust it in *all* of the cases).
