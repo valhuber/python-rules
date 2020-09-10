@@ -1,13 +1,22 @@
-Using rules for
-typical transaction logic (multi-table derivations, constraints)
-provides several advantages in building backend database logic:
+For most database applications, backend database logic is a substantial
+portion of the effort, typically nearly half.  This includes
+multi-table derivation and constraint logic, and actions such as
+sending mail or messages.
 
-| Rule-based<br>Logic is | Because |
+The prevailing assumption is such domain-specific logic must surely be 
+domain-specfic code.  This project introduces a declarative
+approach to such logic, wherein you specify a set of spreadsheet-like
+rules, which are then executed by a plugin to sqlalchemy.
+
+This rule-oriented approach confers several advantages
+over hand-coding:
+
+| Consideration | Rules | Hand-code
 | ------------- | ------------- |
-| **Concise**  | 5 spreadsheet-like rules (shown below) represent the same logic as 200 hundred of lines of code (see explore, below)|
-| **Performant** | SQLs are pruned and minimized (example below)|
-| **High Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases|
-| **Agile** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate<br>Collaboration is further supported by running screens - see also Fab-QuickStart below |
+| **Conciseness**  | 5 spreadsheet-like rules (shown below) represent the same logic as 200 hundred of lines of code (see explore, below)| xx|
+| **Performance** | SQLs are pruned and minimized (example below)| xx |
+| **Quality** | Rules are automatically re-used over all transactions, minimizing missed corner-cases| xx |
+| **Agility** | Rule execution is automatically re-ordered per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate<br>Collaboration is further supported by running screens - see also Fab-QuickStart below | xx |
 
 This can represent a meaningful reduction in project delivery:
 
