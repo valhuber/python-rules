@@ -1,3 +1,4 @@
+### Rules vs. Code
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort, typically nearly half.
 This includes multi-table derivation and constraint logic,
@@ -22,6 +23,9 @@ This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address over 90% of
 the backend logic, reducing such logic by 40X (200 vs. 5).
 
+Importantly, the rules are complemented by Python events,
+so you can address the last 10%.
+
 ### Background
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
@@ -33,12 +37,12 @@ Customers, Orders, OrderDetails and Products.
 
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 This code can be hand-written, or via generators such as Flask AppBuilder
-2. The logic engine handles sqlalchemy `before_flush` events on
-`Mapped Tables.`
+2. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
+`Mapped Tables`
 3. Your logic is expressed as Python functions (see example below).
 Debug your logic with logs that show which rules execute,
 and breakpoints in formula/constraint/action rules
-expressed in Python.
+expressed in Python
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
