@@ -48,8 +48,8 @@ Logic is declared as spreadsheet-like rules as shown below
 from  [`nw_rules_bank.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
 activated in [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py).
 The logic below implements the *check credit* requirement:
-*the balance must not exceed the credit limit,
-where the balance is the sum of the unshipped order totals*:
+* *the balance must not exceed the credit limit,*
+* *where the balance is the sum of the unshipped order totals*:
 ```python
 Logic.constraint_rule(validate="Customer",
                       as_condition="row.Balance <= row.CreditLimit")
