@@ -180,6 +180,7 @@ class LogicRow:
 
     def insert(self, reason: str = None):
         self.log("Insert - " + reason)
+        #self.load_parents()  TODO (lazy loading does not work for inserts)
         self.early_row_events()
         self.copy_rules()
         self.formula_rules()
@@ -213,7 +214,7 @@ class ParentRoleAdjuster:
             self.parent_logic_row.ins_upd_dlt = "upd"
             current_session.add(self.parent_logic_row.row)
             self.parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
-
+            # no after_flush: https://stackoverflow.com/questions/63563680/sqlalchemy-changes-in-before-flush-not-triggering-before-flush
         if self.previous_parent_logic_row is None:
             pass
             # self.child_logic_row.log("save-adjusted not required for previous_parent_logic_row: " + str(self))

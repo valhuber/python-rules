@@ -17,8 +17,7 @@ from logic_engine.util import prt
 from nw.nw_logic.models import Order
 
 '''
-from nw.nw_logic.listeners import nw_before_commit, nw_before_flush
-from nw.nw_logic.order_code import order_modified
+These listeners are part of the hand-coded logic alternative.
 '''
 
 
@@ -61,17 +60,16 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
         elif obj_class == "Order":
             order_flush_delete(each_instance, a_session)
 
-
     print("nw_before_flush  EXIT")
 
-    print("nw_before_flush  EXIT")
-
-
+""" Initialization
+1 - Connect
+2 - Register listeners (either hand-coded ones above, or the logic-engine listeners).
+"""
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir = os.path.dirname(basedir)
 basedir = os.path.dirname(basedir)
 conn_string = "sqlite:///" + os.path.join(basedir, "nw-app/nw.db")
-# e.g. 'sqlite:////Users/val/python/vsc/logic-explore/nw-app/nw.db'
 engine = sqlalchemy.create_engine(conn_string, echo=False)  # sqlalchemy sqls...
 
 
@@ -80,7 +78,7 @@ session_maker = sqlalchemy.orm.sessionmaker()
 session_maker.configure(bind=engine)
 session = session_maker()
 
-do_logic = True  # True => rules, False => code
+do_logic = True  # True => use rules, False => use hand code (for comparison)
 rule_list = None
 db = None
 if do_logic:
@@ -99,7 +97,7 @@ else:
 print(prt("session created, listeners registered"))
 
 
-'''
+'''  *** Exploring alternate listener strategies - ignore ***
 @event.listens_for(models.Order.ShippedDate, 'modified')
 def receive_modified(target, initiator):
     print('Order Modified (Decorator - __init__')
