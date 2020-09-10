@@ -1,10 +1,10 @@
-For most database applications, backend database logic is a substantial
-portion of the effort, typically nearly half.  This includes
-multi-table derivation and constraint logic, and actions such as
-sending mail or messages.
+For most transaction-oriented database applications, backend database logic
+is a substantial portion of the effort, typically nearly half.
+This includes multi-table derivation and constraint logic,
+and actions such as sending mail or messages.
 
-The prevailing assumption is such domain-specific logic must surely be 
-domain-specfic code.  This project introduces a declarative
+The prevailing assumption is that such *domain-specific logic must surely be 
+domain-specfic code.*  This project introduces a declarative
 approach to such logic, wherein you specify a set of spreadsheet-like
 rules, which are then executed by a plugin to sqlalchemy.
 
@@ -18,12 +18,8 @@ over hand-coding:
 | **Quality** | Rules are *automatically re-used* over all transactions, minimizing missed corner-cases| Considerable test and debug is required to find and address all corner cases, with high risk of bugs |
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br>Business Users can read the rules, and collaborate<br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
 
-This can represent a meaningful reduction in project delivery:
-
-* Backend logic often represents nearly half the effort of
-a typical transactional database system.
-
-* Experience has shown that such rules can address over 90% of
+This can represent a meaningful reduction in project delivery.
+Experience has shown that such rules can address over 90% of
 the backend logic, reducing such logic by 40X (200 vs. 5).
 
 ### Background
@@ -49,7 +45,7 @@ or to sqlalchemy batch updates or unmapped sql updates.
 
 #### Declaring Logic
 Logic is declared as spreadsheet-like rules as shown below
-from  [nw_rules_bank.py](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
+from  [`nw_rules_bank.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
 activated in [__init__.py](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py):
 ```python
 Logic.constraint_rule(validate="Customer",
