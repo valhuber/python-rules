@@ -78,10 +78,10 @@ session_maker = sqlalchemy.orm.sessionmaker()
 session_maker.configure(bind=engine)
 session = session_maker()
 
-do_logic = True  # True => use rules, False => use hand code (for comparison)
+by_rules = True  # True => use rules, False => use hand code (for comparison)
 rule_list = None
 db = None
-if do_logic:
+if by_rules:
     # rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
     from nw.nw_logic import nw_rules_bank      # ** activate the rules **

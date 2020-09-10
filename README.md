@@ -5,9 +5,10 @@ This includes multi-table derivation and constraint logic,
 and actions such as sending mail or messages.
 
 The prevailing assumption is that such *domain-specific logic must surely be 
-domain-specfic code.*  This project introduces a declarative
-alternative to such logic, wherein you specify a set of spreadsheet-like
-rules, which are then executed by a plugin to sqlalchemy.
+domain-specfic code.*  This project introduces a *declarative
+alternative* to such logic: you specify a set of *spreadsheet-like
+rules,* which are then executed by a login engine operating
+as a plugin to sqlalchemy.
 
 This rule-oriented approach confers several advantages
 over hand-coding:
@@ -20,13 +21,19 @@ over hand-coding:
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
 
 This can represent a meaningful reduction in project delivery.
-Experience has shown that such rules can address over 90% of
+Experience has shown that such rules can address over 95% of
 the backend logic, reducing such logic by 40X (200 vs. 5).
 
-Importantly, the rules are complemented by Python events,
-so you can address the last 10%.
+Importantly, logic is
+* *Extensible:* Rules are complemented by Python events,
+so you can address the last 5%
+* *Manageable:* logic is expressed in Python, enabling the use of
+standard IDE and Source Code Control systems
+* *Debuggable:* Debug your logic with logs that show which rules execute,
+and breakpoints in formula/constraint/action rules
+expressed in Python
 
-### Background
+### Overview
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
 For those not familiar, this is basically
@@ -40,9 +47,6 @@ This code can be hand-written, or via generators such as Flask AppBuilder
 2. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
 3. Your logic is expressed as Python functions (see example below).
-Debug your logic with logs that show which rules execute,
-and breakpoints in formula/constraint/action rules
-expressed in Python
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
@@ -74,14 +78,14 @@ dozen transactions.  Here we look at 2 simple examples:
 and rollup to AmountTotal / Balance to check CreditLimit
 
 * **Ship / Unship an Order (Adjust Balance) -** when an Order's `DateShippped`
-is changed, adjust the Customers 'Balance`
+is changed, adjust the Customers `Balance`
 
 These representatively complex transactions illustrate common patterns:
 
 ##### Adjustments
 Rollups provoke an important design choice: store the aggregate,
 or sum things on the fly.  There are cases for both:
-   - **Sum** - use sql `select sum` queries to aggregate child data as required.
+   - **Sum on the fly** - use sql `select sum` queries to aggregate child data as required.
    This eliminates consistency risks with storing redundant data
    (i.e, the aggregate becomes invalid if an application fails to
    adjust it in *all* of the cases).
@@ -91,7 +95,7 @@ or sum things on the fly.  There are cases for both:
    *delta* of the children.
 
 This design decision can dominate application coding.  It's nefarious,
-since data volumes may not be known whn coding begins.  (Ideally, this can be
+since data volumes may not be known when coding begins.  (Ideally, this can be
 a "late binding" decision, like a sql index.)
 
 The logic engine uses the **Stored Aggregate** approach.  This optimizes
@@ -137,9 +141,12 @@ pip install -r requirements.txt
 The project includes:
 * the logic engine that executes the rules
 * the sample database (sqlite, so no db install is required)
-* business logic, both by code an by rules,
+* business logic, both
+[by-code](https://github.com/valhuber/python-rules/wiki/by-code) and
+[by-rules,](https://github.com/valhuber/python-rules/wiki/by-rules)
 to facilitate comparison
-   * select by-hand vs. rules logic in the `nw_logic/__init__.py` file
+   * control whether logic is via rules or code by altering`by_rules` in
+   [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py)
 * a test folder that runs various sample transactions
 
 You can run the programs in the `nw/trans-tests` folder,
@@ -147,12 +154,6 @@ and/or review this readme and the wiki.
 
 #### Status: Running, Under Development
 Essential functions running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).  Not complete, under active development.
-
-### Explore
-The [by-code](https://github.com/valhuber/python-rules/wiki/by-code)
-and [by-rules](https://github.com/valhuber/python-rules/wiki/by-rules)
-approaches are described in the 
-[wiki](https://github.com/valhuber/python-rules/wiki).
 
 
 ### Flask App Builder
