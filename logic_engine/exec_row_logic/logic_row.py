@@ -2,8 +2,7 @@ import sqlalchemy
 import sqlalchemy_utils
 from sqlalchemy.ext.declarative import base
 from sqlalchemy.engine.reflection import inspection, Inspector
-from sqlalchemy.orm import object_mapper
-from sqlalchemy.orm import session
+from sqlalchemy.orm import object_mapper, session, relationships
 
 import logic_engine
 from logic_engine.rule_bank.rule_bank import RuleBank
@@ -156,7 +155,31 @@ class LogicRow:
             each_constraint.execute(self)
 
     def cascade_to_children(self):
-        self.log("cascades")
+        pass
+
+    def load_parents(self):
+        """ sqlalchemy lazy does not work for inserts, do it here
+        1. RI would require the sql anyway
+        2. Provide a consistent model - your parents are always there for you
+        """
+        def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
+            child_columns = relationship.local_columns
+            for each_child_column in child_columns:
+                each_child_column_name = each_child_column.name
+                if getattr(self.row, each_child_column_name) is None:
+                    return True
+            return False
+
+        child_mapper = object_mapper(self.row)
+        my_relationships = child_mapper.relationships
+        for each_relationship in my_relationships:  # eg, order has parents cust & emp, child orderdetail
+            if each_relationship.direction == sqlalchemy.orm.interfaces.MANYTOONE:  # cust, emp
+                parent_role_name = each_relationship.key  # eg, OrderList
+                if is_foreign_key_null(each_relationship) is False:
+                    continue#
+                    # FIXME fails flush error identity key
+                    #  self.get_parent_logic_row(parent_role_name)
+        return self
 
     def adjust_parent_aggregates(self):
         # self.log("adjust_parent_aggregates")
@@ -180,7 +203,7 @@ class LogicRow:
 
     def insert(self, reason: str = None):
         self.log("Insert - " + reason)
-        #self.load_parents()  TODO (lazy loading does not work for inserts)
+        self.load_parents()
         self.early_row_events()
         self.copy_rules()
         self.formula_rules()
