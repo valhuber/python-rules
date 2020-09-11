@@ -75,7 +75,7 @@ class UnusedTests:
     """Typically not loaded"""
 
     Logic.constraint_rule(validate="AbUser",  # table is ab_user
-                          as_condition=lambda row: row.username != "noname")
+                          calling=lambda row: row.username != "no_name")
 
     Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
                      where="ShippedDate not None")
