@@ -26,12 +26,11 @@ def activate_basic_check_credit_rules():
 
     Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
-    Logic.formula_rule(derive="OrderDetail.Amount",  # or, calling=compute_amount)
-                       as_exp="row.UnitPrice * row.Quantity")
+    Logic.formula_rule(derive="OrderDetail.Amount",  as_exp="row.UnitPrice * row.Quantity")
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 
 
-class InvokePythonFunctions:
+class InvokePythonFunctions:  # use functions for more complex rules
 
     def my_early_event(row, old_row, logic_row):
         logic_row.log("early event for *all* tables - good breakpoint, time/date stamping, etc")
@@ -56,9 +55,11 @@ class InvokePythonFunctions:
 
     Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
 
+    Logic.formula_rule(derive="OrderDetail.Amount", calling=lambda row: row.Quantity * row.UnitPrice)
+
 
 class DependencyGraphTests:
-    """Typically not loaded"""
+    """Not loaded"""
 
     Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
                        as_exp="row.ColB + row.ColC")
@@ -77,7 +78,7 @@ class DependencyGraphTests:
 
 
 class UnusedTests:
-    """Typically not loaded"""
+    """Not loaded"""
 
     Logic.constraint_rule(validate="AbUser",  # table is ab_user
                           calling=lambda row: row.username != "no_name")
