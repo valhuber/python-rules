@@ -88,6 +88,7 @@ class Product(Base):
     UnitsOnOrder = Column(Integer, nullable=False)
     ReorderLevel = Column(Integer, nullable=False)
     Discontinued = Column(Integer, nullable=False)
+    UnitsShipped = Column(Integer, nullable=False)
 
     OrderList = relationship("OrderDetail", cascade_backrefs=True, backref="ProductOrdered")
 
@@ -131,62 +132,6 @@ class Territory(Base):
     Id = Column(String(8000), primary_key=True)
     TerritoryDescription = Column(String(8000))
     RegionId = Column(Integer, nullable=False)
-
-
-class AbPermission(Base):
-    __tablename__ = 'ab_permission'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False, unique=True)
-
-
-class AbRegisterUser(Base):
-    __tablename__ = 'ab_register_user'
-
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String(64), nullable=False)
-    last_name = Column(String(64), nullable=False)
-    username = Column(String(64), nullable=False, unique=True)
-    password = Column(String(256))
-    email = Column(String(64), nullable=False)
-    registration_date = Column(DateTime)
-    registration_hash = Column(String(256))
-
-
-class AbRole(Base):
-    __tablename__ = 'ab_role'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False, unique=True)
-
-
-class AbUser(Base):
-    __tablename__ = 'ab_user'
-
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String(64), nullable=False)
-    last_name = Column(String(64), nullable=False)
-    username = Column(String(64), nullable=False, unique=True)
-    password = Column(String(256))
-    active = Column(Boolean)
-    email = Column(String(64), nullable=False, unique=True)
-    last_login = Column(DateTime)
-    login_count = Column(Integer)
-    fail_login_count = Column(Integer)
-    created_on = Column(DateTime)
-    changed_on = Column(DateTime)
-    created_by_fk = Column(ForeignKey('ab_user.id'))
-    changed_by_fk = Column(ForeignKey('ab_user.id'))
-
-    parent = relationship('AbUser', remote_side=[id], primaryjoin='AbUser.changed_by_fk == AbUser.id')
-    parent1 = relationship('AbUser', remote_side=[id], primaryjoin='AbUser.created_by_fk == AbUser.id')
-
-
-class AbViewMenu(Base):
-    __tablename__ = 'ab_view_menu'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False, unique=True)
 
 
 class CustomerCustomerDemo(Base):
@@ -246,10 +191,67 @@ class OrderDetail(Base):
     Quantity = Column(Integer, nullable=False)
     Discount = Column(Float, nullable=False)
     Amount = Column(DECIMAL)
+    ShippedDate = Column(String(8000))
 
     # Order = relationship('Order', back_populates="OrderDetailList")  FIXME cleanup
     # Product = relationship('Product')
 
+
+
+class AbPermission(Base):
+    __tablename__ = 'ab_permission'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False, unique=True)
+
+
+class AbRegisterUser(Base):
+    __tablename__ = 'ab_register_user'
+
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(64), nullable=False, unique=True)
+    password = Column(String(256))
+    email = Column(String(64), nullable=False)
+    registration_date = Column(DateTime)
+    registration_hash = Column(String(256))
+
+
+class AbRole(Base):
+    __tablename__ = 'ab_role'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), nullable=False, unique=True)
+
+
+class AbUser(Base):
+    __tablename__ = 'ab_user'
+
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    username = Column(String(64), nullable=False, unique=True)
+    password = Column(String(256))
+    active = Column(Boolean)
+    email = Column(String(64), nullable=False, unique=True)
+    last_login = Column(DateTime)
+    login_count = Column(Integer)
+    fail_login_count = Column(Integer)
+    created_on = Column(DateTime)
+    changed_on = Column(DateTime)
+    created_by_fk = Column(ForeignKey('ab_user.id'))
+    changed_by_fk = Column(ForeignKey('ab_user.id'))
+
+    parent = relationship('AbUser', remote_side=[id], primaryjoin='AbUser.changed_by_fk == AbUser.id')
+    parent1 = relationship('AbUser', remote_side=[id], primaryjoin='AbUser.created_by_fk == AbUser.id')
+
+
+class AbViewMenu(Base):
+    __tablename__ = 'ab_view_menu'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False, unique=True)
 
 class AbPermissionView(Base):
     __tablename__ = 'ab_permission_view'

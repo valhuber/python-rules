@@ -6,6 +6,8 @@ from nw.nw_logic import models
 def activate_basic_check_credit_rules():
     """
     Issues function calls to activate check credit rules, below.
+        These rules are executed not now, but on commits
+        Their inclusion in classes is for doc / convenience, no semantics
     Rules (below) can invoke Python functions
     """
 
@@ -56,23 +58,21 @@ def activate_basic_check_credit_rules():
 
     Logic.early_row_event_rule(on_class="*", calling=my_early_event)
 
-"""
 
-Dependency Graph test (internal use only, please ignore):
+class DependencyGraphTests:
+    """Typically not loaded"""
 
-Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
-                   as_exp="row.ColB + row.ColC")
+    Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
+                       as_exp="row.ColB + row.ColC")
 
-Logic.formula_rule(derive="Tbl.ColB",  # or, calling=compute_amount)
-                   as_exp="row.ColC")
+    Logic.formula_rule(derive="Tbl.ColB",  # or, calling=compute_amount)
+                       as_exp="row.ColC")
 
-Logic.formula_rule(derive="Tbl.ColC",  # or, calling=compute_amount)
-                   as_exp="row.ColD")
+    Logic.formula_rule(derive="Tbl.ColC",  # or, calling=compute_amount)
+                       as_exp="row.ColD")
 
-Logic.formula_rule(derive="Tbl.ColD",  # or, calling=compute_amount)
-                   as_exp="row.ColE")
+    Logic.formula_rule(derive="Tbl.ColD",  # or, calling=compute_amount)
+                       as_exp="row.ColE")
 
-Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
-                   as_exp="xxx")
-
-"""
+    Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
+                       as_exp="xxx")
