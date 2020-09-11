@@ -60,14 +60,16 @@ The logic below implements the *check credit* requirement:
 * *where the balance is the sum of the unshipped order totals*
 * *which is the rollup of OrderDetail Price * Quantities:*
 ```python
-Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit")
+Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
+                      error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
 Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
                where="row.ShippedDate is None")
 
 Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
-Logic.formula_rule(derive="OrderDetail.Amount", as_exp="row.UnitPrice * row.Quantity")
+Logic.formula_rule(derive="OrderDetail.Amount",  as_exp="row.UnitPrice * row.Quantity")
 Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
+
 ```
 The specification is fully executable, and governs around a
 dozen transactions.  Here we look at 2 simple examples:
