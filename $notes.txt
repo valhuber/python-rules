@@ -1,3 +1,6 @@
+FIXME why
+FIXME design
+
 update orderdetail set amount = unitPrice * quantity
 
 update "Order" set AmountTotal =

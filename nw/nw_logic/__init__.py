@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy import event
 from sqlalchemy.orm import session
 
-from logic_engine.rule_bank import rule_bank_withdraw  # FIXME - why required??
+from logic_engine.rule_bank import rule_bank_withdraw  # FIXME why required to avoid circular imports??
 from logic_engine.rule_bank import rule_bank_setup
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula

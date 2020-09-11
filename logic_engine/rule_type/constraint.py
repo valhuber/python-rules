@@ -18,9 +18,9 @@ class Constraint(Rule):
         # self.table = validate  # setter finds object
         self._error_msg = error_msg
         self._as_condition = as_condition
-        if self._function is None and self._as_condition is None:
+        if calling is None and as_condition is None:
             raise Exception(f'Constraint {str} requires calling or as_expression')
-        if self._function is not None and self._as_condition is not None:
+        if calling is not None and as_condition is not None:
             raise Exception(f'Constraint {str} either calling or as_expression')
         if calling is not None:
             self._function = calling
