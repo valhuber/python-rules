@@ -11,16 +11,13 @@ def activate_basic_check_credit_rules():
 
     These rules apply to all transactions (automatic re-use), eg.
     * place order
-    * change Order Detail product, amount
+    * change Order Detail product, quantity
     * add/delete Order Detail
     * ship / unship order
     * delete order
     * move order to new customer
     * etc
     """
-
-    def my_early_event(row, old_row, logic_row):
-        logic_row.log("early event for *all* tables - good breakpoint, time/date stamping, etc")
 
     Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
@@ -33,10 +30,11 @@ def activate_basic_check_credit_rules():
                        as_exp="row.UnitPrice * row.Quantity")
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 
-    Logic.early_row_event_rule(on_class="*", calling=my_early_event)  # just for debug
-
 
 class InvokePythonFunctions:
+
+    def my_early_event(row, old_row, logic_row):
+        logic_row.log("early event for *all* tables - good breakpoint, time/date stamping, etc")
 
     def check_balance(row, old_row, logic_row) -> bool:
         """
@@ -50,6 +48,8 @@ class InvokePythonFunctions:
         Not used... illustrate function alternative (e.g., more complex if/else logic)
         """
         return row.UnitPrice * row.Quantity
+
+    Logic.early_row_event_rule(on_class="*", calling=my_early_event)  # just for debug
 
     Logic.constraint_rule(validate="Customer", calling=check_balance,
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
