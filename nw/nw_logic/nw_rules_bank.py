@@ -21,8 +21,7 @@ def activate_basic_check_credit_rules():
 
     Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
-    Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
-                   where="row.ShippedDate is None")
+    Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
 
     Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
