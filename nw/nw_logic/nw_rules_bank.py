@@ -1,6 +1,7 @@
 from logic_engine.logic import Logic
 from logic_engine.rule_bank.rule_bank import RuleBank
 from nw.nw_logic import models
+from nw.nw_logic.models import Customer, OrderDetail
 
 
 def activate_basic_check_credit_rules():
@@ -29,32 +30,32 @@ def activate_basic_check_credit_rules():
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
 
 
-class InvokePythonFunctions:  # use functions for more complex rules
+class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)
 
-    def my_early_event(row, old_row, logic_row):
-        logic_row.log("early event for *all* tables - good breakpoint, time/date stamping, etc")
+    @staticmethod
+    def load_rules(self):
 
-    def check_balance(row, old_row, logic_row) -> bool:
-        """
-        Not used... illustrate function alternative (e.g., more complex if/else logic)
-        specify rule with `calling=check_balance` (instead of as_condition)
-        """
-        return row.balance <= row.creditLimit
+        def my_early_event(row, old_row, logic_row):
+            logic_row.log("early event for *all* tables - good breakpoint, time/date stamping, etc")
 
-    def compute_amount(row, old_row, logic_row):
-        """
-        Not used... illustrate function alternative (e.g., more complex if/else logic)
-        """
-        return row.UnitPrice * row.Quantity
+        def check_balance(row: Customer, old_row, logic_row) -> bool:
+            """
+            Not used... illustrate function alternative (e.g., more complex if/else logic)
+            specify rule with `calling=check_balance` (instead of as_condition)
+            """
+            return row.Balance <= row.CreditLimit
 
-    Logic.early_row_event_rule(on_class="*", calling=my_early_event)  # just for debug
+        def compute_amount(row: OrderDetail, old_row, logic_row):
+            return row.UnitPrice * row.Quantity
 
-    Logic.constraint_rule(validate="Customer", calling=check_balance,
-                          error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
+        Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
 
-    Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
+        Logic.formula_rule(derive="OrderDetail.Amount", calling=lambda row: row.Quantity * row.UnitPrice)
 
-    Logic.formula_rule(derive="OrderDetail.Amount", calling=lambda row: row.Quantity * row.UnitPrice)
+        Logic.early_row_event_rule(on_class="*", calling=my_early_event)  # just for debug
+
+        Logic.constraint_rule(validate="Customer", calling=check_balance,
+                              error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
 
 
 class DependencyGraphTests:
