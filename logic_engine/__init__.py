@@ -31,13 +31,15 @@ formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelnam
 handler.setFormatter(formatter)
 logic_logger.addHandler(handler)
 
+do_engine_logging = False  # TODO move to config file, reconsider level
 engine_logger = logging.getLogger('engine_logger')  # for internals
-engine_logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
-handler.setFormatter(formatter)
-engine_logger.addHandler(handler)
+if do_engine_logging:
+    engine_logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
+    handler.setFormatter(formatter)
+    engine_logger.addHandler(handler)
 
 
 """

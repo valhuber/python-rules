@@ -10,6 +10,30 @@ cls = sqlalchemy_utils.functions.get_class_by_table(models.Base, "Product", data
 pre_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
 session.expunge(pre_cust)
 
+# First, try one to fail
+bad_order = models.Order(AmountTotal=0, CustomerId="ALFKI", ShipCity="Richmond",
+                         EmployeeId=6, Freight=1)
+session.add(bad_order)
+
+# OrderDetails - https://docs.sqlalchemy.org/en/13/orm/backref.html
+bad_item1 = models.OrderDetail(ProductId=1, Amount=0,
+                               Quantity=1, UnitPrice=18,
+                               Discount=0)
+bad_order.OrderDetailList.append(bad_item1)
+bad_item2 = models.OrderDetail(ProductId=2, Amount=0,
+                               Quantity=20000, UnitPrice=18,
+                               Discount=0)
+bad_order.OrderDetailList.append(bad_item2)
+did_fail = False
+try:
+    session.commit()
+except:
+    session.rollback()
+    did_fail = True
+
+if not did_fail:
+    raise Exception("huge order expected to fail, but succeeded")
+
 new_order = models.Order(AmountTotal=0, CustomerId="ALFKI", ShipCity="Richmond",
                          EmployeeId=6, Freight=1)
 session.add(new_order)

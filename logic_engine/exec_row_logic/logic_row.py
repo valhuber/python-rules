@@ -90,7 +90,7 @@ class LogicRow:
     def log_engine(self, msg: str):
         output = str(self)
         output = output.replace("]:", "] {" + msg + "}", 1)
-        logic_engine.engine_logger.debug(output)  # more on this later
+        logic_engine.engine_logger.debug(output)
 
     def make_copy(self, a_row: base) -> base:
         result_class = a_row.__class__
@@ -100,7 +100,7 @@ class LogicRow:
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
-    def get_parent_logic_row(self, role_name: str):  # FIXME "-> LogicRow" fails to compile
+    def get_parent_logic_row(self, role_name: str, for_update: bool = False):  # FIXME "-> LogicRow" fails to compile
         parent_row = getattr(self.row, role_name)
         always_reread_parent = True  # FIXME design - else FlushError("New instance... conflicts
         if parent_row is None:
@@ -117,7 +117,8 @@ class LogicRow:
             if self.ins_upd_dlt == "upd":  # eg, add order - don't tell sqlalchemy to add cust
                 pass
                 # setattr(self.row, role_name, parent_row)
-            self.session.expunge(parent_row)
+            if for_update:
+                self.session.expunge(parent_row)
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
                                     a_session=self.session,
@@ -167,7 +168,7 @@ class LogicRow:
         1. RI would require the sql anyway
         2. Provide a consistent model - your parents are always there for you
 
-        FIXME fails flush error identity key
+        FIXME fails flush error identity key, disabled
         """
         def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
             child_columns = relationship.local_columns
@@ -184,7 +185,7 @@ class LogicRow:
                 parent_role_name = each_relationship.key  # eg, OrderList
                 if is_foreign_key_null(each_relationship) is False:
                     continue#
-                    #  self.get_parent_logic_row(parent_role_name)
+                    #  self.get_parent_logic_row(parent_role_name)  # see comment above
         return self
 
     def adjust_parent_aggregates(self):

@@ -69,7 +69,7 @@ class Sum(Aggregate):
             )
             parent_adjustor.parent_logic_row = \
                 parent_adjustor.child_logic_row.get_parent_logic_row(
-                    role_name=self._parent_role_name)
+                    role_name=self._parent_role_name, for_update=True)
             curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
             setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
             # print(f'adjust_from_deleted/abandoned_child adjusts {str(self)}')
