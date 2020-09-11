@@ -27,6 +27,7 @@ class LogicRow:
         self.row = row
         self.old_row = old_row
         self.ins_upd_dlt = ins_upd_dlt
+        self.ins_upd_dlt_initial = ins_upd_dlt  # order inserted, then adjusted
         self.nest_level = nest_level
 
         rb = RuleBank()
@@ -38,37 +39,6 @@ class LogicRow:
         self.name = type(self.row).__name__
         self.table_meta = row.metadata.tables[type(self.row).__name__]
         self.inspector = Inspector.from_engine(self.engine)
-
-    def make_copy(self, a_row: base) -> base:
-        result_class = a_row.__class__
-        result = result_class()
-        row_mapper = object_mapper(a_row)
-        for each_attr in row_mapper.attrs:  # TODO skip object references
-            setattr(result, each_attr.key, getattr(a_row, each_attr.key))
-        return result
-
-    def get_parent_logic_row(self, role_name: str):  # FIXME "-> LogicRow" fails to compile
-        parent_row = getattr(self.row, role_name)
-        if parent_row is None:
-            my_mapper = object_mapper(self.row)
-            role_def = my_mapper.relationships.get(role_name)
-            if role_def is None:
-                raise Exception(f"FIXME invalid role name {role_name}")
-            parent_key = {}
-            for each_child_col, each_parent_col in role_def.local_remote_pairs:
-                parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)
-            parent_class = role_def.entity.class_
-            # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
-            parent_row = self.session.query(parent_class).get(parent_key)
-            setattr(self.row, role_name, parent_row)
-        old_parent = self.make_copy(parent_row)
-        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
-                                    a_session=self.session,
-                                    nest_level=1+self.nest_level, ins_upd_dlt="*")
-        return parent_logic_row
-
-    def is_different_parent(self, role_name: str) -> bool:
-        return False # FIXME placeholder, implementation required
 
     def __str__(self):
         result = ""
@@ -122,6 +92,41 @@ class LogicRow:
         output = output.replace("]:", "] {" + msg + "}", 1)
         logic_engine.engine_logger.debug(output)  # more on this later
 
+    def make_copy(self, a_row: base) -> base:
+        result_class = a_row.__class__
+        result = result_class()
+        row_mapper = object_mapper(a_row)
+        for each_attr in row_mapper.columns:  # TODO skip object references
+            setattr(result, each_attr.key, getattr(a_row, each_attr.key))
+        return result
+
+    def get_parent_logic_row(self, role_name: str):  # FIXME "-> LogicRow" fails to compile
+        parent_row = getattr(self.row, role_name)
+        always_reread_parent = True  # FIXME design - else FlushError("New instance... conflicts
+        if parent_row is None:
+            my_mapper = object_mapper(self.row)
+            role_def = my_mapper.relationships.get(role_name)
+            if role_def is None:
+                raise Exception(f"FIXME invalid role name {role_name}")
+            parent_key = {}
+            for each_child_col, each_parent_col in role_def.local_remote_pairs:
+                parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)
+            parent_class = role_def.entity.class_
+            # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
+            parent_row = self.session.query(parent_class).get(parent_key)
+            if self.ins_upd_dlt == "upd":  # eg, add order - don't tell sqlalchemy to add cust
+                pass
+                # setattr(self.row, role_name, parent_row)
+            self.session.expunge(parent_row)
+        old_parent = self.make_copy(parent_row)
+        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
+                                    a_session=self.session,
+                                    nest_level=1+self.nest_level, ins_upd_dlt="*")
+        return parent_logic_row
+
+    def is_different_parent(self, role_name: str) -> bool:
+        return False # TODO placeholder, implementation required
+
     def early_row_events(self):
         self.log_engine("early_events")
         early_row_events = rule_bank_withdraw.generic_rules_of_class(EarlyRowEvent)
@@ -138,11 +143,11 @@ class LogicRow:
             if logic_row.ins_upd_dlt == "ins" or logic_row.is_different_parent(role_name):
                 self.log("copy_rules for role: " + role_name)
                 parent_logic_row = logic_row.get_parent_logic_row(role_name)
-                for each_copy_rule in copy_rules_for_table:
+                for each_copy_rule in copy_rules_for_table:  # TODO consider orphans
                     each_copy_rule.execute(logic_row, parent_logic_row)
 
     def formula_rules(self):
-        self.log_engine("formula_rules")  # TODO (big) execute in dependency order
+        self.log_engine("formula_rules")
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
         formula_rules.sort(key=lambda f: f._exec_order)
         for each_formula in formula_rules:
@@ -161,6 +166,8 @@ class LogicRow:
         """ sqlalchemy lazy does not work for inserts, do it here
         1. RI would require the sql anyway
         2. Provide a consistent model - your parents are always there for you
+
+        FIXME fails flush error identity key
         """
         def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
             child_columns = relationship.local_columns
@@ -177,7 +184,6 @@ class LogicRow:
                 parent_role_name = each_relationship.key  # eg, OrderList
                 if is_foreign_key_null(each_relationship) is False:
                     continue#
-                    # FIXME fails flush error identity key
                     #  self.get_parent_logic_row(parent_role_name)
         return self
 
@@ -235,7 +241,7 @@ class ParentRoleAdjuster:
             # self.child_logic_row.log("adjust required for parent_logic_row: " + str(self))
             current_session = self.child_logic_row.session
             self.parent_logic_row.ins_upd_dlt = "upd"
-            current_session.add(self.parent_logic_row.row)
+            #  current_session.add(self.parent_logic_row.row)  -- read ==> attached
             self.parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
             # no after_flush: https://stackoverflow.com/questions/63563680/sqlalchemy-changes-in-before-flush-not-triggering-before-flush
         if self.previous_parent_logic_row is None:

@@ -56,7 +56,7 @@ def order_update(a_row, an_old_row, a_session):
         old_customer = ObjectView(row2dict(customer))
         delta = a_row.AmountTotal - an_old_row.AmountTotal
         customer.Balance += delta
-        a_session.add(customer)
+        #  a_session.add(customer)
         customer_update(customer, old_customer, a_session)
         row_prt(customer, "order_upd adjusted Customer, per AmountTotal change")
 

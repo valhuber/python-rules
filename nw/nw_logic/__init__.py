@@ -4,8 +4,7 @@ import sqlalchemy
 from sqlalchemy import event
 from sqlalchemy.orm import session
 
-from logic_engine.rule_bank.rule_bank import RuleBank
-from logic_engine.rule_bank import rule_bank_withdraw
+from logic_engine.rule_bank import rule_bank_withdraw  # FIXME - why required??
 from logic_engine.rule_bank import rule_bank_setup
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.formula import Formula
