@@ -24,14 +24,14 @@ bad_item2 = models.OrderDetail(ProductId=2, Amount=0,
                                Quantity=20000, UnitPrice=18,
                                Discount=0)
 bad_order.OrderDetailList.append(bad_item2)
-did_fail = False
+did_fail_as_expected = False
 try:
     session.commit()
 except:
     session.rollback()
-    did_fail = True
+    did_fail_as_expected = True
 
-if not did_fail:
+if not did_fail_as_expected:
     raise Exception("huge order expected to fail, but succeeded")
 
 new_order = models.Order(AmountTotal=0, CustomerId="ALFKI", ShipCity="Richmond",

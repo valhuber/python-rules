@@ -38,8 +38,7 @@ def activate_basic_check_credit_rules():
     * etc
     """
 
-    Logic.constraint_rule(validate="Customer",
-                          as_condition="row.Balance <= row.CreditLimit",
+    Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
     Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal",
                    where="row.ShippedDate is None")
@@ -49,12 +48,6 @@ def activate_basic_check_credit_rules():
     Logic.formula_rule(derive="OrderDetail.Amount",  # or, calling=compute_amount)
                        as_exp="row.UnitPrice * row.Quantity")
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
-
-    Logic.constraint_rule(validate="AbUser",  # table is ab_user
-                          as_condition=lambda row: row.username != "noname")
-
-    Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
-                     where="ShippedDate not None")
 
     Logic.early_row_event_rule(on_class="*", calling=my_early_event)
 
@@ -76,3 +69,13 @@ class DependencyGraphTests:
 
     Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
                        as_exp="xxx")
+
+
+class UnusedTests:
+    """Typically not loaded"""
+
+    Logic.constraint_rule(validate="AbUser",  # table is ab_user
+                          as_condition=lambda row: row.username != "noname")
+
+    Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
+                     where="ShippedDate not None")

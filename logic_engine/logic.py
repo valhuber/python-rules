@@ -44,8 +44,8 @@ class Logic:
         Count(derive, as_count_of, where)
 
     @staticmethod
-    def constraint_rule(validate: str, error_msg: str = "(error_msg not provided)",
-                        calling: Callable = None, as_condition: Callable = None):
+    def constraint_rule(validate: str, as_condition: str,
+                        error_msg: str = "(error_msg not provided)", calling: Callable = None):
         """
         Constraints declare condition that must be true for all commits
         """
