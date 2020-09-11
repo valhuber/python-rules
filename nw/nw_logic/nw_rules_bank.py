@@ -8,6 +8,7 @@ def activate_basic_check_credit_rules():
     """
     Issues function calls to activate check credit rules, below.
         These rules are executed not now, but on commits
+        Order is irrelevant - determined by system based on dependency analysis
         Their inclusion in classes is for doc / convenience, no semantics
 
     These rules apply to all transactions (automatic re-use), eg.
@@ -16,8 +17,7 @@ def activate_basic_check_credit_rules():
     * add/delete Order Detail
     * ship / unship order
     * delete order
-    * move order to new customer
-    * etc
+    * move order to new customer, etc
     """
 
     Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
