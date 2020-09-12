@@ -22,8 +22,8 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
 
 This can represent a meaningful reduction in project delivery.
-Experience has shown that such rules can address over 95% of
-the backend logic, reducing such logic by 40X (200 vs. 5).
+Experience has shown that such rules can address *over 95%* of
+the backend logic, reducing such logic by **40X** (200 vs. 5).
 
 Importantly, logic is
 * *Extensible:* Rules are complemented by Python events,
