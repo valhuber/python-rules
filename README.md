@@ -108,7 +108,7 @@ is changed, adjust the Customers `Balance`
 
 These representatively complex transactions illustrate common logic execution patterns:
 
-##### Adjustments
+##### Adjustments - sum / counts adjusted in 1 row updates, not expensive aggregate SQLs
 Rollups provoke an important design choice: store the aggregate,
 or sum things on the fly.  Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
 (a *chained* aggregate).  There are good cases to be made for both approaches:
