@@ -111,9 +111,8 @@ These representatively complex transactions illustrate common logic execution pa
 ##### Adjustments
 Rollups provoke an important design choice: store the aggregate,
 or sum things on the fly.  Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
-(a *chained* aggregate).
+(a *chained* aggregate).  There are good cases to be made for both approaches:
 
-There are cases for both:
    - **Sum on the fly** - use sql `select sum` queries to aggregate child data as required.
    This eliminates consistency risks with storing redundant data
    (i.e, the aggregate becomes invalid if an application fails to
