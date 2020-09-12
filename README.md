@@ -42,11 +42,19 @@ Customers, Orders, OrderDetails and Products.
 #### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
+1. Your logic is expressed as Python functions (see example below).
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 This code can be hand-written, or via generators such as Flask AppBuilder
-2. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
+1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
-3. Your logic is expressed as Python functions (see example below).
+1. The logic engine operates as follows:
+   * **React** - attribute level changes are detected, and referencing rules are executed
+   (forward chaining *rule inference*);
+   unreferenced rules are pruned.  Note sum/count aggregate processing is
+   extremely efficient, as described below.
+   * **Chain** - if recomputed values are referenced by still other rules,
+   *these* are re-executed.  Note this can be in other tables.
+
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
@@ -79,7 +87,7 @@ and rollup to AmountTotal / Balance to check CreditLimit
 * **Ship / Unship an Order (Adjust Balance) -** when an Order's `DateShippped`
 is changed, adjust the Customers `Balance`
 
-These representatively complex transactions illustrate common patterns:
+These representatively complex transactions illustrate common logic execution patterns:
 
 ##### Adjustments
 Rollups provoke an important design choice: store the aggregate,
