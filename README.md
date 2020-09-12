@@ -11,6 +11,8 @@ alternative* to such logic: you specify a set of *spreadsheet-like
 rules,* which are then executed by a login engine operating
 as a plugin to sqlalchemy.
 
+#### Rules: 40X more concise, automatic optimization and re-use
+
 This declarative, *rule-oriented* approach confers several advantages
 traditional hand-coded *procedural* `after_flush` events or triggers:
 
@@ -24,10 +26,6 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
-<div class="text-red mb-2">
-  .text-red
-</div>
-<br><div class="text-red mb-2">This represents a **40X** reduction in the backend half of a transactional database system.</div>
 
 Importantly, logic is
 * *Extensible:* Rules are complemented by Python events,
