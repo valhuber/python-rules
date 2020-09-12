@@ -117,14 +117,14 @@ multi-table update logic chaining, where updates to 1 row
 trigger updates to other rows, which further chain to still more rows.
 
 ###### Example: Pruning and Adjustment
-The **ship / unship order** example illustrates pruning and chaining:
+The **ship / unship order** example illustrates pruning and adjustment:
 
 * if `ShippedDate` *is not* altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.
-The logic engine issues a 1-row update to the Order
 
 * if `ShippedDate` *is* altered, the logic engine **adjusts** the `Customer.Balance`
 with a 1 row update.
+
   * Contrast this to approaches in other systems where
 the balance is recomputed with expensive aggregate queries over *all*
 the customers' orders, and *all* their OrderDetails.
@@ -133,9 +133,9 @@ the customers' orders, and *all* their OrderDetails.
    thousands of Orders, each with thousands of OrderDetails.
    
 ###### Example: Chaining
-The *Add Order* example illustrates **chaining**:
+The **Add Order** example illustrates chaining:
 
-* OrderDetails are referenced by the Orders' `AmountTotal`, so it is adjusted
+* OrderDetails are referenced by the Orders' `AmountTotal` sum rule, so it is adjusted
 
 * The `AmountTotal` is referenced by the Customers' `Balance', so it is adjusted
 
@@ -144,8 +144,8 @@ The *Add Order* example illustrates **chaining**:
 
 All of the dependency management to see which attribute have changed,
 the sql commands to read and adjust rows, and the chaining
-are fully automated by the engine based on the rules above.
-This is now 5 rules represent the same logic as 200 lines of code.
+are fully automated by the engine based, on the rules above.
+This is how 5 rules represent the same logic as 200 lines of code.
 
 ##### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
