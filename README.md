@@ -3,7 +3,7 @@ For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort, typically nearly half.
 Such backend logic is often performed in triggers, or `before_flush` -
 multi-table derivation and constraint logic,
-and actions such as sending mail or messages .
+and actions such as sending mail or messages.
 
 The prevailing assumption is that such *domain-specific logic must surely be 
 domain-specfic code.*  This project introduces a *declarative
