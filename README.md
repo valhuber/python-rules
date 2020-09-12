@@ -57,6 +57,7 @@ This code can be hand-written, or via generators such as Flask AppBuilder.
 1. The logic engine operates as described below.
 
 ##### Logic Operation: Watch, React, Chain
+The engine operates much as you might imagine a spreadsheet:
 
 * **Watch** - changes are detected at the *attribute* level
 
