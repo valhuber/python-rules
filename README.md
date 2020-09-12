@@ -13,12 +13,12 @@ as a plugin to sqlalchemy.
 
 #### Rules: 40X more concise, automatic optimization and re-use
 
-This declarative, *rule-oriented* approach confers several advantages
+This declarative, *rule-oriented* approach contrasts sharply with
 traditional hand-coded *procedural* `after_flush` events or triggers:
 
 | Consideration |      Declarative Rules    | Hand-coded (`after_flush`, Triggers, ...) |
 | ------------- | ------------- | --------- |
-| **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code)|
+| **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code) - a factor of 40:1|
 | **Performance** | SQLs are *automatically pruned and minimized* (example below)| Optimizations require hand-code, often over-looked due to project time pressure |
 | **Quality** | Rules are *automatically re-used* over all transactions, minimizing missed corner-cases| Considerable test and debug is required to find and address all corner cases, with high risk of bugs |
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
