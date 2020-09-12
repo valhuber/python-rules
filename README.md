@@ -24,7 +24,7 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
-<br><div class="text-red">This represents a **40X** reduction in the backend half of a transactional database system.</div>
+<br><div class="text-red mb-2">This represents a **40X** reduction in the backend half of a transactional database system.</div>
 
 Importantly, logic is
 * *Extensible:* Rules are complemented by Python events,
