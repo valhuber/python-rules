@@ -42,9 +42,12 @@ Customers, Orders, OrderDetails and Products.
 #### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
-1. Your logic is expressed as Python functions (see example below).
+1. Your logic is **declared** as Python functions (see example below).
+   * Unlike coarse-grained triggers or event handlers at the table level,
+   derivations are fine-grained at the attribute level.
+   * This enables the rules system to execute them very efficiently as described below
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
-This code can be hand-written, or via generators such as Flask AppBuilder
+This code can be hand-written, or via generators such as Flask AppBuilder.
 1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
 1. The logic engine operates as follows:
@@ -110,7 +113,11 @@ multi-table update logic chaining, where updates to 1 row
 trigger updates to other rows, which further chain to still more rows.
 
 Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
-(a *chained* aggregate).  Consider the **ship / unship order** example:
+(a *chained* aggregate).  
+
+###### Example: Pruning and Adjustment
+The **ship / unship order** example illustrates pruning and chaining:
+
 * if `ShippedDate` *is not* altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.
 The logic engine issues a 1-row update to the Order
@@ -123,6 +130,21 @@ the customers' orders, and *all* their OrderDetails.
 
   *   Imagine, for example, a customer might have
    thousands of Orders, each with thousands of OrderDetails.
+   
+###### Example: Chaining
+The *Add Order* example illustrates **chaining**:
+
+* OrderDetails are referenced by the Orders' `AmountTotal`, so it is adjusted
+
+* The `AmountTotal` is referenced by the Customers' `Balance', so it is adjusted
+
+* And the Credit Limit constraint is checked 
+(exceptions are raised if constraints are violated)
+
+All of the dependency management to see which attribute have changed,
+the sql commands to read and adjust rows, and the chaining
+are fully automated by the engine based on the rules above.
+This is now 5 rules represent the same logic as 200 lines of code.
 
 ##### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
