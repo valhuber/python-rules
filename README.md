@@ -1,14 +1,15 @@
 ### Rules vs. Code
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort, typically nearly half.
-Such backend logic is often performed in triggers, or `before_flush` -
-multi-table derivation and constraint logic,
+It includes _multi-table_ derivation and constraint logic,
 and actions such as sending mail or messages.
+Such backend logic is typically coded in `before_flush` events,
+or database triggers and/or stored procedures.
 
 The prevailing assumption is that such *domain-specific logic must surely be 
-domain-specfic code.*  This project introduces a *declarative
-alternative* to such logic: you specify a set of *spreadsheet-like
-rules,* which are then executed by a login engine operating
+domain-specfic code.*  This project introduces a _declarative
+alternative_: you specify a set of **_spreadsheet-like
+rules,_** which are then executed by a login engine operating
 as a plugin to sqlalchemy.
 
 #### Rules: 40X more concise, automatic optimization and re-use
@@ -16,7 +17,7 @@ as a plugin to sqlalchemy.
 This declarative, *rule-oriented* approach contrasts sharply with
 traditional hand-coded *procedural* `after_flush` events or triggers:
 
-| Consideration |      Declarative Rules    | Hand-coded (`after_flush`, Triggers, ...) |
+| Consideration |      Declarative Rules    | Procedural (`after_flush`, Triggers, ...) |
 | ------------- | ------------- | --------- |
 | **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code) - a factor of 40:1|
 | **Performance** | SQLs are *automatically pruned and minimized* (example below)| Optimizations require hand-code, often over-looked due to project time pressure |
