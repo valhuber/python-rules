@@ -54,14 +54,25 @@ Customers, Orders, OrderDetails and Products.
 This code can be hand-written, or via generators such as Flask AppBuilder.
 1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
-1. The logic engine operates as follows:
-   * **React** - attribute level changes are detected, and referencing rules are executed
-   (forward chaining *rule inference*);
-   unreferenced rules are pruned.  Note sum/count aggregate processing is
-   extremely efficient, as described below.
-   * **Chain** - if recomputed values are referenced by still other rules,
-   *these* are re-executed.  Note this can be in other tables.
+1. The logic engine operates as described below.
 
+##### Logic Operation: Watch, React, Chain
+
+* **Watch** - changes are detected at the *attribute* level
+
+* **React** - derivation rules referencing changes are (re)executed
+(forward chaining *rule inference*); unreferenced rules are pruned.
+
+  * Note that rules declare *end conditions*, enabling / obligating
+  the engine to optimize execution (like a sql query optimizer)
+  
+  * For example, sum/count aggregate processing is
+  _not_ processed as an expensive (and potentially nested) aggregate query,
+  but rather as an *1 row adjustment* 
+
+* **Chain** - if recomputed values are referenced by still other rules,
+*these* are re-executed.  Note this can be in other tables, thus
+automating multi-table transaction logic.
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
