@@ -137,7 +137,7 @@ The **Add Order** example illustrates chaining:
 
 * OrderDetails are referenced by the Orders' `AmountTotal` sum rule, so it is adjusted
 
-* The `AmountTotal` is referenced by the Customers' `Balance', so it is adjusted
+* The `AmountTotal` is referenced by the Customers' `Balance`, so it is adjusted
 
 * And the Credit Limit constraint is checked 
 (exceptions are raised if constraints are violated)
