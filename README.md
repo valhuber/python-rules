@@ -45,7 +45,8 @@ Customers, Orders, OrderDetails and Products.
 1. Your logic is **declared** as Python functions (see example below).
    * Unlike coarse-grained triggers or event handlers at the table level,
    derivations are fine-grained at the attribute level.
-   * This enables the rules system to execute them very efficiently as described below
+   * This enables the rules system to automate efficiencies like pruning
+   and adjustment, as described below
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 This code can be hand-written, or via generators such as Flask AppBuilder.
 1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
