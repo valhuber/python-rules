@@ -6,8 +6,6 @@ from sqlalchemy.orm import session
 
 from logic_engine.rule_bank import rule_bank_withdraw  # FIXME why required to avoid circular imports??
 from logic_engine.rule_bank import rule_bank_setup
-from logic_engine.rule_type.constraint import Constraint
-from logic_engine.rule_type.formula import Formula
 from nw.nw_logic.nw_rules_bank import activate_basic_check_credit_rules
 
 from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
@@ -73,8 +71,6 @@ basedir = os.path.dirname(basedir)
 conn_string = "sqlite:///" + os.path.join(basedir, "nw-app/nw.db")
 engine = sqlalchemy.create_engine(conn_string, echo=False)  # sqlalchemy sqls...
 
-
-# Create a session
 session_maker = sqlalchemy.orm.sessionmaker()
 session_maker.configure(bind=engine)
 session = session_maker()
@@ -83,7 +79,6 @@ by_rules = True  # True => use rules, False => use hand code (for comparison)
 rule_list = None
 db = None
 if by_rules:
-    # rule_bank = RuleBank()
     rule_bank_setup.setup(session, engine)
     activate_basic_check_credit_rules()
     rule_bank_setup.validate(session, engine)  # checks for cycles, etc
@@ -92,8 +87,7 @@ else:
     event.listen(session, "before_commit", nw_before_commit)
     event.listen(session, "before_flush", nw_before_flush)
 
-# event.listen(Order.ShippedDate, "set", order_modified)
-print(prt("session created, listeners registered"))
+print("\n" + prt("session created, listeners registered\n"))
 
 
 '''  *** Exploring alternate listener strategies - ignore ***

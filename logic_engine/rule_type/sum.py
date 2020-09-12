@@ -39,7 +39,7 @@ class Sum(Aggregate):
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "upd":
             self.adjust_from_updated_child(parent_adjustor)
         else:
-            self.adjust_from_updated_child(parent_adjustor)
+            self.adjust_from_updated_child(parent_adjustor)  # FIXME eh?
 
     def adjust_from_inserted_child(self, parent_adjustor: ParentRoleAdjuster):
         delta = 0.0

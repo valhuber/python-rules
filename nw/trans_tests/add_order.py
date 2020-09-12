@@ -1,7 +1,7 @@
 import sqlalchemy_utils
 
 import nw.nw_logic.models as models
-from logic_engine.util import row_prt
+from logic_engine.util import row_prt, prt
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
 cls = sqlalchemy_utils.functions.get_class_by_table(models.Base, "Product", data=None)
@@ -33,6 +33,8 @@ except:
 
 if not did_fail_as_expected:
     raise Exception("huge order expected to fail, but succeeded")
+else:
+    print("\n" + prt("huge order failed credit check as expected.  Now trying valid order, should succeed..."))
 
 new_order = models.Order(AmountTotal=0, CustomerId="ALFKI", ShipCity="Richmond",
                          EmployeeId=6, Freight=1)

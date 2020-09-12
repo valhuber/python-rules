@@ -50,7 +50,7 @@ class InvokePythonFunctions:  # use functions for more complex rules, type check
 
         Logic.formula_rule(derive="OrderDetail.Amount", calling=compute_amount)
 
-        Logic.formula_rule(derive="OrderDetail.Amount", calling=lambda row: row.Quantity * row.UnitPrice)
+        Logic.formula_rule(derive="OrderDetail.Amount", calling=lambda Customer: Customer.Quantity * Customer.UnitPrice)
 
         Logic.early_row_event_rule(on_class="*", calling=my_early_event)  # just for debug
 

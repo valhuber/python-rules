@@ -46,4 +46,4 @@ class Constraint(Rule):
             raise Exception("Constraint failed: " + msg)
         else:
             raise Exception(f'Constraint did not return boolean: {str(self)}')
-        print(f'Constraint END {str(self)} on {str(logic_row)}')
+        logic_row.log_engine(f'Constraint END {str(self)} on {str(logic_row)}')
