@@ -143,8 +143,8 @@ The **Add Order** example illustrates chaining:
 (exceptions are raised if constraints are violated)
 
 All of the dependency management to see which attribute have changed,
-the sql commands to read and adjust rows, and the chaining
-are fully automated by the engine based, on the rules above.
+logic ordering, the sql commands to read and adjust rows, and the chaining
+are fully automated by the engine, based on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
 ##### State Transition Logic (old values)
