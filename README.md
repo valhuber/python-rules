@@ -1,13 +1,19 @@
 ### Rules vs. Code
 For most transaction-oriented database applications, backend database logic
-is a substantial portion of the effort, typically nearly half.
+is a substantial portion of the effort.
 It includes _multi-table_ derivation and constraint logic,
 and actions such as sending mail or messages.
+
 Such backend logic is typically coded in `before_flush` events,
 or database triggers and/or stored procedures.
-
 The prevailing assumption is that such *domain-specific logic must surely be 
-domain-specfic code.*  This project introduces a _declarative
+domain-specfic code.*  
+
+The problem is that this is a lot of code.  Often nearly half the
+effort for a transactional database-oriented systems,
+it is time-consuming, complex and error-prone.
+
+This project introduces a _declarative
 alternative_: you specify a set of **_spreadsheet-like
 rules,_** which are then executed by a login engine operating
 as a plugin to sqlalchemy.
