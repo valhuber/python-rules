@@ -59,14 +59,13 @@ def validate_formula_dependencies(class_name: str):
                         cycles += ", "
                     cycle_count += 1
                     cycles += each_formula._column
-            raise Exception("blocked by circular dependencies: " + cycles)
+            raise Exception("Mapped Class[" + class_name + "] blocked by circular dependencies:" + cycles)
 
 
 def validate(a_session: session, engine: Engine):
     list_rules = "\n\nValidate Rule Bank"
     rules_bank = RuleBank()
 
-    formula_list = []
     for each_key in rules_bank._tables:
         validate_formula_dependencies(class_name=each_key)
     list_rules += rules_bank.__str__()

@@ -138,17 +138,44 @@ class LogicRow:
         copy_rules = rule_bank_withdraw.copy_rules(self)
         for role_name, copy_rules_for_table in copy_rules.items():
             logic_row = self
-            if logic_row.ins_upd_dlt == "ins" or logic_row.is_different_parent(role_name):
+            if logic_row.ins_upd_dlt == "ins" or \
+                    logic_row.is_different_parent(parent_role_name=role_name):
                 self.log("copy_rules for role: " + role_name)
                 parent_logic_row = logic_row.get_parent_logic_row(role_name)
                 for each_copy_rule in copy_rules_for_table:  # TODO consider orphans
                     each_copy_rule.execute(logic_row, parent_logic_row)
 
-    def is_different_parent(self, role_name: str) -> bool:
+    def get_parent_role_def(self, parent_role_name: str):
+        """ returns sqlalchemy role_def """
         my_mapper = object_mapper(self.row)
-        role_def = my_mapper.relationships.get(role_name)
+        role_def = my_mapper.relationships.get(parent_role_name)
         if role_def is None:
-            raise Exception(f"FIXME invalid role name {role_name}")
+            raise Exception(f"FIXME invalid role name {parent_role_name}")
+        return role_def
+
+    def cascade_to_children(self):
+        """
+        Child Formulas can reference Parent Attributes, so...
+        If the *referenced* Parent Attributes are changed, propagate to child
+        Setting update_msg to denote parent_role
+        This will cause each child to recompute all formulas referencing that role
+        """
+        parent_mapper = object_mapper(self.row)  #, eg, Order propagates ShippedDate => OrderDetailList
+        relationships = parent_mapper.relationships
+        for each_relationship in relationships:  # eg, order has parents cust & emp, child orderdetail
+            if each_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # orderdetail
+                child_role_name = each_relationship.back_populates  # eg,
+                if child_role_name is None:
+                    child_role_name = parent_mapper.class_.__name__  # default TODO review
+                parent_role_name = each_relationship.key  # eg, Customer TODO review
+                parent_class_name = each_relationship.entity.class_.__name__
+
+
+    def is_parent_propagating(self, parent_role_name: str):
+        return True  # TODO stub
+
+    def is_different_parent(self, parent_role_name: str) -> bool:
+        role_def = self.get_parent_role_def(parent_role_name=parent_role_name)
         row = self.row
         for each_child_col, each_parent_col in role_def.local_remote_pairs:
             each_child_col_name = each_child_col.key
@@ -177,7 +204,10 @@ class LogicRow:
                 column = each_dependency
                 if column.contains('.'):
                     role_name = column.split(".")[1]
-                    if self.is_different_parent(role_name):
+                    if self.is_different_parent(parent_role_name=role_name):
+                        is_parent_changed = True
+                        break
+                    if self.is_parent_propagating(role_name):
                         is_parent_changed = True
                         break
                 else:
@@ -188,7 +218,6 @@ class LogicRow:
         if result_prune:
             self.log_engine("Prune Formula: " + formula._column)
         return result_prune
-
 
     def formula_rules(self):
         self.log_engine("formula_rules")
@@ -211,9 +240,6 @@ class LogicRow:
         for each_constraint in constraint_rules:
             each_constraint.execute(self)
 
-    def cascade_to_children(self):
-        pass
-
     def load_parents(self):
         """ sqlalchemy lazy does not work for inserts, do it here
         1. RI would require the sql anyway
@@ -235,7 +261,7 @@ class LogicRow:
             if each_relationship.direction == sqlalchemy.orm.interfaces.MANYTOONE:  # cust, emp
                 parent_role_name = each_relationship.key  # eg, OrderList
                 if is_foreign_key_null(each_relationship) is False:
-                    continue#
+                    continue
                     #  self.get_parent_logic_row(parent_role_name)  # see comment above
         return self
 

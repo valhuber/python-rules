@@ -80,9 +80,9 @@ class DependencyGraphTests:
 
 class UnusedTests:
     """Not loaded"""
+    def not_loaded(self):
+        Logic.constraint_rule(validate="AbUser",  # table is ab_user
+                              calling=lambda row: row.username != "no_name")
 
-    Logic.constraint_rule(validate="AbUser",  # table is ab_user
-                          calling=lambda row: row.username != "no_name")
-
-    Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
-                     where="ShippedDate not None")
+        Logic.count_rule(derive="Customer.OrderCount", as_count_of="Order",
+                         where="ShippedDate not None")
