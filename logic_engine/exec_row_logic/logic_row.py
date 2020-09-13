@@ -125,9 +125,6 @@ class LogicRow:
                                     nest_level=1+self.nest_level, ins_upd_dlt="*")
         return parent_logic_row
 
-    def is_different_parent(self, role_name: str) -> bool:
-        return False # TODO placeholder, implementation required
-
     def early_row_events(self):
         self.log_engine("early_events")
         early_row_events = rule_bank_withdraw.generic_rules_of_class(EarlyRowEvent)
@@ -147,12 +144,66 @@ class LogicRow:
                 for each_copy_rule in copy_rules_for_table:  # TODO consider orphans
                     each_copy_rule.execute(logic_row, parent_logic_row)
 
+    def is_different_parent(self, role_name: str) -> bool:
+        my_mapper = object_mapper(self.row)
+        role_def = my_mapper.relationships.get(role_name)
+        if role_def is None:
+            raise Exception(f"FIXME invalid role name {role_name}")
+        row = self.row
+        for each_child_col, each_parent_col in role_def.local_remote_pairs:
+            each_child_col_name = each_child_col.key
+            if getattr(row, each_child_col_name) != getattr(row, each_child_col_name):
+                return True
+        return False
+
+    def is_formula_pruned(self, formula: Formula) -> bool:
+        """
+        Prune Conservatively:
+         * if delete, or
+         * has parent refs & no dependencies changed (skip parent read)
+        e.g. always execute formulas with no dependencies
+        """
+        result_prune = True
+        row = self.row
+        old_row = self.old_row
+        if self.ins_upd_dlt == "ins":
+            result_prune = False
+        elif self.ins_upd_dlt == "dlt":
+            result_prune = True
+        else:
+            is_parent_changed = False
+            is_dependent_changed = False
+            for each_dependency in formula._dependencies:
+                column = each_dependency
+                if column.contains('.'):
+                    role_name = column.split(".")[1]
+                    if self.is_different_parent(role_name):
+                        is_parent_changed = True
+                        break
+                else:
+                    if getattr(row, column) == getattr(old_row, column):
+                        is_dependent_changed = True
+                        break
+            result_prune = is_parent_changed or is_dependent_changed
+        if result_prune:
+            self.log_engine("Prune Formula: " + formula._column)
+        return result_prune
+
+
     def formula_rules(self):
         self.log_engine("formula_rules")
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
         formula_rules.sort(key=lambda f: f._exec_order)
         for each_formula in formula_rules:
-            each_formula.execute(self)
+            if not self.is_formula_pruned(each_formula):
+                each_formula.execute(self)
+        """
+        FIXME design nasty issue
+        get_parent_logic_row cannot fill the reference
+        so, how does it reference the parent consistently?
+        eg. Component.Product.Price
+        fill it, then Null it?? (good grief)
+        """
 
     def constraints(self):
         # self.log("constraints")

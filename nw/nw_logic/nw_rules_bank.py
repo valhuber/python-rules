@@ -61,20 +61,21 @@ class InvokePythonFunctions:  # use functions for more complex rules, type check
 class DependencyGraphTests:
     """Not loaded"""
 
-    Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
-                       as_exp="row.ColB + row.ColC")
+    def not_loaded(self):
+        Logic.formula_rule(derive="Tbl.ColA",  # or, calling=compute_amount)
+                           as_exp="row.ColB + row.ColC")
 
-    Logic.formula_rule(derive="Tbl.ColB",  # or, calling=compute_amount)
-                       as_exp="row.ColC")
+        Logic.formula_rule(derive="Tbl.ColB",  # or, calling=compute_amount)
+                           as_exp="row.ColC")
 
-    Logic.formula_rule(derive="Tbl.ColC",  # or, calling=compute_amount)
-                       as_exp="row.ColD")
+        Logic.formula_rule(derive="Tbl.ColC",  # or, calling=compute_amount)
+                           as_exp="row.ColD")
 
-    Logic.formula_rule(derive="Tbl.ColD",  # or, calling=compute_amount)
-                       as_exp="row.ColE")
+        Logic.formula_rule(derive="Tbl.ColD",  # or, calling=compute_amount)
+                           as_exp="row.ColE")
 
-    Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
-                       as_exp="xxx")
+        Logic.formula_rule(derive="Tbl.ColE",  # or, calling=compute_amount)
+                           as_exp="xxx")
 
 
 class UnusedTests:

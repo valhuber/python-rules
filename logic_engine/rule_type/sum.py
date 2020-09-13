@@ -76,7 +76,8 @@ class Sum(Aggregate):
 
     def adjust_from_updated_child(self, parent_adjustor: ParentRoleAdjuster):
         delta = 0.0
-        if parent_adjustor.child_logic_row.is_different_parent("FIXME ROLENAME") is False:
+        parent_role_name = parent_adjustor.parent_role_name
+        if parent_adjustor.child_logic_row.is_different_parent(parent_role_name) is False:
             where = self._where_cond(parent_adjustor.child_logic_row.row)
             old_where = self._where_cond(parent_adjustor.child_logic_row.old_row)
             delta = 0.0

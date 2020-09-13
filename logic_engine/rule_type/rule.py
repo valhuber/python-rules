@@ -1,5 +1,4 @@
 class Rule(object):
-
     table = None  # FIXME remove
 
     def __init__(self, a_table_name: str):
@@ -8,11 +7,16 @@ class Rule(object):
         self._dependencies = ()
 
     def parse_dependencies(self, rule_text: str):
+        """
+        Split rule_text into space-separated words
+        Set <rule>._dependencies() to all words starting with "row."
+        """
         words = rule_text.split()
         for each_word in words:
-            if each_word.startswith("row."):
-                self._dependencies.append(each_word.split('.')[1])
-
-
-    def execute(self, row, old_row, context):
-        raise Exception("Not Implemented - Subclass Responsibility")
+            if each_word.startswith("row."):  # allow Cust.CreditLimit?
+                dependencies = each_word.split('.')
+                if len(dependencies) == 2:
+                    self._dependencies.append(dependencies[1])
+                else:
+                    self._dependencies.append(dependencies[1] +
+                                              "." + dependencies[2])
