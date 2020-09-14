@@ -28,7 +28,7 @@ def activate_basic_check_credit_rules():
 
     Logic.formula_rule(derive="OrderDetail.Amount",  as_exp="row.UnitPrice * row.Quantity")
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
-
+    Logic.formula_rule(derive="OrderDetail.ShippedDate", as_exp="row.OrderHeader.ShippedDate")
 
 class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)
 

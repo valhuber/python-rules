@@ -19,7 +19,7 @@ class TableRules(object):
 
     def __init__(self):
         self.rules = []
-        self.child_references = {}
+        self.referring_children = {}  # parent_role_name, parent_attribute_names[]
 
 
 class RuleBank(metaclass=Singleton):
@@ -34,7 +34,7 @@ class RuleBank(metaclass=Singleton):
     _engine = None
 
     def __init__(self):
-        pass
+        self._rb_base = None
 
     def deposit_rule(self, a_rule: Rule):
         if a_rule.table not in self._tables:

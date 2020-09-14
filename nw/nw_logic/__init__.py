@@ -2,6 +2,7 @@ import os
 
 import sqlalchemy
 from sqlalchemy import event
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import session
 
 from logic_engine.rule_bank import rule_bank_withdraw  # FIXME why required to avoid circular imports??

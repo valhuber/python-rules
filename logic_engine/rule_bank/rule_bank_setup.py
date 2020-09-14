@@ -20,6 +20,7 @@ def setup(a_session: session, an_engine: Engine):
 
     rules_bank._engine = an_engine
     rules_bank._rb_base = declarative_base  # FIXME good grief, not appearing, no error
+
     return
 
 

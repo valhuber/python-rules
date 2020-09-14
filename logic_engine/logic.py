@@ -1,24 +1,11 @@
 from typing import Callable
 
-from sqlalchemy.ext.declarative import declarative_base
-
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.copy import Copy
 from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
 from logic_engine.rule_type.row_event import EarlyRowEvent
 from logic_engine.rule_type.sum import Sum
-
-Base = declarative_base()
-metadata = Base.metadata
-
-
-class LogicContext:
-    row = None
-    old_row = None
-    insert_update_delete = ""
-    metadata = None
-    nest_level = 0
 
 
 class Logic:
