@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import event
+from sqlalchemy import event, MetaData
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -15,11 +15,12 @@ def setup(a_session: session, an_engine: Engine):
     rules_bank = RuleBank()
     rules_bank._session = a_session
     event.listen(a_session, "before_flush", before_flush)
+
     rules_bank._tables = {}
     rules_bank._at = datetime.now()
 
     rules_bank._engine = an_engine
-    rules_bank._rb_base = declarative_base  # FIXME good grief, not appearing, no error
+    rules_bank._rb_base = MetaData(bind=an_engine, reflect=True)
 
     return
 

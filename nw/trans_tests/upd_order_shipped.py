@@ -1,10 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import inspect
+from sqlalchemy import inspect, MetaData
+from sqlalchemy.ext.declarative import declarative_base
 
 import nw.nw_logic.models as models
 from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.util import row_prt, prt
+from nw import nw_logic
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
 
@@ -12,6 +14,7 @@ from nw.nw_logic import session  # opens db, activates logic listener <--
 """ also test join.
 session.query(Customer).join(Invoice).filter(Invoice.amount == 8500).all()
 """
+
 pre_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
 session.expunge(pre_cust)
 
