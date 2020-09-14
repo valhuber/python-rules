@@ -1,6 +1,6 @@
+from __future__ import annotations
 from logic_engine import engine_logger
 from logic_engine.util import prt
-from logic_engine.rule_type.rule import Rule
 from datetime import datetime
 
 # https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
@@ -37,7 +37,7 @@ class RuleBank(metaclass=Singleton):
     def __init__(self):
         self._metadata = None
 
-    def deposit_rule(self, a_rule: Rule):
+    def deposit_rule(self, a_rule: 'Rule'):
         if a_rule.table not in self._tables:
             self._tables[a_rule.table] = TableRules()
         table_rules = self._tables[a_rule.table]
