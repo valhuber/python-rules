@@ -128,3 +128,13 @@ def generic_rules_of_class(a_class: (Formula, Constraint, EarlyRowEvent)) -> lis
             if isinstance(each_rule, a_class):
                 rules_list.append(each_rule)
     return rules_list
+
+
+def get_meta_data():
+    rule_bank = RuleBank()
+    return rule_bank._metadata
+
+
+def get_session():
+    rule_bank = RuleBank()
+    return rule_bank._session

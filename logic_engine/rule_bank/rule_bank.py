@@ -28,13 +28,14 @@ class RuleBank(metaclass=Singleton):
     """
 
     _tables = {}  # key = mapped class name, value = list of TableRules
-    _rb_base = None
+    _metadata = None
+    _base = None
     _at = datetime.now()
     _session = None
     _engine = None
 
     def __init__(self):
-        self._rb_base = None
+        self._metadata = None
 
     def deposit_rule(self, a_rule: Rule):
         if a_rule.table not in self._tables:

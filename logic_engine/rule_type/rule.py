@@ -3,7 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import object_mapper
 
 # from logic_engine.logic import Base  # circular import
+from logic_engine.rule_bank import rule_bank_withdraw
 # from logic_engine.rule_bank.rule_bank import RuleBank # circular import
+from sqlalchemy.orm import mapperlib
 
 
 class Rule(object):
@@ -36,7 +38,8 @@ class Rule(object):
         dependencies is a list
         """
         child_class = self.get_class_by_tablename(self.table)
-        parent_mapper = object_mapper(child_class)  # , eg, Order propagates ShippedDate => OrderDetailList
+        parent_mapper = get_mapper(local_table=child_class)
+        parent_mapper = self.find_table_mapper(child_class)  # , eg, Order propagates ShippedDate => OrderDetailList
         relationships = parent_mapper.relationships
         for each_relationship in relationships:  # eg, order has parents cust & emp, child orderdetail
             if each_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # orderdetail
@@ -53,10 +56,35 @@ class Rule(object):
         :return: Class reference or None.
         https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
         """
-        Base = declarative_base()
-        # Base = logic.Base
-        metadata = Base.metadata  # FIXME this should prolly be class
-        Base = RuleBank()._rb_base
-        for c in Base._decl_class_registry.values():
-            if hasattr(c, '__tablename__') and c.__tablename__ == tablename:
-                return c
+        use_table_name = True  # FIXME - should be using class name
+        if use_table_name:
+            meta_data = rule_bank_withdraw.get_meta_data()
+            result = meta_data.tables[tablename]
+            return result
+        else:
+            meta_data = rule_bank_withdraw.get_meta_data()
+            session = rule_bank_withdraw.get_session()
+            from sqlalchemy.ext.declarative import declarative_base
+            Base = declarative_base()
+            for c in Base._decl_class_registry.values():
+                if hasattr(c, '__tablename__') and c.__tablename__ == tablename:
+                    return c
+
+    def find_table_mapper(self, tbl):
+        """
+        https://stackoverflow.com/questions/51529759/sqlalchemy-get-mapper-object-from-table-object-from-metadata-or-session-or-othe
+        """
+        mappers = [
+            mapper for mapper in mapperlib._mapper_registry
+            if tbl in mapper.tables
+        ]
+        if len(mappers) > 1:
+            raise ValueError(
+                "Multiple mappers found for table '%s'." % tbl.name
+            )
+        elif not mappers:
+            raise ValueError(
+                "Could not get mapper for table '%s'." % tbl.name  # fails here
+            )
+        else:
+            return mappers[0]

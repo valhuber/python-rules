@@ -1,6 +1,8 @@
 FIXME why
 FIXME design
 
+Not running under VSC - imports (always, the imports)
+
 update orderdetail set amount = unitPrice * quantity
 
 update "Order" set AmountTotal =
