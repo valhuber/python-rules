@@ -51,8 +51,12 @@ class Logic:
         """
         Formulas declare column value, based on current and parent rows
         Parent changes are propagated to child row(s)
+        Supply 1 (one) of the following:
+          * as_exp - string (for very short expressions - price * quantity)
+          * ex_expression - lambda (for type checking)
+          * calling - function (for more complex formula, with old_row)
         """
-        Formula(derive=derive, calling=calling, as_exp=as_exp)
+        Formula(derive=derive, calling=calling, as_exp=as_exp, as_expression=as_expression)
 
     @staticmethod
     def copy_rule(derive: str, from_parent: str):

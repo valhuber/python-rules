@@ -26,7 +26,7 @@ class Sum(Aggregate):
             result = super().__str__() + f'Sum({self._as_sum_of} Where {self._where})'
         else:
             result = super().__str__() + f'Sum({self._as_sum_of})'
-        result += "  (adjust using parent_role_name: " + self._parent_role_name + ")"
+        # result += "  (adjust using parent_role_name: " + self._parent_role_name + ")"
         return result
 
     def adjust_parent(self, parent_adjustor: ParentRoleAdjuster):

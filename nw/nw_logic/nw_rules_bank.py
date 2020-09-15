@@ -1,7 +1,8 @@
+from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.logic import Logic
 from logic_engine.rule_bank.rule_bank import RuleBank
 from nw.nw_logic import models
-from nw.nw_logic.models import Customer, OrderDetail
+from nw.nw_logic.models import Customer, OrderDetail, Product
 
 
 def activate_basic_check_credit_rules():
@@ -20,6 +21,10 @@ def activate_basic_check_credit_rules():
     * move order to new customer, etc
     """
 
+    def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
+        result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsOnOrder)
+        return result
+
     Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
     Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
@@ -29,6 +34,10 @@ def activate_basic_check_credit_rules():
     Logic.formula_rule(derive="OrderDetail.Amount",  as_exp="row.UnitPrice * row.Quantity")
     Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
     Logic.formula_rule(derive="OrderDetail.ShippedDate", as_exp="row.OrderHeader.ShippedDate")
+
+    Logic.sum_rule(derive="Product.UnitsShipped", as_sum_of="OrderDetails.Quantity",
+                    where="row.ShippedDate is not None")
+    Logic.formula_rule(derive="Product.UnitsShipped", as_expression=units_shipped)
 
 class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)
 
