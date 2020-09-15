@@ -131,7 +131,7 @@ automating multi-table transaction logic.
    * This enables the rules system to automate efficiencies like pruning
    and adjustment, as described below
    
-[More Information on Rule Execution](../../../wiki/Multi-Table-Logic-Execution)
+[More Information on Rule Execution](../../wiki/Multi-Table-Logic-Execution)
 
 
 #### Example: Pruning and Adjustment
