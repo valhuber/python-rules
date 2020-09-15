@@ -11,6 +11,7 @@ from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
 from logic_engine.rule_type.row_event import EarlyRowEvent
 from logic_engine.rule_type.sum import Sum
+from logic_engine.util import get_child_class_name
 
 """
 There really want to be instance methods on RuleBank, but circular imports...
@@ -138,3 +139,40 @@ def get_meta_data():
 def get_session():
     rule_bank = RuleBank()
     return rule_bank._session
+
+
+def get_referring_children(parent_logic_row: LogicRow) -> dict:
+    """
+    return RulesBank[class_name].referring_children (create if None)
+    referring_children is <parent_role_name>, parent_attribute_list()
+    """
+    rule_bank = RuleBank()
+    table_rules = rule_bank._tables[parent_logic_row.name]
+    result = table_rules.referring_children
+    if result is not None:
+       return result
+    else:
+        # sigh, best to have build this in rule_bank_setup, but unable to get mapper
+        table_rules.referring_children = {}
+        parent_mapper = object_mapper(parent_logic_row.row)
+        parent_relationships = parent_mapper.relationships
+        for each_parent_relationship in parent_relationships:  # eg, order has parents cust & emp, child orderdetail
+            if each_parent_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # cust, emp
+                parent_role_name = each_parent_relationship.back_populates  # eg, OrderList
+                table_rules.referring_children[parent_role_name] = []
+                child_role_name = each_parent_relationship.key
+                child_class_name = get_child_class_name(each_parent_relationship)  # eg, OrderDetail
+                child_table_rules = rule_bank._tables[child_class_name].rules
+                search_for_rew_parent = "row." + parent_role_name
+                if child_table_rules is not None:
+                    for each_rule in child_table_rules:
+                        if isinstance(each_rule, (Formula, Constraint)):  # eg, OrderDetail.ShippedDate
+                            rule_text = each_rule.get_rule_text()  #        eg, row.OrderHeader.ShippedDate
+                            rule_words = rule_text.split()
+                            for each_word in rule_words:
+                                if each_word.startswith(search_for_rew_parent):
+                                    rule_terms = each_word.split(".")
+                                    # if parent_role_name not in table_rules.referring_children:
+                                    #    table_rules.referring_children[parent_role_name] = ()
+                                    table_rules.referring_children[parent_role_name].append(rule_terms[2])
+        return table_rules.referring_children

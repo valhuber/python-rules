@@ -13,35 +13,45 @@ class Formula(Derivation):
                  as_exp: str = None):
         super(Formula, self).__init__(derive)
         self._function = calling
-        self._as_exp = None
+        self._as_exp = as_exp
+        self._as_exp_lambda = None
         if as_exp is not None:
-            self._as_exp = lambda row: eval(as_exp)
+            self._as_exp_lambda = lambda row: eval(as_exp)
         if self._function is None and self._as_exp is None:
             raise Exception(f'Formula {str} requires calling or as_exp')
         if self._function is not None and self._as_exp is not None:
-            raise Exception(f'Formula {str} requires *eithe*r calling or as_expression')
+            raise Exception(f'Formula {str} requires *either* calling or as_expression')
         self._dependencies = []
-        text = as_exp
-        if as_exp is None:
-            text = inspect.getsource(self._function)
+        text = self.get_rule_text()
         self.parse_dependencies(rule_text=text)
-        self._exec_order = -1
+        self._exec_order = -1  # will be computed in rule_bank_setup (all rules loaded)
         rb = RuleBank()
         rb.deposit_rule(self)
 
     def execute(self, logic_row: LogicRow):
+        """
+        executes EITHER:
+          - as_exp_lambda(row=logic_row.row), OR
+          - _function(row, old_row, logic_row)
+        """
         # logic_row.log(f'Formula BEGIN {str(self)} on {str(logic_row)}')
         if self._function is not None:
             value = self._function(row=logic_row.row,
                                    old_row=logic_row.old_row, logic_row=logic_row)
-        elif self._as_exp is not None:
-            value = self._as_exp(row=logic_row.row)
+        elif self._as_exp_lambda is not None:
+            value = self._as_exp_lambda(row=logic_row.row)
         else:
             value = self._as_exp(row=logic_row.row)
         old_value = getattr(logic_row.row, self._column)
         if value != old_value:
             setattr(logic_row.row, self._column, value)
             logic_row.log(f'Formula {self._column}')
+
+    def get_rule_text(self):
+        text = self._as_exp
+        if self._as_exp is None:
+            text = inspect.getsource(self._function)
+        return text
 
     def __str__(self):  # TODO get text of as_expression
         return super().__str__() + \

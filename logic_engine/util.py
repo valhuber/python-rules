@@ -1,3 +1,4 @@
+from __future__ import annotations
 import inspect
 import os
 
@@ -117,11 +118,6 @@ def row_to_string(obj) -> str:
         raise Exception("Oops, expected ObjectView or sqlalchemy row")
 
 
-def row_prt(obj: object, a_msg: str = ""):
-    msg = row_to_string(obj)
-    print(a_msg + ", " + msg)
-
-
 def prt(a_msg: str) -> str:
     """Returns file#method + a_msg
     (debug tracing)
@@ -133,3 +129,16 @@ def prt(a_msg: str) -> str:
     file_name = os.path.basename(file_name)
     result = f'@{file_name}#{function_name}(): {a_msg}'
     return result
+
+
+def row_prt(obj: object, a_msg: str = ""):
+    msg = row_to_string(obj)
+    print(a_msg + ", " + msg)
+
+
+def get_child_class_name(relationship):
+    """
+    get name from mapper relationship
+    (FIXME why got to be a better way)
+    """
+    return relationship.mapper._log_desc.split("|")[0][1:]

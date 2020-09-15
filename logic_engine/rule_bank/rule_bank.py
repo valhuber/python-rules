@@ -19,7 +19,8 @@ class TableRules(object):
 
     def __init__(self):
         self.rules = []
-        self.referring_children = {}  # parent_role_name, parent_attribute_names[]
+        self.referring_children: dict = None
+        """ parent_role_name, parent_attribute_names[] """
 
 
 class RuleBank(metaclass=Singleton):

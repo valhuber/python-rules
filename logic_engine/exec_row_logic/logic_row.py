@@ -29,6 +29,7 @@ class LogicRow:
         self.ins_upd_dlt = ins_upd_dlt
         self.ins_upd_dlt_initial = ins_upd_dlt  # order inserted, then adjusted
         self.nest_level = nest_level
+        self.reason = "?"  # set by insert, update and delete
 
         rb = RuleBank()
         self.rb = rb
@@ -153,26 +154,62 @@ class LogicRow:
             raise Exception(f"FIXME invalid role name {parent_role_name}")
         return role_def
 
+    def get_child_role(self, parent_role_name) -> str:
+        parent_mapper = object_mapper(self.row)  # , eg, Order cascades ShippedDate => OrderDetailList
+        parent_relationships = parent_mapper.relationships
+        found = False
+        for each_parent_relationship in parent_relationships:  # eg, order has parents cust & emp, child orderdetail
+            if each_parent_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # cust, emp
+                each_parent_role_name = each_parent_relationship.back_populates  # eg, OrderList
+                if each_parent_role_name == parent_role_name:
+                    child_role_name = each_parent_relationship.key
+                    return child_role_name
+        raise Exception("unable to find child role corresponding to: " + parent_role_name)
+
     def cascade_to_children(self):
         """
-        Child Formulas can reference Parent Attributes, so...
-        If the *referenced* Parent Attributes are changed, propagate to child
+        Child Formulas can reference (my) Parent Attributes, so...
+        If the *referenced* Parent Attributes are changed, cascade to child
         Setting update_msg to denote parent_role
         This will cause each child to recompute all formulas referencing that role
+        eg,
+          OrderDetail.ShippedDate = Order.ShippedDate, so....
+          Order cascades changed ShippedDate => OrderDetailList
         """
-        parent_mapper = object_mapper(self.row)  #, eg, Order propagates ShippedDate => OrderDetailList
-        relationships = parent_mapper.relationships
-        for each_relationship in relationships:  # eg, order has parents cust & emp, child orderdetail
-            if each_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # orderdetail
-                child_role_name = each_relationship.back_populates  # eg,
-                if child_role_name is None:
-                    child_role_name = parent_mapper.class_.__name__  # default TODO review
-                parent_role_name = each_relationship.key  # eg, Customer TODO review
-                parent_class_name = each_relationship.entity.class_.__name__
+        referring_children = rule_bank_withdraw.get_referring_children(parent_logic_row=self)
+        for each_parent_role_name in referring_children:  # children that reference me
+            parent_attributes = referring_children[each_parent_role_name]
+            do_cascade = False
+            cascading_attribute_name = ""
+            for each_parent_attribute in parent_attributes:
+                value = getattr(self.row, each_parent_attribute)
+                old_value = getattr(self.old_row, each_parent_attribute)
+                if value != old_value:
+                    do_cascade = True
+                    cascading_attribute_name = each_parent_attribute
+                    break
+            if do_cascade:  # eg, Order cascades ShippedDate => OrderDetailList
+                child_role_name = self.get_child_role(each_parent_role_name)
+                reason = "Cascading " + each_parent_role_name + \
+                         "." + cascading_attribute_name + " (,...)"
+                child_rows = getattr(self.row, child_role_name)
+                for each_child_row in child_rows:
+                    old_child = self.make_copy(each_child_row)
+                    each_logic_row = LogicRow(row=each_child_row, old_row=old_child,
+                                                a_session=self.session,
+                                                nest_level=1 + self.nest_level, ins_upd_dlt="upd")
+                    each_logic_row.update(reason=reason)
 
-
-    def is_parent_propagating(self, parent_role_name: str):
-        return True  # TODO stub
+    def is_parent_cascading(self, parent_role_name: str):
+        result = False
+        update_reason = self.reason
+        if update_reason.startswith("Cascading "):
+            target = update_reason[10:]
+            words = target.split('.')
+            cascading_parent_role_name = words[0]
+            if cascading_parent_role_name == parent_role_name:
+                result = True
+        return result
 
     def is_different_parent(self, parent_role_name: str) -> bool:
         role_def = self.get_parent_role_def(parent_role_name=parent_role_name)
@@ -202,19 +239,19 @@ class LogicRow:
             is_dependent_changed = False
             for each_dependency in formula._dependencies:
                 column = each_dependency
-                if column.contains('.'):
-                    role_name = column.split(".")[1]
+                if '.' in column:
+                    role_name = column.split(".")[0]
                     if self.is_different_parent(parent_role_name=role_name):
                         is_parent_changed = True
                         break
-                    if self.is_parent_propagating(role_name):
+                    if self.is_parent_cascading(role_name):
                         is_parent_changed = True
                         break
                 else:
                     if getattr(row, column) == getattr(old_row, column):
                         is_dependent_changed = True
                         break
-            result_prune = is_parent_changed or is_dependent_changed
+            result_prune = not (is_parent_changed or is_dependent_changed)
         if result_prune:
             self.log_engine("Prune Formula: " + formula._column)
         return result_prune
@@ -222,15 +259,14 @@ class LogicRow:
     def formula_rules(self):
         self.log_engine("formula_rules")
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
-        formula_rules.sort(key=lambda f: f._exec_order)
+        formula_rules.sort(key=lambda formula: formula._exec_order)
         for each_formula in formula_rules:
             if not self.is_formula_pruned(each_formula):
                 each_formula.execute(self)
         """
-        FIXME design nasty issue
-        get_parent_logic_row cannot fill the reference
+        FIXME design nasty issue, eg. Component.Product.Price
+        get_parent_logic_row cannot fill the reference (e.g, Product)
         so, how does it reference the parent consistently?
-        eg. Component.Product.Price
         fill it, then Null it?? (good grief)
         """
 
@@ -277,6 +313,7 @@ class LogicRow:
             parent_adjuster.save_altered_parents()
 
     def update(self, reason: str = None):
+        self.reason = reason
         self.log("Update - " + reason)
         self.early_row_events()
         self.copy_rules()
@@ -286,6 +323,7 @@ class LogicRow:
         self.cascade_to_children()
 
     def insert(self, reason: str = None):
+        self.reason = reason
         self.log("Insert - " + reason)
         self.load_parents()
         self.early_row_events()

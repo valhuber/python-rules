@@ -1,3 +1,4 @@
+import inspect
 from typing import Callable
 
 import logic_engine.exec_row_logic.logic_row as LogicRow
@@ -18,6 +19,7 @@ class Constraint(Rule):
         # self.table = validate  # setter finds object
         self._error_msg = error_msg
         self._as_condition = as_condition
+        self._calling = calling
         if calling is None and as_condition is None:
             raise Exception(f'Constraint {str} requires calling or as_expression')
         if calling is not None and as_condition is not None:
@@ -31,6 +33,12 @@ class Constraint(Rule):
 
     def __str__(self):
         return f'Constraint Function: {str(self._function)} '
+
+    def get_rule_text(self):
+        text = self._as_condition
+        if self._function is not None:
+            text = inspect.getsource(self._function)
+        return text
 
     def execute(self, logic_row: LogicRow):
         # logic_row.log(f'Constraint BEGIN {str(self)} on {str(logic_row)}')
