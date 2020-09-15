@@ -22,7 +22,7 @@ def activate_basic_check_credit_rules():
     """
 
     def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
-        result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsOnOrder)
+        result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
         return result
 
     Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
@@ -37,7 +37,8 @@ def activate_basic_check_credit_rules():
 
     Logic.sum_rule(derive="Product.UnitsShipped", as_sum_of="OrderList.Quantity",
                     where="row.ShippedDate is not None")
-    Logic.formula_rule(derive="Product.UnitsShipped", calling=units_shipped)
+    Logic.formula_rule(derive="Product.UnitsInStock", calling=units_shipped)
+
 
 class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)
 

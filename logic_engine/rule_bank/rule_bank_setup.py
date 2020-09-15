@@ -49,8 +49,9 @@ def validate_formula_dependencies(class_name: str):
                     if each_referenced_col_name in formula_list_dict:
                         referenced_formula = formula_list_dict[each_referenced_col_name]
                         if referenced_formula._exec_order == -1:  # ref'd col done?
-                            refers_to = referenced_formula._column
-                            break  # can't do me yet - ref'd col not done
+                            if each_referenced_col_name != each_formula_name:
+                                refers_to = referenced_formula._column
+                                break  # can't do me yet - ref'd col not done
                 if refers_to == "":
                     exec_order += 1
                     each_formula._exec_order = exec_order
