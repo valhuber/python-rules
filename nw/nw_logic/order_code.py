@@ -8,6 +8,10 @@ from logic_engine.util import get_old_row, row_prt, row2dict, ObjectView
 # https://docs.sqlalchemy.org/en/13/_modules/examples/versioned_history/history_meta.html
 from nw.nw_logic.customer_code import customer_update
 
+"""
+This is part of the hand-coded alternative to declarative logic.
+Such code is NO LONGER REQUIRED - rules express the same logic order of magnitude more concisely.
+"""
 
 def order_flush_dirty(a_row, a_session: session):
     """

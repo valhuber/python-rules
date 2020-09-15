@@ -1,4 +1,4 @@
-### Rules vs. Code
+## Rules vs. Code
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort.
 It includes _multi-table_ derivation and constraint logic,
@@ -43,65 +43,56 @@ standard IDE and Source Code Control systems
 and breakpoints in formula/constraint/action rules
 expressed in Python
 
-### Overview
+## Overview
 The subject database is an adaption of the Northwind database,
 with a few rollup columns added.
 For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
-#### Architecture
+### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
 1. Your logic is **declared** as Python functions (see example below).
-   * Unlike coarse-grained triggers or event handlers at the table level,
-   derivations are fine-grained at the attribute level.
-   * This enables the rules system to automate efficiencies like pruning
-   and adjustment, as described below
+
 1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 This code can be hand-written, or via generators such as Flask AppBuilder.
+
 1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
-1. The logic engine operates as described below.
 
-##### Logic Operation: Watch, React, Chain
-The engine operates much as you might imagine a spreadsheet:
-
-* **Watch** - changes are detected at the *attribute* level
-
-* **React** - derivation rules referencing changes are (re)executed
-(forward chaining *rule inference*); unreferenced rules are pruned.
-
-  * Note that rules declare *end conditions*, enabling / obligating
-  the engine to optimize execution (like a sql query optimizer)
-  
-  * For example, sum/count aggregate processing is
-  _not_ processed as an expensive (and potentially nested) aggregate query,
-  but rather as an *1 row adjustment* 
-
-* **Chain** - if recomputed values are referenced by still other rules,
-*these* are re-executed.  Note this can be in other tables, thus
-automating multi-table transaction logic.
+1. The logic engine operates much like a spreadsheet:
+**watch** for changes at the attribute level,
+**react** by running rules that referenced changed attributes,
+which can **chain** to still other attributes that refer to
+_those_ changes.  Note these might be in different tables,
+providing automation for _multi-table logic_.
 
 Logic does not apply to updates outside sqlalchemy,
 or to sqlalchemy batch updates or unmapped sql updates.
 
-#### Declaring Logic
+
+## Declaring Logic as Spreadsheet-like Rules
 Logic is declared as spreadsheet-like rules as shown below
-from  [`nw_rules_bank.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
+from  [`nw_rules_bank.py`](python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
 activated in [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py).
 The logic below implements the *check credit* requirement:
 * *the balance must not exceed the credit limit,*
 * *where the balance is the sum of the unshipped order totals*
 * *which is the rollup of OrderDetail Price * Quantities:*
 ```python
-Logic.constraint_rule(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
-                      error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
-Logic.sum_rule(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
+Rule.constraint(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
+                error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
+Rule.sum(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
 
-Logic.sum_rule(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
+Rule.sum(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
 
-Logic.formula_rule(derive="OrderDetail.Amount",  as_exp="row.UnitPrice * row.Quantity")
-Logic.copy_rule(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
+Rule.formula(derive="OrderDetail.Amount", as_exp="row.UnitPrice * row.Quantity")
+Rule.copy(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
+Rule.formula(derive="OrderDetail.ShippedDate", as_exp="row.OrderHeader.ShippedDate")
+
+Rule.sum(derive="Product.UnitsShipped", as_sum_of="OrderList.Quantity",
+         where="row.ShippedDate is not None")
+Rule.formula(derive="Product.UnitsInStock", calling=units_shipped)
 
 ```
 The specification is fully executable, and governs around a
@@ -115,29 +106,35 @@ is changed, adjust the Customers `Balance`
 
 These representatively complex transactions illustrate common logic execution patterns:
 
-##### Adjustments - sum / counts adjusted in 1 row updates, not expensive aggregate SQLs
-Rollups provoke an important design choice: store the aggregate,
-or sum things on the fly.  Here, the stored aggregates are `Customer.Balance`, and `Order.AmountTotal`
-(a *chained* aggregate).  There are good cases to be made for both approaches:
 
-   - **Sum on the fly** - use sql `select sum` queries to aggregate child data as required.
-   This eliminates consistency risks with storing redundant data
-   (i.e, the aggregate becomes invalid if an application fails to
-   adjust it in *all* of the cases).
+## Logic Execution: Watch, React, Chain
+The engine operates much as you might imagine a spreadsheet:
+
+* **Watch** - changes are detected at the *attribute* level
+
+* **React** - derivation rules referencing changes are (re)executed
+(forward chaining *rule inference*); unreferenced rules are pruned.
+
+  * Note that rules declare *end conditions*, enabling / _obligating_
+  the engine to optimize execution (like a sql query optimizer)
+  
+  * For example, sum/count aggregate processing is
+  _not_ processed as an expensive (and potentially nested) aggregate query,
+  but rather as an *1 row adjustment* 
+
+* **Chain** - if recomputed values are referenced by still other rules,
+*these* are re-executed.  Note this can be in other tables, thus
+automating multi-table transaction logic.
+
+   * Unlike coarse-grained triggers or event handlers at the table level,
+   derivations are fine-grained at the attribute level.
+   * This enables the rules system to automate efficiencies like pruning
+   and adjustment, as described below
    
-   - **Stored Aggregates** - a good choice when data volumes are large, and / or chain,
-   since the application can **adjust** (make a 1 row update) the aggregate based on the
-   *delta* of the children.
+[More Information on Rule Execution](wiki/Multi-Table-Logic-Execution)
 
-This design decision can dominate application coding.  It's nefarious,
-since data volumes may not be known when coding begins.  (Ideally, this can be
-a "late binding" decision, like a sql index.)
 
-The logic engine uses the **Stored Aggregate** approach.  This optimizes
-multi-table update logic chaining, where updates to 1 row
-trigger updates to other rows, which further chain to still more rows.
-
-###### Example: Pruning and Adjustment
+#### Example: Pruning and Adjustment
 The **ship / unship order** example illustrates pruning and adjustment:
 
 * if `ShippedDate` *is not* altered, nothing is dependent on that,
@@ -153,7 +150,7 @@ the customers' orders, and *all* their OrderDetails.
   *   Imagine, for example, a customer might have
    thousands of Orders, each with thousands of OrderDetails.
    
-###### Example: Chaining
+#### Example: Chaining
 The **Add Order** example illustrates chaining:
 
 * OrderDetails are referenced by the Orders' `AmountTotal` sum rule, so it is adjusted
@@ -168,19 +165,19 @@ logic ordering, the sql commands to read and adjust rows, and the chaining
 are fully automated by the engine, based on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
-##### State Transition Logic (old values)
+#### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
 For example, we need to adjust the Customers balance
 if the Orders `ShippedDate` is changed.
 
-##### DB-generated Keys
+#### DB-generated Keys
 DB-generated keys are often tricky (how do you insert
 items if you don't know the db-generated orderId?), shown here in `Order`
 and `OrderDetail`.  These were well-handled by sqlalchemy,
 where adding OrderDetail rows into the Orders' collection automatically
 set the foreign keys.
 
-### Installation
+## Installation
 Relies on `from __future__ import annotations`, so requires Python 3.7.
 
 Using your IDE (works with PyCharm, VSC fails on imports) or command line: 
@@ -205,11 +202,11 @@ to facilitate comparison
 You can run the programs in the `nw/trans-tests` folder,
 and/or review this readme and the wiki.
 
-#### Status: Running, Under Development
+## Status: Running, Under Development
 Essential functions running on 9/6/2020: able to save order (a multi-table transaction - certain paths of copy, formula, constraint and sum rules).  Not complete, under active development.
 
 
-### Flask App Builder
+## Flask App Builder
 You can also run an app (generated by [fab-quick-start](https://github.com/valhuber/fab-quick-start/wiki))
 to exolore the `nw` database, though this is not currently enforcing logic.
 
