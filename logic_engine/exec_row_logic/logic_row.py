@@ -101,7 +101,7 @@ class LogicRow:
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
-    def get_parent_logic_row(self, role_name: str, for_update: bool = False):  # FIXME "-> LogicRow" fails to compile
+    def get_parent_logic_row(self, role_name: str, for_update: bool = False) -> 'LogicRow':
         parent_row = getattr(self.row, role_name)
         always_reread_parent = True  # FIXME design - else FlushError("New instance... conflicts
         if parent_row is None:
