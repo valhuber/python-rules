@@ -10,6 +10,8 @@ update "Order" set AmountTotal =
 
 select id, shippeddate, amounttotal from "Order" where id = 11011;
 
+select ProductName, UnitsInStock, UnitsShipped from Product where id = 58;
+
 select id, balance, creditlimit from customer where id="ALFKI";
     960
 
