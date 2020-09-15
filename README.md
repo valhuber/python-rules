@@ -73,7 +73,7 @@ or to sqlalchemy batch updates or unmapped sql updates.
 
 ## Declaring Logic as Spreadsheet-like Rules
 Logic is declared as spreadsheet-like rules as shown below
-from  [`nw_rules_bank.py`](python-rules/blob/master/nw/nw_logic/nw_rules_bank.py),
+from  [`nw_rules_bank.py`](blob/master/nw/nw_logic/nw_rules_bank.py),
 activated in [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py).
 The logic below implements the *check credit* requirement:
 * *the balance must not exceed the credit limit,*
@@ -131,7 +131,7 @@ automating multi-table transaction logic.
    * This enables the rules system to automate efficiencies like pruning
    and adjustment, as described below
    
-[More Information on Rule Execution](wiki/Multi-Table-Logic-Execution)
+[More Information on Rule Execution](blob/master/wiki/Multi-Table-Logic-Execution)
 
 
 #### Example: Pruning and Adjustment
