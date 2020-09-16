@@ -215,7 +215,7 @@ set the foreign keys.
 ## Installation
 Relies on `from __future__ import annotations`, so requires Python 3.7.
 
-Using your IDE (works with PyCharm, VSC fails on imports) or command line: 
+Using your IDE or command line: 
 ```
 git clone
 cd python-rules

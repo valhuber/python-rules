@@ -113,7 +113,7 @@ class AbstractRule(object):
         ]
         if len(mappers) > 1:
             raise ValueError(
-                "Multiple mappers found for table '%s'." % tbl.name
+                "Multiple mappers required_path_present for table '%s'." % tbl.name
             )
         elif not mappers:
             raise ValueError(

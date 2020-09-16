@@ -62,10 +62,12 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
 
     print("nw_before_flush  EXIT")
 
+
 """ Initialization
 1 - Connect
 2 - Register listeners (either hand-coded ones above, or the logic-engine listeners).
 """
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir = os.path.dirname(basedir)
 basedir = os.path.dirname(basedir)
