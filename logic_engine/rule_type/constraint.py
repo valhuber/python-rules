@@ -14,7 +14,7 @@ class Constraint(AbstractRule):
     def __init__(self, validate: object,
                  error_msg: str,
                  calling: Callable = None,
-                 as_condition: str = None):
+                 as_condition: object = None):  # str or lambda boolean expression
         super(Constraint, self).__init__(validate)
         # self.table = validate  # setter finds object
         self._error_msg = error_msg
@@ -26,7 +26,7 @@ class Constraint(AbstractRule):
             raise Exception(f'Constraint {str} either calling or as_expression')
         if calling is not None:
             self._function = calling
-        else:
+        elif isinstance(as_condition, str):
             self._as_condition = lambda row: eval(as_condition)
         ll = RuleBank()
         ll.deposit_rule(self)
