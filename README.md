@@ -74,7 +74,7 @@ or to sqlalchemy batch updates or unmapped sql updates.
 ## Declaring Logic as Spreadsheet-like Rules
 Logic is declared as spreadsheet-like rules as shown below
 from  [`nw_rules_bank.py`](nw/nw_logic/nw_rules_bank.py),
-activated in [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py).
+activated in [`__init__.py`](nw/nw_logic/__init__.py).
 The logic below implements the *check credit* requirement:
 * *the balance must not exceed the credit limit,*
 * *where the balance is the sum of the unshipped order totals*
@@ -115,13 +115,6 @@ The engine operates much as you might imagine a spreadsheet:
 * **React** - derivation rules referencing changes are (re)executed
 (forward chaining *rule inference*); unreferenced rules are pruned.
 
-  * Note that rules declare *end conditions*, enabling / _obligating_
-  the engine to optimize execution (like a sql query optimizer)
-  
-  * For example, sum/count aggregate processing is
-  _not_ processed as an expensive (and potentially nested) aggregate query,
-  but rather as an *1 row adjustment* 
-
 * **Chain** - if recomputed values are referenced by still other rules,
 *these* are re-executed.  Note this can be in other tables, thus
 automating multi-table transaction logic.
@@ -131,31 +124,15 @@ automating multi-table transaction logic.
    * This enables the rules system to automate efficiencies like pruning
    and adjustment, as described below
    
-[More Information on Rule Execution](../../wiki/Multi-Table-Logic-Execution)
-
-
-#### Example: Pruning and Adjustment
-The **ship / unship order** example illustrates pruning and adjustment:
-
-* if `ShippedDate` *is not* altered, nothing is dependent on that,
-so the rule is **pruned** from the logic execution.
-
-* if `ShippedDate` *is* altered, the logic engine **adjusts** the `Customer.Balance`
-with a 1 row update.
-
-  * Contrast this to approaches in other systems where
-the balance is recomputed with expensive aggregate queries over *all*
-the customers' orders, and *all* their OrderDetails.
-
-  *   Imagine, for example, a customer might have
-   thousands of Orders, each with thousands of OrderDetails.
    
-#### Example: Chaining
+#### Example: Add Order - Multi-Table Adjustment, Chaining
 The **Add Order** example illustrates chaining:
 
-* OrderDetails are referenced by the Orders' `AmountTotal` sum rule, so it is adjusted
+* OrderDetails are referenced by the Orders' `AmountTotal` sum rule,
+so `AmountTotal` is adjusted
 
-* The `AmountTotal` is referenced by the Customers' `Balance`, so it is adjusted
+* The `AmountTotal` is referenced by the Customers' `Balance`,
+so it is adjusted
 
 * And the Credit Limit constraint is checked 
 (exceptions are raised if constraints are violated)
@@ -165,10 +142,68 @@ logic ordering, the sql commands to read and adjust rows, and the chaining
 are fully automated by the engine, based on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
+Key points:
+
+##### Multi-Table Logic
+The `sum` rule "watching" `OrderDetail.AmountTotal` changes is in
+a different table: `Orders`.  So, the "react" logic has to
+perform a multi-table transaction.
+
+##### Optimizations: Adjustment (vs. nested `sum` queries)
+
+Note that rules declare _end conditions_, enabling / _obligating_
+the engine to optimize execution (like a sql query optimizer).
+For example, sum/count aggregate processing is
+_not_ processed as an expensive aggregate query,
+but rather as an *1 row adjustment*.
+
+Here, computing the
+balance does _not_ result in a sum over all the Orders, and OrderDetails.
+
+  * Contrast this to approaches in other systems where
+the balance is recomputed with expensive aggregate queries over *all*
+the customers' orders, and *all* their OrderDetails.
+
+  *   Imagine, for example, a customer might have
+   thousands of Orders, each with thousands of OrderDetails.
+
+
+[See here](../../wiki/Multi-Table-Logic-Execution)
+for more information on Rule Execution.
+
+
+#### Example: Ship Order - Pruning, Adjustment and Cascade
+The **ship / unship order** example illustrates pruning and adjustment:
+
+* if `DueDate` is altered, nothing is dependent on that,
+so the rule is **pruned** from the logic execution.  The result
+is a 1 row transaction - no SQL overhead from rules.
+
+* if `ShippedDate` altered, 2 kinds of multi-table logic are triggered:
+
+   * the logic engine **adjusts** the `Customer.Balance` with a 1 row update.
+   
+       * Note the here, the triggering event is a change to the `where` condition,
+   rather than a change to the summed value.
+   
+   * the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
+   so the system **cascades** the change to each `OrderDetail`
+   to reevaluate referring rules.
+   
+       * This **further _chains_** to _adjust_ `Product.UnitsInStock`,
+       whose change recomputes `Product.UnitsInStock` (see below)
+ 
+
 #### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
-For example, we need to adjust the Customers balance
-if the Orders `ShippedDate` is changed.
+For example, here is the function used to compute `Product.UnitsInStock`:
+```python
+def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
+    result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
+    return result
+```
+Note this logic is in Python: you can invoke Python functions,
+set breakpoints, etc.
 
 #### DB-generated Keys
 DB-generated keys are often tricky (how do you insert
