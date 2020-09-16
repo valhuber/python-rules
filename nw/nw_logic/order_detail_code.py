@@ -4,7 +4,8 @@ from logic_engine.util import get_old_row, row_prt, row2dict, ObjectView
 from nw.nw_logic.order_code import order_update
 
 
-"""
+"""            NO LONGER REQUIRED
+
 This is part of the hand-coded alternative to declarative logic.
 Such code is NO LONGER REQUIRED - rules express the same logic order of magnitude more concisely.
 """

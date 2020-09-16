@@ -142,7 +142,7 @@ logic ordering, the sql commands to read and adjust rows, and the chaining
 are fully automated by the engine, based on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
-Key points:
+Key points are discussed in the sub-sections below.
 
 ##### Multi-Table Logic
 The `sum` rule "watching" `OrderDetail.AmountTotal` changes is in
