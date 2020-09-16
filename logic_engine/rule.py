@@ -1,5 +1,7 @@
 from typing import Callable
 
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
 from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.copy import Copy
 from logic_engine.rule_type.count import Count
@@ -15,7 +17,7 @@ class Rule:
     """
 
     @staticmethod
-    def sum(derive: str, as_sum_of: str, where: str = None):
+    def sum(derive: InstrumentedAttribute, as_sum_of: str, where: str = None):
         """
         Sums declare parent column as sum of designated child column
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
@@ -23,7 +25,7 @@ class Rule:
         Sum(derive, as_sum_of, where)
 
     @staticmethod
-    def count(derive: str, as_count_of: str, where: str = ""):
+    def count(derive: InstrumentedAttribute, as_count_of: str, where: str = ""):
         """
         Sums declare parent column as sum of designated child rows
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
@@ -31,7 +33,7 @@ class Rule:
         Count(derive, as_count_of, where)
 
     @staticmethod
-    def constraint(validate: str, as_condition: str = None,
+    def constraint(validate: object, as_condition: str = None,
                    error_msg: str = "(error_msg not provided)", calling: Callable = None):
         """
         Constraints declare condition that must be true for all commits
@@ -46,7 +48,7 @@ class Rule:
         EarlyRowEvent(on_class, calling)  # --> load_logic
 
     @staticmethod
-    def formula(derive: str, calling: Callable = None,
+    def formula(derive: InstrumentedAttribute, calling: Callable = None,
                 as_expression: Callable = None, as_exp: str = None):
         """
         Formulas declare column value, based on current and parent rows
@@ -59,7 +61,7 @@ class Rule:
         Formula(derive=derive, calling=calling, as_exp=as_exp, as_expression=as_expression)
 
     @staticmethod
-    def copy(derive: str, from_parent: str):
+    def copy(derive: InstrumentedAttribute, from_parent: str):
         """
         Copy declares child column copied from parent column
         Unlike formulas references, parent changes are *not* propagated to children

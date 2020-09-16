@@ -1,5 +1,5 @@
 """
-Rule Repository
+AbstractRule Repository
 ===============
 
 Want a shared copy of rules for engine (e.g, forms/rest server), thread safe.

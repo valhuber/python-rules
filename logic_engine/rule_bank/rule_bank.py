@@ -38,7 +38,7 @@ class RuleBank(metaclass=Singleton):
     def __init__(self):
         self._metadata = None
 
-    def deposit_rule(self, a_rule: 'Rule'):
+    def deposit_rule(self, a_rule: 'AbstractRule'):
         if a_rule.table not in self._tables:
             self._tables[a_rule.table] = TableRules()
         table_rules = self._tables[a_rule.table]
@@ -46,7 +46,7 @@ class RuleBank(metaclass=Singleton):
         engine_logger.debug(prt(str(a_rule)))
 
     def __str__(self):
-        result = f"Rule Bank[{str(hex(id(self)))}] (loaded {self._at})"
+        result = f"AbstractRule Bank[{str(hex(id(self)))}] (loaded {self._at})"
         for each_key in self._tables:
             result += f"\nMapped Class[{each_key}] rules:"
             table_rules = self._tables[each_key]

@@ -1,3 +1,5 @@
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
 from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.aggregate import Aggregate
@@ -8,7 +10,7 @@ class Sum(Aggregate):
     _child_role_name = ""
     _where = ""
 
-    def __init__(self, derive: str, as_sum_of: str, where: str):
+    def __init__(self, derive: InstrumentedAttribute, as_sum_of: str, where: str):
         super(Sum, self).__init__(derive)
         self._as_sum_of = as_sum_of  # could probably super-ize parent accessor
         self._child_role_name = self._as_sum_of.split(".")[0]  # child role retrieves children

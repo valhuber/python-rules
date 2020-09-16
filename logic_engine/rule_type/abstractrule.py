@@ -16,11 +16,19 @@ from logic_engine.rule_bank.rule_bank import RuleBank, TableRules  # circular im
 from logic_engine.util import prt
 
 
-class Rule(object):
+class AbstractRule(object):
 
-    def __init__(self, a_table_name: str):
+    def __init__(self, decl_meta: sqlalchemy.ext.declarative.api.DeclarativeMeta):
         #  failed -- mapped_class = get_class_by_table(declarative_base(), a_table_name)  # User class
-        self.table = a_table_name  # FIXME wrong, should be class not table
+        if not isinstance(decl_meta, sqlalchemy.ext.declarative.api.DeclarativeMeta):
+            raise Exception("rule definition error, not mapped class: " + str(decl_meta))
+        self._decl_meta = decl_meta
+        nodal_name = str(decl_meta)
+        nodes = nodal_name.split('.')
+        class_name = nodes[len(nodes) - 1]
+        class_name = class_name[0: len(class_name) - 2]
+        self.table = class_name  # FIXME design - got to be a better way
+        # sqlalchemy.ext.declarative.api.DeclarativeMeta
         self._dependencies = ()
 
     def parse_dependencies(self, rule_text: str):

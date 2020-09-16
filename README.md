@@ -80,19 +80,19 @@ The logic below implements the *check credit* requirement:
 * *where the balance is the sum of the unshipped order totals*
 * *which is the rollup of OrderDetail Price * Quantities:*
 ```python
-Rule.constraint(validate="Customer", as_condition="row.Balance <= row.CreditLimit",
+Rule.constraint(validate=Customer, as_condition="row.Balance <= row.CreditLimit",
                 error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
-Rule.sum(derive="Customer.Balance", as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
+Rule.sum(derive=Customer.Balance, as_sum_of="OrderList.AmountTotal", where="row.ShippedDate is None")
 
-Rule.sum(derive="Order.AmountTotal", as_sum_of="OrderDetailList.Amount")
+Rule.sum(derive=Order.AmountTotal, as_sum_of="OrderDetailList.Amount")
 
-Rule.formula(derive="OrderDetail.Amount", as_exp="row.UnitPrice * row.Quantity")
-Rule.copy(derive="OrderDetail.UnitPrice", from_parent="ProductOrdered.UnitPrice")
-Rule.formula(derive="OrderDetail.ShippedDate", as_exp="row.OrderHeader.ShippedDate")
+Rule.formula(derive=OrderDetail.Amount, as_exp="row.UnitPrice * row.Quantity")
+Rule.copy(derive=OrderDetail.UnitPrice, from_parent="ProductOrdered.UnitPrice")
+Rule.formula(derive=OrderDetail.ShippedDate, as_exp="row.OrderHeader.ShippedDate")
 
-Rule.sum(derive="Product.UnitsShipped", as_sum_of="OrderList.Quantity",
+Rule.sum(derive=Product.UnitsShipped, as_sum_of="OrderList.Quantity",
          where="row.ShippedDate is not None")
-Rule.formula(derive="Product.UnitsInStock", calling=units_shipped)
+Rule.formula(derive=Product.UnitsInStock, calling=units_shipped)
 
 ```
 The specification is fully executable, and governs around a

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import object_mapper
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
@@ -7,7 +8,7 @@ from logic_engine.rule_type.derivation import Derivation
 
 class Aggregate(Derivation):
 
-    def __init__(self, derive: str):
+    def __init__(self, derive: InstrumentedAttribute):
         super(Aggregate, self).__init__(derive)
         self._parent_role_name = "set in rule_blank_withdraw"
 

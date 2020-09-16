@@ -4,10 +4,10 @@ from typing import Callable
 import logic_engine.exec_row_logic.logic_row as LogicRow
 
 from logic_engine.rule_bank.rule_bank import RuleBank
-from logic_engine.rule_type.rule import Rule
+from logic_engine.rule_type.abstractrule import AbstractRule
 
 
-class RowEvent(Rule):
+class RowEvent(AbstractRule):
     _function = None
 
     def __init__(self, on_class: str,

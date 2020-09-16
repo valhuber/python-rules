@@ -47,7 +47,7 @@ def copy_rules(logic_row: LogicRow) -> CopyRulesForTable:
     return role_rules_list
 
 """
-Rule Bank is a dict of <table><rule-list>, e.g.:
+AbstractRule Bank is a dict of <table><rule-list>, e.g.:
 
 Table[Customer] rules:
   Constraint Function: None 

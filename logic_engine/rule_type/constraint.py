@@ -4,14 +4,14 @@ from typing import Callable
 import logic_engine.exec_row_logic.logic_row as LogicRow
 
 from logic_engine.rule_bank.rule_bank import RuleBank
-from logic_engine.rule_type.rule import Rule
+from logic_engine.rule_type.abstractrule import AbstractRule
 
 
-class Constraint(Rule):
+class Constraint(AbstractRule):
 
     _function = None
 
-    def __init__(self, validate: str,
+    def __init__(self, validate: object,
                  error_msg: str,
                  calling: Callable = None,
                  as_condition: str = None):

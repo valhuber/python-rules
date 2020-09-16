@@ -1,3 +1,5 @@
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
 import logic_engine.exec_row_logic.logic_row as LogicRow
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.derivation import Derivation
@@ -5,7 +7,7 @@ from logic_engine.rule_type.derivation import Derivation
 
 class Copy(Derivation):
 
-    def __init__(self, derive: str, from_parent: str):
+    def __init__(self, derive: InstrumentedAttribute, from_parent: str):
         super(Copy, self).__init__(derive)
         names = from_parent.split('.')
         self._from_parent_role = names[0]

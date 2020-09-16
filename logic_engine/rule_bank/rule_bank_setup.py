@@ -70,7 +70,7 @@ def validate_formula_dependencies(class_name: str):
 
 
 def validate(a_session: session, engine: Engine):
-    list_rules = "\n\nValidate Rule Bank"
+    list_rules = "\n\nValidate AbstractRule Bank"
     rules_bank = RuleBank()
 
     for each_key in rules_bank._tables:

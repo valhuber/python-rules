@@ -1,6 +1,8 @@
 import inspect
 from typing import Callable
 
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
 import logic_engine.exec_row_logic.logic_row as LogicRow
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.derivation import Derivation
@@ -8,7 +10,7 @@ from logic_engine.rule_type.derivation import Derivation
 
 class Formula(Derivation):
 
-    def __init__(self, derive: str,
+    def __init__(self, derive: InstrumentedAttribute,
                  as_exp: str = None,              # for very short expressions
                  as_expression: Callable = None,  # short, with type checking
                  calling: Callable = None         # complex formula

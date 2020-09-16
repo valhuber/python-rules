@@ -1,3 +1,5 @@
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
 from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.aggregate import Aggregate
 
@@ -8,7 +10,7 @@ class Count(Aggregate):
     _child_role_name = ""
     _where = ""
 
-    def __init__(self, derive: str, as_count_of: str, where: str):
+    def __init__(self, derive: InstrumentedAttribute, as_count_of: str, where: str):
         super(Count, self).__init__(derive)
         self._as_count_of = as_count_of  # could probably super-ize parent accessor
         self._from_parent_role = as_count_of
