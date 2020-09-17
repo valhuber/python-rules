@@ -1,3 +1,5 @@
+import sqlalchemy
+
 from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.rule import Rule
 from logic_engine.rule_bank.rule_bank import RuleBank
@@ -34,6 +36,7 @@ def activate_basic_check_credit_rules():
 
     Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
     Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
+
     Rule.formula(derive=OrderDetail.ShippedDate, as_exp="row.OrderHeader.ShippedDate")
 
     Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,

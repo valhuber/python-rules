@@ -5,7 +5,7 @@ It includes _multi-table_ derivation and constraint logic,
 and actions such as sending mail or messages.
 
 Such backend logic is typically coded in `before_flush` events,
-or database triggers and/or stored procedures.
+database triggers, and/or stored procedures.
 The prevailing assumption is that such *domain-specific logic must surely be 
 domain-specfic code.*  
 
@@ -26,9 +26,10 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 | Consideration |      Declarative Rules    | Procedural (`after_flush`, Triggers, ...) |
 | ------------- | ------------- | --------- |
 | **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code) - a factor of 40:1|
-| **Performance** | SQLs are *automatically pruned and minimized* (example below)| Optimizations require hand-code, often over-looked due to project time pressure |
+| **Performance** | SQLs are *automatically pruned and optimized* (example below)| Optimizations require hand-code, often over-looked due to project time pressure |
 | **Quality** | Rules are *automatically re-used* over all transactions, minimizing missed corner-cases| Considerable test and debug is required to find and address all corner cases, with high risk of bugs |
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
+| **Architecture** | Rules are extracted from UI controllers, so logic is _automatically re-used_ between apps and APIs | Manual logic is often coded in UI controllers; this eliminates re-use, leading to bugs and inconsistencies |
 
 This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
@@ -89,7 +90,7 @@ Rule.sum(derive=Order.AmountTotal, as_sum_of=OrderDetail.Amount)
 
 Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
 Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
-Rule.formula(derive=OrderDetail.ShippedDate, as_exp="row.OrderHeader.ShippedDate")
+Rule.formula(derive=OrderDetail.ShippedDate, as_expression=lambda row: row.OrderHeader.ShippedDate)
 
 Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
          where="row.ShippedDate is not None")
@@ -152,21 +153,20 @@ perform a multi-table transaction.
 ##### Optimizations: Adjustment (vs. nested `sum` queries)
 
 Note that rules declare _end conditions_, enabling / _obligating_
-the engine to optimize execution (like a sql query optimizer).
-For example, sum/count aggregate processing is
-_not_ processed as an expensive aggregate query,
-but rather as an *1 row adjustment*.
+the engine to optimize execution (like a sql query optimizer). 
+Consider the rule for `Customer.Balance`.
 
-Here, computing the
-balance does _not_ result in a sum over all the Orders, and OrderDetails.
+As in commonly the case, you may reasonably expect this is executed as a sql `select sum`.
 
-  * Contrast this to approaches in other systems where
-the balance is recomputed with expensive aggregate queries over *all*
-the customers' orders, and *all* their OrderDetails.
+**_It is not._**
 
-  *   Imagine, for example, a customer might have
-   thousands of Orders, each with thousands of OrderDetails.
+Instead, it is executed a *1 row adjustment* to the balance.
 
+  * `select sum` queries are expensive - imagine a customer with thousands of Orders.
+  
+  * Here, it's lots worse, since it's a _chained sum_,
+  so computing the balance requires not only we read all the orders,
+  but all the OrderDetails of each order.
 
 [See here](../../wiki/Multi-Table-Logic-Execution)
 for more information on Rule Execution.
@@ -177,14 +177,19 @@ The **ship / unship order** example illustrates pruning and adjustment:
 
 * if `DueDate` is altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.  The result
-is a 1 row transaction - no SQL overhead from rules.
+is a 1 row transaction - zero SQL overhead from rules.
 
-* if `ShippedDate` altered, 2 kinds of multi-table logic are triggered:
+* if `ShippedDate` _is_ altered, 2 kinds of multi-table logic are triggered:
 
-   * the logic engine **adjusts** the `Customer.Balance` with a 1 row update.
+   * the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
+   as described above.
    
-       * Note the here, the triggering event is a change to the `where` condition,
+       * Note that in this case, the triggering event is a change to the `where` condition,
    rather than a change to the summed value.
+   
+       * The _watch_ logic is monitoring changes to summed fields, where conditions,
+       foreign keys, and inserts / updates / delete.  This eliminates large amounts
+       of clumsy, boring and error prone code.
    
    * the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
    so the system **cascades** the change to each `OrderDetail`
@@ -194,7 +199,7 @@ is a 1 row transaction - no SQL overhead from rules.
        whose change recomputes `Product.UnitsInStock` (see below)
  
 
-#### State Transition Logic (old values)
+##### State Transition Logic (old values)
 Logic often depends on the old and new state of a row.
 For example, here is the function used to compute `Product.UnitsInStock`:
 ```python

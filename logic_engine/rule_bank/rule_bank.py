@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import List, TypeVar, Dict
 from logic_engine import engine_logger
 from logic_engine.util import prt
 from datetime import datetime
@@ -16,19 +17,33 @@ class Singleton(type):
 
 
 class TableRules(object):
+    """
+    Rules and dependencies for a mapped class
+    Attributes:
+        rules : List['AbstractRule']
+            Sums, Constraints, Formulas etc for this mapped class
+        referring_children : Dict[parent_role_name: str, List[parent_attr_name: str]]
+            Information driving cascade
+    """
 
     def __init__(self):
-        self.rules = []
-        self.referring_children: dict = None
-        """ parent_role_name, parent_attribute_names[] """
+        self.rules = []  # type: List['AbstractRule']
+        self.referring_children = None  # type: Dict[str, List[str]]
+        """ parent_role_name, parent_attribute_names[]
+        set in rule_bank_withdraw """
 
 
 class RuleBank(metaclass=Singleton):
     """
-    scans for rules, creates the logic_repository
+    Attributes:
+
+    _tables Dict[mapped_class_name: str, List[TableRules]]
+
+    _metadata, _base, _engine from sqlalchemy
     """
 
-    _tables = {}  # key = mapped class name, value = list of TableRules
+    _tables = {}  # type: Dict[str, TableRules]
+    """ Dict[mapped_class: str, List[TablesRules]] -- rules for a table """
     _metadata = None
     _base = None
     _at = datetime.now()
