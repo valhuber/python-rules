@@ -96,7 +96,7 @@ Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
 ```
  
 We add 3 more rules to manage UnitsInStock:
-* _when orders are shipped, reduce the UnitsIn_stock for the ordered items_
+* _when orders are shipped, reduce the UnitsInStock for the ordered items_
 ```python
 Rule.formula(derive=OrderDetail.ShippedDate, as_expression=lambda row: row.OrderHeader.ShippedDate)
 
