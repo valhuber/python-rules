@@ -93,6 +93,11 @@ Rule.sum(derive=Order.AmountTotal, as_sum_of=OrderDetail.Amount)
 
 Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
 Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
+```
+ 
+We add 3 more rules to manage UnitsInStock:
+* _when orders are shipped, reduce the UnitsIn_stock for the ordered items_
+```python
 Rule.formula(derive=OrderDetail.ShippedDate, as_expression=lambda row: row.OrderHeader.ShippedDate)
 
 Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
