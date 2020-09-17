@@ -113,7 +113,8 @@ and rollup to AmountTotal / Balance to check CreditLimit
 * **Ship / Unship an Order (Adjust Balance) -** when an Order's `DateShippped`
 is changed, adjust the Customers `Balance`
 
-These representatively complex transactions illustrate common logic execution patterns:
+These representatively complex transactions illustrate
+common logic execution patterns, described in the following sections.
 
 
 ## Logic Execution: Watch, React, Chain
@@ -135,7 +136,8 @@ automating multi-table transaction logic.
    
    
 #### Example: Add Order - Multi-Table Adjustment, Chaining
-The **Add Order** example illustrates chaining:
+The **Add Order** example illustrates chaining;
+as OrderDetails are added:
 
 * OrderDetails are referenced by the Orders' `AmountTotal` sum rule,
 so `AmountTotal` is adjusted
@@ -147,28 +149,33 @@ so it is adjusted
 (exceptions are raised if constraints are violated)
 
 All of the dependency management to see which attribute have changed,
-logic ordering, the sql commands to read and adjust rows, and the chaining
-are fully automated by the engine, based on the rules above.
+logic ordering, the SQL commands to read and adjust rows, and the chaining
+are fully automated by the engine, based solely on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
 Key points are discussed in the sub-sections below.
 
 ##### Multi-Table Logic
-The `sum` rule "watching" `OrderDetail.AmountTotal` changes is in
+The `sum` rule that "watches" `OrderDetail.AmountTotal` changes is in
 a different table: `Orders`.  So, the "react" logic has to
-perform a multi-table transaction.
+perform a multi-table transaction, which means we need to
+be careful about performance.
 
 ##### Optimizations: Adjustment (vs. nested `sum` queries)
 
 Note that rules declare _end conditions_, enabling / _obligating_
-the engine to optimize execution (like a sql query optimizer). 
+the engine to optimize execution (like a SQL query optimizer). 
 Consider the rule for `Customer.Balance`.
 
-As in commonly the case, you may reasonably expect this is executed as a sql `select sum`.
+As in commonly the case (e.g. Rete engines, some ORM systems),
+you may reasonably expect this is executed as a SQL `select sum`.
 
 **_It is not._**
 
-Instead, it is executed a *1 row adjustment* to the balance.
+Instead, it is executed as an *adjustment:*
+as single row update to the Orders balance.
+This optimization dramatically reduces the SQL cost,
+often by orders of magnitude:
 
   * `select sum` queries are expensive - imagine a customer with thousands of Orders.
   
@@ -208,7 +215,7 @@ is a 1 row transaction - zero SQL overhead from rules.
  
 
 ##### State Transition Logic (old values)
-Logic often depends on the old and new state of a row.
+Logic often depends on the old vs. new state of a row.
 For example, here is the function used to compute `Product.UnitsInStock`:
 ```python
 def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
@@ -230,7 +237,7 @@ Relies on `from __future__ import annotations`, so requires Python 3.7.
 
 Using your IDE or command line: 
 ```
-git clone
+git fork / clone
 cd python-rules
 virtualenv venv
 source venv/bin/activate
@@ -247,7 +254,8 @@ to facilitate comparison
    [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py)
 * a test folder that runs various sample transactions
 
-You can run the programs in the `nw/trans-tests` folder,
+You can run the programs in the `nw/trans_tests` folder
+(note the generated log),
 and/or review this readme and the wiki.
 
 ## Status: Running, Under Development
