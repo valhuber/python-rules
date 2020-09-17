@@ -52,18 +52,18 @@ Customers, Orders, OrderDetails and Products.
 ### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 
-1. Your logic is **declared** as Python functions (see example below).
+ 1. Your logic is **declared** as Python functions (see example below).
 
-1. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
+ 2. Your application makes calls on `sqlalchemy` for inserts, updates and deletes.
 
-  ** By bundling transaction logic into sqlalchemy data access, your logic
+  * By bundling transaction logic into sqlalchemy data access, your logic
   is automatically shared, whether for hand-written code (Flask apps, APIs)
   or via generators such as Flask AppBuilder.
 
-1. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
+ 3. The **python-rules** logic engine handles sqlalchemy `before_flush` events on
 `Mapped Tables`
 
-1. The logic engine operates much like a spreadsheet:
+ 4. The logic engine operates much like a spreadsheet:
 **watch** for changes at the attribute level,
 **react** by running rules that referenced changed attributes,
 which can **chain** to still other attributes that refer to
