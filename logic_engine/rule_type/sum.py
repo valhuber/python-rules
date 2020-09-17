@@ -1,4 +1,6 @@
+from sqlalchemy.orm import RelationshipProperty
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from typing import Callable
 
 from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
 from logic_engine.rule_bank.rule_bank import RuleBank
@@ -10,16 +12,42 @@ class Sum(Aggregate):
     _child_role_name = ""
     _where = ""
 
-    def __init__(self, derive: InstrumentedAttribute, as_sum_of: str, where: str):
+    def __init__(self, derive: InstrumentedAttribute, as_sum_of: any, where: any):
         super(Sum, self).__init__(derive)
         self._as_sum_of = as_sum_of  # could probably super-ize parent accessor
-        self._child_role_name = self._as_sum_of.split(".")[0]  # child role retrieves children
-        self._child_summed_field = self._as_sum_of.split(".")[1]
         self._where = where
+        if isinstance(as_sum_of, str):
+            self._child_role_name = self._as_sum_of.split(".")[0]  # child role retrieves children
+            self._child_summed_field = self._as_sum_of.split(".")[1]
+        elif isinstance(as_sum_of, InstrumentedAttribute):
+            self._child_summed_field = as_sum_of.key
+            attrs = as_sum_of.parent.attrs
+            found_attr = None
+            for each_attr in attrs:
+                if isinstance(each_attr, RelationshipProperty):
+                    pass
+                    parent_class_nodal_name = each_attr.entity.class_
+                    parent_class_name = self.get_class_name(parent_class_nodal_name)
+                    if parent_class_name == self.table:
+                        if found_attr is not None:
+                            raise Exception("TODO - disambiguate relationship")
+                        found_attr = each_attr
+            if found_attr is None:
+                raise Exception("Invalid 'as_sum_of' - not a reference to: " + self.table +
+                                " in " + self.__str__())
+            else:
+                self._child_role_name = found_attr.back_populates
+        else:
+            raise Exception("as_sum_of must be either string, or <mapped-class.column>: " +
+                            str(as_sum_of))
         if where is None:
             self._where_cond = lambda row: True
-        else:
+        elif isinstance(where, str):
             self._where_cond = lambda row: eval(where)
+        elif isinstance(where, Callable):
+            self._where_cond = where
+        else:
+            raise Exception("'where' must be string, or lambda: " + self.__str__())
         rb = RuleBank()
         rb.deposit_rule(self)
 
@@ -82,6 +110,9 @@ class Sum(Aggregate):
         if parent_adjustor.child_logic_row.is_different_parent(parent_role_name) is False:
             where = self._where_cond(parent_adjustor.child_logic_row.row)
             old_where = self._where_cond(parent_adjustor.child_logic_row.old_row)
+            if where != False and where != True:
+                raise Exception("where clause must return boolean: " +
+                                str(where) + ", from " + self.__str__())
             delta = 0.0
             if where and old_where:
                 delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field) - \

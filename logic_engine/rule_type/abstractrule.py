@@ -23,13 +23,21 @@ class AbstractRule(object):
         if not isinstance(decl_meta, sqlalchemy.ext.declarative.api.DeclarativeMeta):
             raise Exception("rule definition error, not mapped class: " + str(decl_meta))
         self._decl_meta = decl_meta
+        class_name = self.get_class_name(decl_meta)
+        self.table = class_name
+
+        self._dependencies = ()
+
+    def get_class_name(self, decl_meta: sqlalchemy.ext.declarative.api.DeclarativeMeta) -> str:
+        """
+        extract class name from class_
+        eg, OrderDetail from <class 'nw.nw_logic.models.OrderDetail'>
+        """
         nodal_name = str(decl_meta)
         nodes = nodal_name.split('.')
         class_name = nodes[len(nodes) - 1]
         class_name = class_name[0: len(class_name) - 2]
-        self.table = class_name  # FIXME design - got to be a better way
-        # sqlalchemy.ext.declarative.api.DeclarativeMeta
-        self._dependencies = ()
+        return class_name  # FIXME design - got to be a better way
 
     def parse_dependencies(self, rule_text: str):
         """

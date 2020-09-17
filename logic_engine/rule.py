@@ -17,17 +17,18 @@ class Rule:
     """
 
     @staticmethod
-    def sum(derive: InstrumentedAttribute, as_sum_of: str, where: str = None):
+    def sum(derive: InstrumentedAttribute, as_sum_of: any, where: any = None):
         """
-        Sums declare parent column as sum of designated child column
+        Sums declare parent column as sum of designated child column, optional where, eg
+          Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal, where="row.ShippedDate is None")
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
         """
         Sum(derive, as_sum_of, where)
 
     @staticmethod
-    def count(derive: InstrumentedAttribute, as_count_of: str, where: str = ""):
+    def count(derive: InstrumentedAttribute, as_count_of: str, where: any = None):
         """
-        Sums declare parent column as sum of designated child rows
+        Sums declare parent column as count of designated child rows
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
         """
         Count(derive, as_count_of, where)
@@ -61,7 +62,7 @@ class Rule:
         Formula(derive=derive, calling=calling, as_exp=as_exp, as_expression=as_expression)
 
     @staticmethod
-    def copy(derive: InstrumentedAttribute, from_parent: str):
+    def copy(derive: InstrumentedAttribute, from_parent: any):
         """
         Copy declares child column copied from parent column
         Unlike formulas references, parent changes are *not* propagated to children
