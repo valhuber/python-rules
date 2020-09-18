@@ -139,7 +139,7 @@ automating multi-table transaction logic.
 The **Add Order** example illustrates chaining;
 as OrderDetails are added:
 
-[[/images/check-credit.png|ALT TEXT]]
+[[images/check-credit.png|ALT TEXT]]
 
 1. The `OrderDetail.UnitPrice` is referenced from the Product
 so it is copied
