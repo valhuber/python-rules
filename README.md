@@ -120,6 +120,8 @@ common logic execution patterns, described in the following sections.
 ## Logic Execution: Watch, React, Chain
 The engine operates much as you might imagine a spreadsheet:
 
+[[/images/check-credit.png|ALT TEXT]]
+
 * **Watch** - for inserts, deletes, and updates at the *attribute* level
 
 * **React** - derivation rules referencing changes are (re)executed
