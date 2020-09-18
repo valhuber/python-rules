@@ -201,8 +201,8 @@ If `DueDate` is altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.  The result
 is a 1 row transaction - zero SQL overhead from rules.
 
-If `ShippedDate` _is_ altered,
-2 kinds of multi-table logic are triggered - adjustment and cascade:
+If `ShippedDate` is altered,
+2 kinds of multi-table logic are triggered - _adjustment and cascade:_
 
    1. the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
    as described above
