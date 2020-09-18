@@ -1,4 +1,4 @@
-## Rules vs. Code
+# Low Code Logic, using Spreadsheet-like Rules 
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort.
 It includes _multi-table_ derivation and constraint logic,
@@ -7,16 +7,17 @@ and actions such as sending mail or messages.
 Such backend logic is typically coded in `before_flush` events,
 database triggers, and/or stored procedures.
 The prevailing assumption is that such *domain-specific logic must surely be 
-domain-specfic code.*  
+domain-specific code.*  
 
 The problem is that this is a lot of code.  Often nearly half the
 effort for a transactional database-oriented systems,
 it is time-consuming, complex and error-prone.
 
-This project introduces a _declarative
-alternative_: you specify a set of **_spreadsheet-like
-rules,_** which are then executed by a login engine operating
-as a plugin to sqlalchemy.
+This project introduces a _declarative alternative_:
+you specify a set of **_spreadsheet-like rules,_**
+which are then executed by a login engine operating
+as a plugin to sqlalchemy.  As in a spreadsheet,
+there are dramatic gains in conciseness and clarity.
 
 #### Rules: 40X more concise, automatic optimization and re-use
 
@@ -26,7 +27,7 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 | Consideration |      Declarative Rules    | Procedural (`after_flush`, Triggers, ...) |
 | ------------- | ------------- | --------- |
 | **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code) - a factor of 40:1|
-| **Performance** | SQLs are *automatically pruned and optimized* (example below)| Optimizations require hand-code, often over-looked due to project time pressure |
+| **Performance** | SQLs are *automatically pruned and optimized* (examples below)| Optimizations require hand-code, often over-looked due to project time pressure |
 | **Quality** | Rules are *automatically re-used* over all transactions, minimizing missed corner-cases| Considerable test and debug is required to find and address all corner cases, with high risk of bugs |
 | **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
 | **Architecture** | Rules are extracted from UI controllers, so logic is _automatically re-used_ between apps and APIs | Manual logic is often coded in UI controllers; this eliminates re-use, leading to bugs and inconsistencies |
@@ -35,22 +36,17 @@ This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
 
-Importantly, logic is
-* *Extensible:* Rules are complemented by Python events,
-so you can address the last 5%
-* *Manageable:* logic is expressed in Python, enabling the use of
+Importantly, logic is:
+* **Low Code:** Rules are complemented by Python events -
+extensibility, so you can address the last 5%
+* **Manageable:** logic is expressed in Python, enabling the use of
 standard IDE and Source Code Control systems
-* *Debuggable:* Debug your logic with logs that show which rules execute,
+* **Debuggable:** Debug your logic with logs that show which rules execute,
 and breakpoints in formula/constraint/action rules
 expressed in Python
 
-## Overview
-The subject database is an adaption of the Northwind database,
-with a few rollup columns added.
-For those not familiar, this is basically
-Customers, Orders, OrderDetails and Products.
 
-### Architecture
+## Architecture
 <figure><img src="images/architecture.png" width="500"><figcaption>Architecture</figcaption></figure>
 
 
@@ -77,6 +73,13 @@ or to sqlalchemy batch updates or unmapped sql updates.
 
 
 ## Declaring Logic as Spreadsheet-like Rules
+To illustrate, let's use an adaption
+of the Northwind database,
+with a few rollup columns added.
+For those not familiar, this is basically
+Customers, Orders, OrderDetails and Products,
+as shown in the diagrams below.
+
 Logic is declared as spreadsheet-like rules as shown below
 from  [`nw_rules_bank.py`](nw/nw_logic/nw_rules_bank.py),
 activated in [`__init__.py`](nw/nw_logic/__init__.py).
