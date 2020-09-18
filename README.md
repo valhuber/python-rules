@@ -139,13 +139,16 @@ automating multi-table transaction logic.
 The **Add Order** example illustrates chaining;
 as OrderDetails are added:
 
-* OrderDetails are referenced by the Orders' `AmountTotal` sum rule,
+1. The `OrderDetail.UnitPrice` is referenced from the Product
+so it is copied
+
+1. OrderDetails are referenced by the Orders' `AmountTotal` sum rule,
 so `AmountTotal` is adjusted
 
-* The `AmountTotal` is referenced by the Customers' `Balance`,
+1. The `AmountTotal` is referenced by the Customers' `Balance`,
 so it is adjusted
 
-* And the Credit Limit constraint is checked 
+1. And the Credit Limit constraint is checked 
 (exceptions are raised if constraints are violated)
 
 All of the dependency management to see which attribute have changed,
