@@ -18,7 +18,7 @@ you specify a set of **_spreadsheet-like rules,_**
 which are then executed by a login engine operating
 as a plugin to sqlalchemy.  As in a spreadsheet,
 there are dramatic gains in conciseness and clarity.
-   
+     <br/>   
 
 #### Rules: 40X more concise, automatic optimization and re-use
 
@@ -37,6 +37,7 @@ This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
 
+     <br/>
 #### Extensible, Manageable, Debuggable
 
 Importantly, logic is:
