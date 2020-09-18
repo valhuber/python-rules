@@ -136,4 +136,4 @@ class Sum(Aggregate):
                 setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
                 # parent_adjustor.child_logic_row.log(f'adjust_from_updated_child adjusts {str(self)}')
         else:
-            raise Exception("sum / re-parent not implemented")
+            raise Exception("TODO major sum / re-parent not implemented")

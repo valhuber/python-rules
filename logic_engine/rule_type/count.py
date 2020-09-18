@@ -25,3 +25,6 @@ class Count(Aggregate):
             result = super().__str__() + f'Count({self._as_count_of})'
         return result
 
+    def execute(self):
+        raise Exception("TODO major")
+

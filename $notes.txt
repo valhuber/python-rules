@@ -1,4 +1,5 @@
-FIXME design - search for these, which signal request for external review
+FIXME design - search for these, which designate request for external review
+TODO major - designates significant unimplemented
 
 Not running under VSC - imports (always, the imports)
 

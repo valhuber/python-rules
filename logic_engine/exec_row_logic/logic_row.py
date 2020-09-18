@@ -334,6 +334,18 @@ class LogicRow:
         # self.cascade_to_children()
 
 
+    def delete(self, reason: str = None):  # TODO major
+        self.reason = reason
+        self.log("delete - " + reason)
+        self.load_parents()
+        self.early_row_events()
+        self.copy_rules()
+        self.formula_rules()
+        self.adjust_parent_aggregates()
+        self.constraints()
+        # self.cascade_to_children()
+
+
 class ParentRoleAdjuster:
     """
     Passed to <aggregate>.adjust_parent who will set parent row(s) values
