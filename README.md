@@ -36,8 +36,8 @@ traditional hand-coded *procedural* `after_flush` events or triggers:
 This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
-
-     <br/>
+     <br/> 
+     
      
 #### Extensible, Manageable, Debuggable
 
