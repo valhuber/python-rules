@@ -1,4 +1,4 @@
-# Low Code Logic, using Spreadsheet-like Rules 
+# Rules to Automate Business Logic 
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort.
 It includes _multi-table_ derivation and constraint logic,
