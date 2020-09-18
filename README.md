@@ -198,27 +198,28 @@ The **ship / unship order** example illustrates pruning and adjustment:
 
 <figure><img src="images/ship-order.png" width="500"><figcaption>Logic Execution - Chaining</figcaption></figure>
 
-* if `DueDate` is altered, nothing is dependent on that,
+If `DueDate` is altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.  The result
 is a 1 row transaction - zero SQL overhead from rules.
 
-* if `ShippedDate` _is_ altered, 2 kinds of multi-table logic are triggered:
+If `ShippedDate` _is_ altered,
+2 kinds of multi-table logic are triggered - adjustment and cascade:
 
    1. the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
-   as described above.
+   as described above
    
        * Note that in this case, the triggering event is a change to the `where` condition,
-   rather than a change to the summed value.
+   rather than a change to the summed value
    
        * The _watch_ logic is monitoring changes to summed fields, where conditions,
        foreign keys, and inserts / updates / delete.  This eliminates large amounts
-       of clumsy, boring and error prone code.
+       of clumsy, boring and error prone code
    
    2. the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
    so the system **cascades** the change to each `OrderDetail`
-   to reevaluate referring rules.
+   to reevaluate referring rules
    
-    3. This **further _chains_** to _adjust_ `Product.UnitsInStock`,
+   3. This **further _chains_** to _adjust_ `Product.UnitsInStock`,
        whose change recomputes `Product.UnitsInStock` (see below)
  
 
