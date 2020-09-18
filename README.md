@@ -52,6 +52,8 @@ Customers, Orders, OrderDetails and Products.
 
 ### Architecture
 <img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
+<figure><img src="images/architecture.png" width="500"><figcaption>Architecture</figcaption></figure>
+
 
  1. Your logic is **declared** as Python functions (see example below).
 
@@ -138,8 +140,6 @@ automating multi-table transaction logic.
 #### Example: Add Order - Multi-Table Adjustment, Chaining
 The **Add Order** example illustrates chaining;
 as OrderDetails are added:
-
-[[images/check-credit.png|ALT TEXT]]
 
 <figure><img src="images/check-credit.png"><figcaption>Logic Execution - Chaining</figcaption></figure>
 
