@@ -141,6 +141,8 @@ as OrderDetails are added:
 
 [[images/check-credit.png|ALT TEXT]]
 
+<figure><img src="images/check-credit.png"><figcaption>Logic Execution - Chaining</figcaption></figure>
+
 1. The `OrderDetail.UnitPrice` is referenced from the Product
 so it is copied
 
