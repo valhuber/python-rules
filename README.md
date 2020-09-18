@@ -193,9 +193,9 @@ for more information on Rule Execution.
 
 
 #### Example: Ship Order - Pruning, Adjustment and Cascade
-The **ship / unship order** example illustrates pruning and adjustment:
 
-<figure><img src="images/ship-order.png" width="500"><figcaption>Logic Execution - Chaining</figcaption></figure>
+<figure><img src="images/ship-order.png" width="500">
+ <figcaption>The <b>ship / unship order</b> example illustrates pruning and adjustment:</figcaption></figure>
 
 If `DueDate` is altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.  The result
