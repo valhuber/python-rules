@@ -10,7 +10,11 @@ from logic_engine.rule_bank import rule_bank_withdraw
 from nw.nw_logic import session
 
 
-def setup(a_session: session, an_engine: Engine):
+def setup(a_session: session, an_engine: Engine):  # FIXME major - ensure compatible with fab, flask etc
+    """
+    Initialize the RuleBank
+
+    """
     rules_bank = RuleBank()
     rules_bank._session = a_session
     event.listen(a_session, "before_flush", before_flush)
@@ -51,7 +55,7 @@ def validate_formula_dependencies(class_name: str):
                         if referenced_formula._exec_order == -1:  # ref'd col done?
                             if each_referenced_col_name != each_formula_name:
                                 refers_to = referenced_formula._column
-                                break  # can't do me yet - ref'd col not done
+                                break  # can't do me yet - ref'd col may also have rules but not yet loaded
                 if refers_to == "":
                     exec_order += 1
                     each_formula._exec_order = exec_order
