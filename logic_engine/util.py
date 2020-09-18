@@ -20,7 +20,7 @@ class ObjectView(object):
         return str(self.__dict__)
 
 
-def get_old_row(obj) -> ObjectView:
+def get_old_row(obj) -> ObjectView:  # FIXME design
     """
     obtain old_row (during before_flush) from sqlalchemy row
 
@@ -139,6 +139,6 @@ def row_prt(obj: object, a_msg: str = ""):
 def get_child_class_name(relationship):
     """
     get name from mapper relationship
-    (FIXME why got to be a better way)
+    (FIXME design why got to be a better way)
     """
     return relationship.mapper._log_desc.split("|")[0][1:]

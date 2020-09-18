@@ -96,7 +96,7 @@ class AbstractRule(object):
         https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
         FIXME - unable to get working (remove)
         """
-        use_table_name = True  # FIXME - should be using class name
+        use_table_name = True
         if use_table_name:
             meta_data = rule_bank_withdraw.get_meta_data()
             result = meta_data.tables[tablename]

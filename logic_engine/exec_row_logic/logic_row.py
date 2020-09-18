@@ -97,13 +97,12 @@ class LogicRow:
         result_class = a_row.__class__
         result = result_class()
         row_mapper = object_mapper(a_row)
-        for each_attr in row_mapper.columns:  # TODO skip object references
+        for each_attr in row_mapper.columns:  # note skips parent references
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
     def get_parent_logic_row(self, role_name: str, for_update: bool = False) -> 'LogicRow':
         parent_row = getattr(self.row, role_name)
-        always_reread_parent = True  # FIXME design - else FlushError("New instance... conflicts
         if parent_row is None:
             my_mapper = object_mapper(self.row)
             role_def = my_mapper.relationships.get(role_name)
@@ -116,7 +115,7 @@ class LogicRow:
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
             if self.ins_upd_dlt == "upd":  # eg, add order - don't tell sqlalchemy to add cust
-                pass
+                pass  # FIXME design - else FlushError("New instance... conflicts
                 # setattr(self.row, role_name, parent_row)
             if for_update:
                 self.session.expunge(parent_row)
@@ -136,6 +135,7 @@ class LogicRow:
             each_row_event.execute(self)
 
     def copy_rules(self):
+        """ runs copy rules (get parent values) """
         copy_rules = rule_bank_withdraw.copy_rules(self)
         for role_name, copy_rules_for_table in copy_rules.items():
             logic_row = self
@@ -281,7 +281,7 @@ class LogicRow:
         1. RI would require the sql anyway
         2. Provide a consistent model - your parents are always there for you
 
-        FIXME fails flush error identity key, disabled
+        FIXME design fails flush error identity key, disabled
         """
         def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
             child_columns = relationship.local_columns

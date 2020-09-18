@@ -1,5 +1,4 @@
-FIXME why
-FIXME design
+FIXME design - search for these, which signal request for external review
 
 Not running under VSC - imports (always, the imports)
 

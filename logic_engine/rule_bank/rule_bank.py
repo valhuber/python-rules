@@ -19,10 +19,11 @@ class Singleton(type):
 class TableRules(object):
     """
     Rules and dependencies for a mapped class
+
     Attributes:
-        rules : List['AbstractRule']
+        rules is a List['AbstractRule']
             Sums, Constraints, Formulas etc for this mapped class
-        referring_children : Dict[parent_role_name: str, List[parent_attr_name: str]]
+        referring_children is a Dict[parent_role_name - str, List[parent_attr_name: str]]
             Information driving cascade
     """
 
@@ -33,7 +34,7 @@ class TableRules(object):
         set in rule_bank_withdraw """
 
 
-class RuleBank(metaclass=Singleton):
+class RuleBank(metaclass=Singleton):  # FIXME design review singleton
     """
     Attributes:
 

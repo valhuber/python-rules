@@ -51,7 +51,7 @@ class Constraint(AbstractRule):
         elif not value:
             row = logic_row.row
             msg = eval(f'f"""{self._error_msg}"""')
-            raise Exception("Constraint failed: " + msg)
+            raise Exception("Constraint failed: " + msg)  # FIXME design exception type?
         else:
             raise Exception(f'Constraint did not return boolean: {str(self)}')
         logic_row.log_engine(f'Constraint END {str(self)} on {str(logic_row)}')

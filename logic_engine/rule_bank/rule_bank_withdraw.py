@@ -15,6 +15,7 @@ from logic_engine.util import get_child_class_name
 
 """
 There really want to be instance methods on RuleBank, but circular imports...
+FIXME design
 """
 
 
@@ -79,8 +80,8 @@ def aggregate_rules(child_logic_row: LogicRow) -> dict:
         if each_relationship.direction == sqlalchemy.orm.interfaces.MANYTOONE:  # cust, emp
             child_role_name = each_relationship.back_populates  # eg, OrderList
             if child_role_name is None:
-                child_role_name = child_mapper.class_.__name__  # default TODO review
-            parent_role_name = each_relationship.key   # eg, Customer TODO review
+                child_role_name = child_mapper.class_.__name__  # default TODO design review
+            parent_role_name = each_relationship.key   # eg, Customer TODO design review
             parent_class_name = each_relationship.entity.class_.__name__
             if parent_class_name in rule_bank._tables:
                 parent_rules = rule_bank._tables[parent_class_name].rules
@@ -153,6 +154,7 @@ def get_referring_children(parent_logic_row: LogicRow) -> dict:
        return result
     else:
         # sigh, best to have build this in rule_bank_setup, but unable to get mapper
+        # FIXME design is this threadsafe?
         table_rules.referring_children = {}
         parent_mapper = object_mapper(parent_logic_row.row)
         parent_relationships = parent_mapper.relationships
