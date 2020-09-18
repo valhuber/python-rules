@@ -194,7 +194,7 @@ for more information on Rule Execution.
 
 #### Example: Ship Order - Pruning, Adjustment and Cascade
 
-<figure><img src="images/ship-order.png" width="500"><figcaption>The <b>ship / unship order</b> example illustrates pruning and adjustment:</figcaption></figure>  
+<figure><img src="images/ship-order.png" width="500"><figcaption>The <b>ship / unship order</b> example illustrates pruning and adjustment:<br/></figcaption></figure>  
   <br />
   
 
