@@ -120,8 +120,6 @@ common logic execution patterns, described in the following sections.
 ## Logic Execution: Watch, React, Chain
 The engine operates much as you might imagine a spreadsheet:
 
-[[/images/check-credit.png|ALT TEXT]]
-
 * **Watch** - for inserts, deletes, and updates at the *attribute* level
 
 * **React** - derivation rules referencing changes are (re)executed
@@ -140,6 +138,8 @@ automating multi-table transaction logic.
 #### Example: Add Order - Multi-Table Adjustment, Chaining
 The **Add Order** example illustrates chaining;
 as OrderDetails are added:
+
+[[/images/check-credit.png|ALT TEXT]]
 
 1. The `OrderDetail.UnitPrice` is referenced from the Product
 so it is copied
