@@ -138,7 +138,7 @@ automating multi-table transaction logic.
    
 #### Example: Add Order - Multi-Table Adjustment, Chaining
 
-<figure><img src="images/check-credit.png" width="500"><figcaption>The <b>Add Order</b example illustrates chaining as OrderDetails are added:
+<figure><img src="images/check-credit.png" width="500"><figcaption>The <b>Add Order</b> example illustrates chaining as OrderDetails are added:
 </figcaption></figure>
 
 1. The `OrderDetail.UnitPrice` is referenced from the Product
