@@ -36,6 +36,8 @@ This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
 the backend logic, reducing such logic by **40X** (200 vs. 5).
 
+### Extensible, Manageable, Debuggable
+
 Importantly, logic is:
 * **Low Code:** Rules are complemented by Python events -
 extensibility, so you can address the last 5%
