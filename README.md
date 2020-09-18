@@ -51,7 +51,6 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products.
 
 ### Architecture
-<img src="https://github.com/valhuber/python-rules/blob/master/images/architecture.png" width="500">
 <figure><img src="images/architecture.png" width="500"><figcaption>Architecture</figcaption></figure>
 
 
@@ -141,7 +140,7 @@ automating multi-table transaction logic.
 The **Add Order** example illustrates chaining;
 as OrderDetails are added:
 
-<figure><img src="images/check-credit.png"><figcaption>Logic Execution - Chaining</figcaption></figure>
+<figure><img src="images/check-credit.png" width="500"><figcaption>Logic Execution - Chaining</figcaption></figure>
 
 1. The `OrderDetail.UnitPrice` is referenced from the Product
 so it is copied
@@ -197,13 +196,15 @@ for more information on Rule Execution.
 #### Example: Ship Order - Pruning, Adjustment and Cascade
 The **ship / unship order** example illustrates pruning and adjustment:
 
+<figure><img src="images/ship-order.png" width="500"><figcaption>Logic Execution - Chaining</figcaption></figure>
+
 * if `DueDate` is altered, nothing is dependent on that,
 so the rule is **pruned** from the logic execution.  The result
 is a 1 row transaction - zero SQL overhead from rules.
 
 * if `ShippedDate` _is_ altered, 2 kinds of multi-table logic are triggered:
 
-   * the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
+   1. the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
    as described above.
    
        * Note that in this case, the triggering event is a change to the `where` condition,
@@ -213,11 +214,11 @@ is a 1 row transaction - zero SQL overhead from rules.
        foreign keys, and inserts / updates / delete.  This eliminates large amounts
        of clumsy, boring and error prone code.
    
-   * the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
+   2. the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
    so the system **cascades** the change to each `OrderDetail`
    to reevaluate referring rules.
    
-       * This **further _chains_** to _adjust_ `Product.UnitsInStock`,
+    3. This **further _chains_** to _adjust_ `Product.UnitsInStock`,
        whose change recomputes `Product.UnitsInStock` (see below)
  
 
