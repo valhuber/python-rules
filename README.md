@@ -18,6 +18,7 @@ you specify a set of **_spreadsheet-like rules,_**
 which are then executed by a login engine operating
 as a plugin to sqlalchemy.  As in a spreadsheet,
 there are dramatic gains in conciseness and clarity.
+   
 
 #### Rules: 40X more concise, automatic optimization and re-use
 
