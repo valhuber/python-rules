@@ -1,10 +1,11 @@
 import sqlalchemy
+from sqlalchemy_utils import get_mapper
 
 from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.rule import Rule
 from logic_engine.rule_bank.rule_bank import RuleBank
 from nw.nw_logic import models
-from nw.nw_logic.models import Customer, OrderDetail, Product, Order
+from nw.nw_logic.models import Customer, OrderDetail, Product, Order, Employee
 
 
 def activate_basic_check_credit_rules():
@@ -27,6 +28,15 @@ def activate_basic_check_credit_rules():
         result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
         return result
 
+    def congratulate_sales_rep(row: Order, old_row: Order, logic_row: LogicRow):
+        if logic_row.ins_upd_dlt == "ins" or True:
+            sales_rep = row.SalesRep  # type : Employee
+            if sales_rep is None:  # FIXME design parent refs empty for inserts...
+                mapper = get_mapper(row)
+                print("no salesrep for this order")
+            else:
+                logic_row.log(f'Hi, {sales_rep.Manager.FirstName}, congratulate {sales_rep.FirstName} on their new order')
+
     Rule.constraint(validate=Customer, as_condition=lambda row: row.Balance <= row.CreditLimit,
                     error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
     Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal,
@@ -42,6 +52,8 @@ def activate_basic_check_credit_rules():
     Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
              where="row.ShippedDate is not None")
     Rule.formula(derive=Product.UnitsInStock, calling=units_shipped)
+
+    Rule.commit_row_event(on_class=Order, calling=congratulate_sales_rep)
 
 
 class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)

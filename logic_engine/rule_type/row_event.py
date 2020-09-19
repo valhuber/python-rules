@@ -7,12 +7,12 @@ from logic_engine.rule_bank.rule_bank import RuleBank
 from logic_engine.rule_type.abstractrule import AbstractRule
 
 
-class RowEvent(AbstractRule):
+class AbstractRowEvent(AbstractRule):
     _function = None
 
     def __init__(self, on_class: str,
                  calling: Callable = None):
-        super(RowEvent, self).__init__(on_class)
+        super(AbstractRowEvent, self).__init__(on_class)
         self._function = calling
         ll = RuleBank()
         ll.deposit_rule(self)
@@ -26,9 +26,25 @@ class RowEvent(AbstractRule):
         # print(f'Event END {str(self)} on {str(logic_row)}')
 
 
-class EarlyRowEvent(RowEvent):
+class EarlyRowEvent(AbstractRowEvent):
     _function = None
 
     def __init__(self, on_class: str,
                  calling: Callable = None):
         super(EarlyRowEvent, self).__init__(on_class=on_class, calling=calling)
+
+
+class RowEvent(AbstractRowEvent):
+    _function = None
+
+    def __init__(self, on_class: str,
+                 calling: Callable = None):
+        super(RowEvent, self).__init__(on_class=on_class, calling=calling)
+
+
+class CommitRowEvent(AbstractRowEvent):
+    _function = None
+
+    def __init__(self, on_class: str,
+                 calling: Callable = None):
+        super(CommitRowEvent, self).__init__(on_class=on_class, calling=calling)

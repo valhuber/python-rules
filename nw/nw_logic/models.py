@@ -3,11 +3,17 @@
 """
 WARNING: used in nw_logic, but FAB uses version in nw-app/app
 The primary copy is here -- copy changes to nw-app/app.
+
+on relationships...
+  * declare them in the parent (not child), eg, for Order:
+  *    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
+
 """
 import sqlalchemy_utils
 from sqlalchemy import Boolean, Column, DECIMAL, DateTime, Float, ForeignKey, Integer, LargeBinary, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.testing import db
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -68,9 +74,15 @@ class Employee(Base):
     Extension = Column(String(8000))
     Photo = Column(LargeBinary)
     Notes = Column(String(8000))
-    ReportsTo = Column(Integer)
+    # ReportsTo = Column(Integer)
+    ReportsTo = Column(ForeignKey('Employee.Id'), nullable=False)
     PhotoPath = Column(String(8000))
+
     OrderList = relationship("Order", cascade_backrefs=True, backref="SalesRep")
+    # https://stackoverflow.com/questions/2638217/sqlalchemy-mapping-self-referential-relationship-as-one-to-many-declarative-f
+    Manager = relationship('Employee', remote_side='Employee.Id',
+                                      backref='Manages')  # parent Company
+
 # not sure about this... adding backref="Order" causes this failure:  FIXME cleanup
 # "Error creating backref 'Employee' on relationship 'Employee.OrderList':
 #   property of that name exists on mapper 'mapped class Order->Order'"
@@ -176,9 +188,7 @@ class Order(Base):
     # Customer = relationship('Customer', lazy='noload',  back_populates="OrderList")  FIXME cleanup
     # Employee = relationship('Employee')
 
-    OrderDetailList = relationship("OrderDetail",
-                                   backref="OrderHeader",
-                                   cascade_backrefs=True)
+    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
 
 
 class OrderDetail(Base):

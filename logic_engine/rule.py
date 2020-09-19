@@ -6,7 +6,7 @@ from logic_engine.rule_type.constraint import Constraint
 from logic_engine.rule_type.copy import Copy
 from logic_engine.rule_type.count import Count
 from logic_engine.rule_type.formula import Formula
-from logic_engine.rule_type.row_event import EarlyRowEvent
+from logic_engine.rule_type.row_event import EarlyRowEvent, RowEvent, CommitRowEvent
 from logic_engine.rule_type.sum import Sum
 
 
@@ -25,7 +25,7 @@ class Rule:
                    where=Lambda row: row.ShippedDate is None)
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
         """
-        Sum(derive, as_sum_of, where)
+        return Sum(derive, as_sum_of, where)
 
     @staticmethod
     def count(derive: InstrumentedAttribute, as_count_of: str, where: any = None):
@@ -35,7 +35,7 @@ class Rule:
                    where=Lambda row: row.ShippedDate is None)
         Optimized to eliminate / minimize SQLs: Pruning, Adjustment Logic
         """
-        Count(derive, as_count_of, where)
+        return Count(derive, as_count_of, where)
 
     @staticmethod
     def constraint(validate: object, as_condition: any = None,
@@ -45,14 +45,7 @@ class Rule:
           Rule.constraint(validate=Customer, as_condition=lambda row: row.Balance <= row.CreditLimit,
                           error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
         """
-        Constraint(validate=validate, calling=calling, as_condition=as_condition, error_msg=error_msg)  # --> load_logic
-
-    @staticmethod
-    def early_row_event(on_class: str, calling: Callable = None):
-        """
-        Row Events are Python functions called before logic
-        """
-        EarlyRowEvent(on_class, calling)  # --> load_logic
+        return Constraint(validate=validate, calling=calling, as_condition=as_condition, error_msg=error_msg)  # --> load_logic
 
     @staticmethod
     def formula(derive: InstrumentedAttribute, calling: Callable = None,
@@ -67,7 +60,7 @@ class Rule:
           * ex_expression - lambda (for type checking)
           * calling - function (for more complex formula, with old_row)
         """
-        Formula(derive=derive, calling=calling, as_exp=as_exp, as_expression=as_expression)
+        return Formula(derive=derive, calling=calling, as_exp=as_exp, as_expression=as_expression)
 
     @staticmethod
     def copy(derive: InstrumentedAttribute, from_parent: any):
@@ -76,4 +69,32 @@ class Rule:
           Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
         Unlike formulas references, parent changes are *not* propagated to children
         """
-        Copy(derive=derive, from_parent=from_parent)
+        return Copy(derive=derive, from_parent=from_parent)
+
+    @staticmethod
+    def early_row_event(on_class: str, calling: Callable = None):
+        """
+        Row Events are Python functions called before logic
+        Possible multiple calls per transaction
+        Use: computing foreign keys...
+        """
+        EarlyRowEvent(on_class, calling)  # --> load_logic
+
+    @staticmethod
+    def row_event(on_class: str, calling: Callable = None):
+        """
+        Row Events are Python functions called during logic, after formulas/constraints
+        Possible multiple calls per transaction
+        Use: recursive explosions (e.g, Bill of Materials)
+        """
+        RowEvent(on_class, calling)  # --> load_logic
+
+    @staticmethod
+    def commit_row_event(on_class: str, calling: Callable = None):
+        """
+        Row Events are Python functions called during logic, after formulas/constraints
+        1 call per row, per transaction
+        Use: send mail/message
+        """
+        return CommitRowEvent(on_class, calling)  # --> load_logic
+

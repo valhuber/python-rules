@@ -22,7 +22,8 @@ class LogicRow:
     Helper Methods (get_parent_logic_row(role_name), log, etc)
     """
 
-    def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int, a_session: session):
+    def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int,
+                 a_session: session, row_cache: object):
         self.session = a_session
         self.row = row
         self.old_row = old_row
@@ -30,6 +31,10 @@ class LogicRow:
         self.ins_upd_dlt_initial = ins_upd_dlt  # order inserted, then adjusted
         self.nest_level = nest_level
         self.reason = "?"  # set by insert, update and delete
+
+        self.row_cache = row_cache
+        if row_cache is not None:  # eg, for debug as in upd_order_shipped test
+            row_cache.add(logic_row=self)
 
         rb = RuleBank()
         self.rb = rb
@@ -42,7 +47,7 @@ class LogicRow:
         self.inspector = Inspector.from_engine(self.engine)
 
     def __str__(self):
-        result = ""
+        result = ".."
         for x in range(self.nest_level):
             result += ".."
         result += self.row.__tablename__ + "["
@@ -120,9 +125,8 @@ class LogicRow:
             if for_update:
                 self.session.expunge(parent_row)
         old_parent = self.make_copy(parent_row)
-        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent,
-                                    a_session=self.session,
-                                    nest_level=1+self.nest_level, ins_upd_dlt="*")
+        parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, ins_upd_dlt="*", nest_level=1 + self.nest_level,
+                                    a_session=self.session, row_cache=self.row_cache)
         return parent_logic_row
 
     def early_row_events(self):
@@ -195,9 +199,9 @@ class LogicRow:
                 child_rows = getattr(self.row, child_role_name)
                 for each_child_row in child_rows:
                     old_child = self.make_copy(each_child_row)
-                    each_logic_row = LogicRow(row=each_child_row, old_row=old_child,
-                                                a_session=self.session,
-                                                nest_level=1 + self.nest_level, ins_upd_dlt="upd")
+                    each_logic_row = LogicRow(row=each_child_row, old_row=old_child, ins_upd_dlt="upd",
+                                              nest_level=1 + self.nest_level,
+                                              a_session=self.session, row_cache=self.row_cache)
                     each_logic_row.update(reason=reason)
 
     def is_parent_cascading(self, parent_role_name: str):
