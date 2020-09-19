@@ -42,8 +42,8 @@ the backend logic, reducing such logic by **40X** (200 vs. 5).
 #### Extensible, Manageable, Debuggable
 
 Importantly, logic is:
-* **Low Code:** Rules are complemented by Python events -
-extensibility, so you can address the last 5%
+* **Low Code:** Rules are complemented by Python events,
+providing _extensibility,_ so you can address the last 5%
 * **Manageable:** logic is expressed in Python, enabling the use of
 standard IDE and Source Code Control systems
 * **Debuggable:** Debug your logic with logs that show which rules execute,
