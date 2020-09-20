@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 
 import sqlalchemy
 from sqlalchemy import event
@@ -71,7 +72,15 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
 basedir = os.path.abspath(os.path.dirname(__file__))
 basedir = os.path.dirname(basedir)
 basedir = os.path.dirname(basedir)
-conn_string = "sqlite:///" + os.path.join(basedir, "nw-app/nw.db")
+
+"""
+    IMPORTANT - create nw.db from a fresh copy
+"""
+nw_loc = os.path.join(basedir, "nw-app/nw.db")
+nw_source = os.path.join(basedir, "nw-app/nw.db copy")
+copyfile(src=nw_source, dst=nw_loc)
+
+conn_string = "sqlite:///" + nw_loc
 engine = sqlalchemy.create_engine(conn_string, echo=False)  # sqlalchemy sqls...
 
 session_maker = sqlalchemy.orm.sessionmaker()

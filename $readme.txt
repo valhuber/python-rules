@@ -9,7 +9,7 @@ update orderdetail set amount = unitPrice * quantity
 update "Order" set AmountTotal =
 (select sum(orderdetail.amount) from orderdetail where orderdetail.orderid = "Order".id);
 
-select id, shippeddate, amounttotal from "Order" where id = 11011;
+select id, customerid, shippeddate, amounttotal from "Order" where id = 11011;
 
 select ProductName, UnitsInStock, UnitsShipped from Product where id = 58;
 

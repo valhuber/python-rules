@@ -49,8 +49,13 @@ class AbstractRule(object):
         """
         words = rule_text.split()
         for each_word in words:
-            if each_word.startswith("row."):  # allow Cust.CreditLimit?
-                dependencies = each_word.split('.')
+            the_word = each_word
+            if each_word.startswith("("):
+                the_word = each_word[1:]
+            if the_word.endswith(")"):
+                the_word = each_word[0:len(the_word) - 1]
+            if the_word.startswith("row."):  # allow Cust.CreditLimit?
+                dependencies = the_word.split('.')
                 if len(dependencies) == 2:
                     self._dependencies.append(dependencies[1])
                 else:

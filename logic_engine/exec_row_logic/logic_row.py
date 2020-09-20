@@ -272,12 +272,13 @@ class LogicRow:
                         is_parent_changed = True
                         break
                 else:
-                    if getattr(row, column) == getattr(old_row, column):
+                    if getattr(row, column) != getattr(old_row, column):
                         is_dependent_changed = True
                         break
             result_prune = not (is_parent_changed or is_dependent_changed)
         if result_prune:
-            self.log_engine("Prune Formula: " + formula._column)
+            self.log("Prune Formula: " + formula._column +
+                     " [" + str(formula._dependencies) + "]")
         return result_prune
 
     def formula_rules(self):

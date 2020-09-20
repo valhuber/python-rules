@@ -185,9 +185,6 @@ class Order(Base):
     ShipCountry = Column(String(8000))
     AmountTotal = Column(DECIMAL)
 
-    # Customer = relationship('Customer', lazy='noload',  back_populates="OrderList")  FIXME cleanup
-    # Employee = relationship('Employee')
-
     OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
 
 
