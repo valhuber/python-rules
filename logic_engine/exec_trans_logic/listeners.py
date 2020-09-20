@@ -17,7 +17,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
         * performance / pruning (skip rules iff no dependent values change)
         * performance / optimization (1 row adjustments, not expensive select sum/count)
     """
-    logic_engine.logic_logger.debug("\nLogic Phase\t\t\t")
+    logic_engine.logic_logger.debug("\nLogic Phase (sqlalchemy before_flush)\t\t\t")
     row_cache = RowCache()
     for each_instance in a_session.dirty:
         table_name = each_instance.__tablename__

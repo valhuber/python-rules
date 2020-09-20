@@ -31,9 +31,15 @@ def activate_basic_check_credit_rules():
     def congratulate_sales_rep(row: Order, old_row: Order, logic_row: LogicRow):
         if logic_row.ins_upd_dlt == "ins" or True:
             sales_rep = row.SalesRep  # type : Employee
-            if sales_rep is None:  # FIXME design parent refs empty for inserts...
+            if sales_rep is None:  # FIXME design please ignore debug code
                 mapper = get_mapper(row)
-                print("no salesrep for this order")
+                logic_row.log("no salesrep for this order")
+                sales_rep = logic_row.session.query(models.Employee).\
+                    filter(models.Employee.Id == row.EmployeeId).one()
+                setattr(row, "Manager", sales_rep)  # row.Manager = sales_rep
+                logic_row.log(f'Hi, {sales_rep.Manager.FirstName}, congratulate {sales_rep.FirstName} on their new order')
+                # row.Manager = None  # so sqlalchemy won't try to insert  FIXME not req'd??
+                # logic_row.session.expunge(sales_rep)
             else:
                 logic_row.log(f'Hi, {sales_rep.Manager.FirstName}, congratulate {sales_rep.FirstName} on their new order')
 

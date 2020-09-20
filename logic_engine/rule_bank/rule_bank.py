@@ -18,13 +18,9 @@ class Singleton(type):
 
 class TableRules(object):
     """
-    Rules and dependencies for a mapped class
-
-    Attributes:
-        rules is a List['AbstractRule']
-            Sums, Constraints, Formulas etc for this mapped class
-        referring_children is a Dict[parent_role_name - str, List[parent_attr_name: str]]
-            Information driving cascade
+    Rules and dependencies for a mapped class, with attributes:
+        * rules: List['AbstractRule'] - Sums, Constraints, Formulas etc for this mapped class
+        * referring_children: Dict[parent_role_name, List[parent_attr_name]] - for cascade
     """
 
     def __init__(self):

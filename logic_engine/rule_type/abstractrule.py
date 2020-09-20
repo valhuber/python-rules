@@ -27,6 +27,9 @@ class AbstractRule(object):
         self.table = class_name
 
         self._dependencies = ()
+        """
+        list of attributes this rule refers to, including parent.attribute
+        """
 
     def get_class_name(self, decl_meta: sqlalchemy.ext.declarative.api.DeclarativeMeta) -> str:
         """

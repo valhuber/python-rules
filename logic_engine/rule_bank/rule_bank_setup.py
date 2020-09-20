@@ -35,7 +35,7 @@ def set_referring_children(rule, dependency: list):
 
 def validate_formula_dependencies(class_name: str):
     """
-    compute formula._exec_order
+    compute formula._exec_order per formula._dependencies
     """
     formula_list = rule_bank_withdraw.get_formula_rules(class_name)
     formula_list_dict = {}
@@ -74,7 +74,11 @@ def validate_formula_dependencies(class_name: str):
 
 
 def validate(a_session: session, engine: Engine):
-    list_rules = "\n\nValidate AbstractRule Bank"
+    """
+    Determine formula execution order based on "row.xx" references,
+    (or raise exception if cycles detected).
+    """
+    list_rules = "\n\nValidate Rule Bank"
     rules_bank = RuleBank()
 
     for each_key in rules_bank._tables:

@@ -89,11 +89,17 @@ class LogicRow:
         return result  # str(my_dict)
 
     def log(self, msg: str):
+        """
+        prints to logic_logger: row/old_row, indented, inserting msg
+        """
         output = str(self)
         output = output.replace("]:", "] {" + msg + "}", 1)
         logic_engine.logic_logger.debug(output)  # more on this later
 
     def log_engine(self, msg: str):
+        """
+        prints to engine_logger: row/old_row, indented, inserting msg
+        """
         output = str(self)
         output = output.replace("]:", "] {" + msg + "}", 1)
         logic_engine.engine_logger.debug(output)
@@ -107,6 +113,7 @@ class LogicRow:
         return result
 
     def get_parent_logic_row(self, role_name: str, for_update: bool = False) -> 'LogicRow':
+        debug_set_parents_for_inserts = True
         parent_row = getattr(self.row, role_name)
         if parent_row is None:
             my_mapper = object_mapper(self.row)
@@ -119,11 +126,11 @@ class LogicRow:
             parent_class = role_def.entity.class_
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
-            if self.ins_upd_dlt == "upd":  # eg, add order - don't tell sqlalchemy to add cust
+            if self.ins_upd_dlt == "upd" or debug_set_parents_for_inserts:  # eg, add order - don't tell sqlalchemy to add cust
                 pass  # FIXME design - else FlushError("New instance... conflicts
-                # setattr(self.row, role_name, parent_row)
+                setattr(self.row, role_name, parent_row)
             if for_update:
-                self.session.expunge(parent_row)
+                self.session.expunge(parent_row)  # TODO needs a comment
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, ins_upd_dlt="*", nest_level=1 + self.nest_level,
                                     a_session=self.session, row_cache=self.row_cache)
@@ -267,12 +274,6 @@ class LogicRow:
         for each_formula in formula_rules:
             if not self.is_formula_pruned(each_formula):
                 each_formula.execute(self)
-        """
-        FIXME design nasty issue, eg. Component.Product.Price
-        get_parent_logic_row cannot fill the reference (e.g, Product)
-        so, how does it reference the parent consistently?
-        fill it, then Null it?? (good grief)
-        """
 
     def constraints(self):
         # self.log("constraints")
@@ -284,8 +285,6 @@ class LogicRow:
         """ sqlalchemy lazy does not work for inserts, do it here
         1. RI would require the sql anyway
         2. Provide a consistent model - your parents are always there for you
-
-        FIXME design fails flush error identity key, disabled
         """
         def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
             child_columns = relationship.local_columns
@@ -301,11 +300,19 @@ class LogicRow:
             if each_relationship.direction == sqlalchemy.orm.interfaces.MANYTOONE:  # cust, emp
                 parent_role_name = each_relationship.key  # eg, OrderList
                 if is_foreign_key_null(each_relationship) is False:
-                    continue
-                    #  self.get_parent_logic_row(parent_role_name)  # see comment above
+                    # continue
+                    self.get_parent_logic_row(parent_role_name)  # sets the accessor
         return self
 
     def adjust_parent_aggregates(self):
+        """
+        Objective: 1 (one) update per role, for N aggregates along that role.
+
+        For each child-to-parent role,
+            For each aggregate along that role
+                execute sum (etc) logic which set parent_adjustor (as req'd)
+            use parent_adjustor to save altered parent (iff req'd)
+        """
         # self.log("adjust_parent_aggregates")
         aggregate_rules = rule_bank_withdraw.aggregate_rules(child_logic_row=self)
         for each_parent_role, each_aggr_list in aggregate_rules.items():
@@ -352,7 +359,10 @@ class LogicRow:
 
 class ParentRoleAdjuster:
     """
-    Passed to <aggregate>.adjust_parent who will set parent row(s) values
+    Contains current / previous parent_logic_row iff parent needs adjustment,
+    and method to save_altered_parents.
+
+    Instances are passed to <aggregate>.adjust_parent who will set parent row(s) values
     iff adjustment is required (e.g., summed value changes, where changes, fk changes, etc)
     This ensures only 1 update per set of aggregates along a given role
     """
@@ -366,6 +376,9 @@ class ParentRoleAdjuster:
         self.previous_parent_logic_row = None
 
     def save_altered_parents(self):
+        """
+        Save (chain) parent iff parent_logic_row has been set by sum/count executor.
+        """
         if self.parent_logic_row is None:  # save *only altered* parents (often does nothing)
             pass
             # self.child_logic_row.log("adjust not required for parent_logic_row: " + str(self))

@@ -101,9 +101,10 @@ def rules_of_class(logic_row: LogicRow, a_class: (Formula, Constraint, EarlyRowE
     rule_bank = RuleBank()
     rules_list = []
     role_rules_list = {}  # dict of RoleRules
-    for each_rule in rule_bank._tables[logic_row.name].rules:
-        if isinstance(each_rule, a_class):
-            rules_list.append(each_rule)
+    if logic_row.name in rule_bank._tables:
+        for each_rule in rule_bank._tables[logic_row.name].rules:
+            if isinstance(each_rule, a_class):
+                rules_list.append(each_rule)
     return rules_list
 
 
