@@ -280,8 +280,7 @@ multi-table transactions -
 key paths of copy, formula, constraint, sum and event rules. 
 
 Not complete, under active development.  Key remaining items
-are changing foreign keys (adjust old/new parent), delete,
-and verify operation with Flask / Flask AppBuilder.
+delete, and verify operation with Flask / Flask AppBuilder.
 
 Ready to explore and provide feedback
 on general value, and features.

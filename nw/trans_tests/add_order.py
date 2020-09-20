@@ -67,7 +67,7 @@ if post_cust.Balance == pre_cust.Balance + 56:
 else:
     row_prt(post_cust, "\nERROR - incorrect adjusted Customer Result")
     print("\n--> probable cause: Order customer update not written")
-    row_prt(pre_cust, "\npre_cust")
+    row_prt(pre_cust, "\npre_alfki")
     assert False
 
 print("\nadd_order, ran to completion\n\n")

@@ -25,12 +25,15 @@ class LogicRow:
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int,
                  a_session: session, row_cache: object):
         self.session = a_session
-        self.row = row
+        self.row = row  # type(base)
+        """ mapped row """
         self.old_row = old_row
+        """ old mapped row """
         self.ins_upd_dlt = ins_upd_dlt
         self.ins_upd_dlt_initial = ins_upd_dlt  # order inserted, then adjusted
         self.nest_level = nest_level
         self.reason = "?"  # set by insert, update and delete
+        """ if starts with cascade, triggers cascade processing """
 
         self.row_cache = row_cache
         if row_cache is not None:  # eg, for debug as in upd_order_shipped test
@@ -112,9 +115,15 @@ class LogicRow:
             setattr(result, each_attr.key, getattr(a_row, each_attr.key))
         return result
 
-    def get_parent_logic_row(self, role_name: str, for_update: bool = False) -> 'LogicRow':
+    def get_parent_logic_row(self, role_name: str, from_row: base = None) -> 'LogicRow':
+        """ get parent *and* set parent accessor """
+        row = self.row
+        if from_row is not None:
+            row = from_row
         debug_set_parents_for_inserts = True  # interim, for debug (this failed once, keeping watch)
-        parent_row = getattr(self.row, role_name)
+        parent_row = None
+        if hasattr(row, role_name):  # for client updates, old is obj_view, not base
+            parent_row = getattr(row, role_name)
         if parent_row is None:
             my_mapper = object_mapper(self.row)
             role_def = my_mapper.relationships.get(role_name)
@@ -122,14 +131,12 @@ class LogicRow:
                 raise Exception(f"FIXME invalid role name {role_name}")
             parent_key = {}
             for each_child_col, each_parent_col in role_def.local_remote_pairs:
-                parent_key[each_parent_col.name] = getattr(self.row, each_child_col.name)
+                parent_key[each_parent_col.name] = getattr(row, each_child_col.name)
             parent_class = role_def.entity.class_
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
             if self.ins_upd_dlt == "upd" or debug_set_parents_for_inserts:  # eg, add order - don't tell sqlalchemy to add cust
-                setattr(self.row, role_name, parent_row)
-            if for_update:
-                self.session.expunge(parent_row)  # TODO needs a comment
+                setattr(row, role_name, parent_row)
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, ins_upd_dlt="*", nest_level=1 + self.nest_level,
                                     a_session=self.session, row_cache=self.row_cache)
@@ -224,13 +231,18 @@ class LogicRow:
         return result
 
     def is_different_parent(self, parent_role_name: str) -> bool:
+        """ return True if any changes to foreign key fields of parent_role_name"""
         role_def = self.get_parent_role_def(parent_role_name=parent_role_name)
         row = self.row
-        for each_child_col, each_parent_col in role_def.local_remote_pairs:
-            each_child_col_name = each_child_col.key
-            if getattr(row, each_child_col_name) != getattr(row, each_child_col_name):
-                return True
-        return False
+        old_row = self.old_row
+        if old_row is None:
+            return True
+        else:
+            for each_child_col, each_parent_col in role_def.local_remote_pairs:
+                each_child_col_name = each_child_col.key
+                if getattr(row, each_child_col_name) != getattr(old_row, each_child_col_name):
+                    return True
+            return False
 
     def is_formula_pruned(self, formula: Formula) -> bool:
         """
@@ -363,7 +375,8 @@ class LogicRow:
 
 class ParentRoleAdjuster:
     """
-    Contains current / previous parent_logic_row iff parent needs adjustment,
+    Contains current / previous parent_logic_row
+        Set iff parent needs adjustment
     and method to save_altered_parents.
 
     Instances are passed to <aggregate>.adjust_parent who will set parent row(s) values
@@ -382,19 +395,19 @@ class ParentRoleAdjuster:
     def save_altered_parents(self):
         """
         Save (chain) parent iff parent_logic_row has been set by sum/count executor.
+        This can update parent, and previous parent (eg, foreign key changed)
         """
         if self.parent_logic_row is None:  # save *only altered* parents (often does nothing)
             pass
             # self.child_logic_row.log("adjust not required for parent_logic_row: " + str(self))
         else:
-            # self.child_logic_row.log("adjust required for parent_logic_row: " + str(self))
-            current_session = self.child_logic_row.session
             self.parent_logic_row.ins_upd_dlt = "upd"
-            #  current_session.add(self.parent_logic_row.row)  -- read ==> attached
             self.parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
             # no after_flush: https://stackoverflow.com/questions/63563680/sqlalchemy-changes-in-before-flush-not-triggering-before-flush
         if self.previous_parent_logic_row is None:
             pass
             # self.child_logic_row.log("save-adjusted not required for previous_parent_logic_row: " + str(self))
         else:
-            raise Exception("Not Implemented - adjust required for previous_parent_logic_row: " + str(self))
+            current_session = self.child_logic_row.session
+            self.previous_parent_logic_row.ins_upd_dlt = "upd"
+            self.previous_parent_logic_row.update(reason="Adjusting " + self.parent_role_name)

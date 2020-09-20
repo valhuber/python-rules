@@ -61,6 +61,7 @@ class Sum(Aggregate):
 
     def adjust_parent(self, parent_adjustor: ParentRoleAdjuster):
         """
+        @see LogicRow.adjust_parent_aggregates
         Set parent_adjustor iff adjustment update is required for this aggregate
             * Insert & Delete - value non-zero
             * Update - summed field, where or pk changes
@@ -85,8 +86,7 @@ class Sum(Aggregate):
                 child_role_name=self._child_role_name
             )
             parent_adjustor.parent_logic_row = \
-                parent_adjustor.child_logic_row.get_parent_logic_row(
-                    role_name=self._parent_role_name)
+                parent_adjustor.child_logic_row.get_parent_logic_row(role_name=self._parent_role_name)
             curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
             setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
             # parent_adjustor.child_logic_row.log(f'adjust_from_inserted/adopted_child adjusts {str(self)}')
@@ -102,15 +102,15 @@ class Sum(Aggregate):
                 child_role_name=self._child_role_name
             )
             parent_adjustor.parent_logic_row = \
-                parent_adjustor.child_logic_row.get_parent_logic_row(
-                    role_name=self._parent_role_name, for_update=True)
+                parent_adjustor.child_logic_row.get_parent_logic_row(role_name=self._parent_role_name)
             curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
             setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
             # print(f'adjust_from_deleted/abandoned_child adjusts {str(self)}')
 
     def adjust_from_updated_child(self, parent_adjustor: ParentRoleAdjuster):
         parent_role_name = parent_adjustor.parent_role_name
-        if parent_adjustor.child_logic_row.is_different_parent(parent_role_name) is False:
+        is_different_parent = parent_adjustor.child_logic_row.is_different_parent(parent_role_name)
+        if is_different_parent is False:
             where = self._where_cond(parent_adjustor.child_logic_row.row)
             old_where = self._where_cond(parent_adjustor.child_logic_row.old_row)
             if where != False and where != True:
@@ -127,13 +127,12 @@ class Sum(Aggregate):
                 delta = - getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
 
             if delta != 0.0:
-                parent_role_name = self.get_parent_role_from_child_role_name(  # FIXME remove this
+                """ parent_role_name = self.get_parent_role_from_child_role_name(  # FIXME remove this
                     child_logic_row=parent_adjustor.child_logic_row,
                     child_role_name=self._child_role_name
-                )
+                ) """
                 parent_adjustor.parent_logic_row = \
-                    parent_adjustor.child_logic_row.get_parent_logic_row(
-                        role_name=self._parent_role_name)
+                    parent_adjustor.child_logic_row.get_parent_logic_row(role_name=self._parent_role_name)
                 curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
                 setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
                 # parent_adjustor.child_logic_row.log(f'adjust_from_updated_child adjusts {str(self)}')
@@ -141,4 +140,25 @@ class Sum(Aggregate):
             self.adjust_from_updated_reparented_child(parent_adjustor=parent_adjustor)
 
     def adjust_from_updated_reparented_child(self, parent_adjustor: ParentRoleAdjuster):
-        raise Exception("TODO major sum / re-parent not implemented")
+        """
+        Foreign key changed, may require adjust old and new parent
+        """
+
+        where = self._where_cond(parent_adjustor.child_logic_row.row)
+        delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
+        if where and delta != 0:
+            parent_adjustor.parent_logic_row = \
+                parent_adjustor.child_logic_row.get_parent_logic_row(
+                    role_name=self._parent_role_name)
+            curr_value = getattr(parent_adjustor.parent_logic_row.row, self._column)
+            setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
+
+        where = self._where_cond(parent_adjustor.child_logic_row.old_row)
+        delta = getattr(parent_adjustor.child_logic_row.old_row, self._child_summed_field)
+        if where and delta != 0:
+            parent_adjustor.previous_parent_logic_row = \
+                parent_adjustor.child_logic_row.get_parent_logic_row(
+                    role_name=self._parent_role_name,
+                    from_row=parent_adjustor.child_logic_row.old_row)
+            curr_value = getattr(parent_adjustor.previous_parent_logic_row.row, self._column)
+            setattr(parent_adjustor.previous_parent_logic_row.row, self._column, curr_value - delta)
