@@ -113,7 +113,7 @@ class LogicRow:
         return result
 
     def get_parent_logic_row(self, role_name: str, for_update: bool = False) -> 'LogicRow':
-        debug_set_parents_for_inserts = True
+        debug_set_parents_for_inserts = True  # interim, for debug (this failed once, keeping watch)
         parent_row = getattr(self.row, role_name)
         if parent_row is None:
             my_mapper = object_mapper(self.row)
@@ -127,7 +127,6 @@ class LogicRow:
             # https://docs.sqlalchemy.org/en/13/orm/query.html#the-query-object
             parent_row = self.session.query(parent_class).get(parent_key)
             if self.ins_upd_dlt == "upd" or debug_set_parents_for_inserts:  # eg, add order - don't tell sqlalchemy to add cust
-                pass  # FIXME design - else FlushError("New instance... conflicts
                 setattr(self.row, role_name, parent_row)
             if for_update:
                 self.session.expunge(parent_row)  # TODO needs a comment
@@ -166,6 +165,7 @@ class LogicRow:
         return role_def
 
     def get_child_role(self, parent_role_name) -> str:
+        """ given parent_role_name, return child_role_name """
         parent_mapper = object_mapper(self.row)  # , eg, Order cascades ShippedDate => OrderDetailList
         parent_relationships = parent_mapper.relationships
         found = False
@@ -212,6 +212,7 @@ class LogicRow:
                     each_logic_row.update(reason=reason)
 
     def is_parent_cascading(self, parent_role_name: str):
+        """ if so (check self.reason), we must not prune referencing formulae """
         result = False
         update_reason = self.reason
         if update_reason.startswith("Cascading "):
@@ -268,6 +269,7 @@ class LogicRow:
         return result_prune
 
     def formula_rules(self):
+        """ execute un-pruned formulae, in dependency order """
         self.log_engine("formula_rules")
         formula_rules = rule_bank_withdraw.rules_of_class(self, Formula)
         formula_rules.sort(key=lambda formula: formula._exec_order)
@@ -276,15 +278,17 @@ class LogicRow:
                 each_formula.execute(self)
 
     def constraints(self):
+        """ execute constraints (throw error if one fails) """
         # self.log("constraints")
         constraint_rules = rule_bank_withdraw.rules_of_class(self, Constraint)
         for each_constraint in constraint_rules:
             each_constraint.execute(self)
 
     def load_parents(self):
-        """ sqlalchemy lazy does not work for inserts, do it here
+        """ sqlalchemy lazy does not work for inserts... do it here...
         1. RI would require the sql anyway
         2. Provide a consistent model - your parents are always there for you
+            - eg, see add_order event rule - references {sales_rep.Manager.FirstName}
         """
         def is_foreign_key_null(relationship: sqlalchemy.orm.relationships):
             child_columns = relationship.local_columns

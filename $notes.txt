@@ -1,7 +1,8 @@
 FIXME design - search for these, which designate request for external review
 TODO major - designates significant unimplemented
 
-Not running under VSC - imports (always, the imports)
+
+Various misc copy/paste:
 
 update orderdetail set amount = unitPrice * quantity
 

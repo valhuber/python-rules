@@ -72,7 +72,7 @@ class Rule:
         return Copy(derive=derive, from_parent=from_parent)
 
     @staticmethod
-    def early_row_event(on_class: str, calling: Callable = None):
+    def early_row_event(on_class: object, calling: Callable = None):
         """
         Row Events are Python functions called before logic
         Possible multiple calls per transaction
@@ -81,7 +81,7 @@ class Rule:
         EarlyRowEvent(on_class, calling)  # --> load_logic
 
     @staticmethod
-    def row_event(on_class: str, calling: Callable = None):
+    def row_event(on_class: object, calling: Callable = None):
         """
         Row Events are Python functions called during logic, after formulas/constraints
         Possible multiple calls per transaction
@@ -90,7 +90,7 @@ class Rule:
         RowEvent(on_class, calling)  # --> load_logic
 
     @staticmethod
-    def commit_row_event(on_class: str, calling: Callable = None):
+    def commit_row_event(on_class: object, calling: Callable = None):
         """
         Row Events are Python functions called during logic, after formulas/constraints
         1 call per row, per transaction

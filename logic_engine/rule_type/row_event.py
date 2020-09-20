@@ -10,7 +10,7 @@ from logic_engine.rule_type.abstractrule import AbstractRule
 class AbstractRowEvent(AbstractRule):
     _function = None
 
-    def __init__(self, on_class: str,
+    def __init__(self, on_class: object,
                  calling: Callable = None):
         super(AbstractRowEvent, self).__init__(on_class)
         self._function = calling
@@ -29,7 +29,7 @@ class AbstractRowEvent(AbstractRule):
 class EarlyRowEvent(AbstractRowEvent):
     _function = None
 
-    def __init__(self, on_class: str,
+    def __init__(self, on_class: object,
                  calling: Callable = None):
         super(EarlyRowEvent, self).__init__(on_class=on_class, calling=calling)
 
@@ -37,7 +37,7 @@ class EarlyRowEvent(AbstractRowEvent):
 class RowEvent(AbstractRowEvent):
     _function = None
 
-    def __init__(self, on_class: str,
+    def __init__(self, on_class: object,
                  calling: Callable = None):
         super(RowEvent, self).__init__(on_class=on_class, calling=calling)
 
@@ -45,6 +45,6 @@ class RowEvent(AbstractRowEvent):
 class CommitRowEvent(AbstractRowEvent):
     _function = None
 
-    def __init__(self, on_class: str,
+    def __init__(self, on_class: object,
                  calling: Callable = None):
         super(CommitRowEvent, self).__init__(on_class=on_class, calling=calling)

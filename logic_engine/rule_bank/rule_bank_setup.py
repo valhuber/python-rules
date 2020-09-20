@@ -10,7 +10,7 @@ from logic_engine.rule_bank import rule_bank_withdraw
 from nw.nw_logic import session
 
 
-def setup(a_session: session, an_engine: Engine):  # FIXME major - ensure compatible with fab, flask etc
+def setup(a_session: session, an_engine: Engine):  # TODO major - ensure compatible with fab, flask etc
     """
     Initialize the RuleBank
 
