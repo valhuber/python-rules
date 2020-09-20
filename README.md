@@ -111,7 +111,7 @@ Rule.formula(derive=OrderDetail.ShippedDate, as_expression=lambda row: row.Order
 
 Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
          where="row.ShippedDate is not None")
-Rule.formula(derive=Product.UnitsInStock, calling=units_shipped)
+Rule.formula(derive=Product.UnitsInStock, calling=units_in_stock)
 ```
 The specification is fully executable, and governs around a
 dozen transactions.  Here we look at 2 simple examples:
@@ -234,7 +234,7 @@ If `ShippedDate` is altered,
 Logic often depends on the old vs. new state of a row.
 For example, here is the function used to compute `Product.UnitsInStock`:
 ```python
-def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
+def units_in_stock(row: Product, old_row: Product, logic_row: LogicRow):
     result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
     return result
 ```
@@ -277,9 +277,12 @@ and/or review this readme and the wiki.
 ## Status: Running, Under Development
 Essential functions running on 9/6/2020:
 multi-table transactions -
-key paths of copy, formula, constraint and sum rules. 
+key paths of copy, formula, constraint, sum and event rules. 
 
-Not complete, under active development.
+Not complete, under active development.  Key remaining items
+are changing foreign keys (adjust old/new parent), delete,
+and verify operation with Flask / Flask AppBuilder.
+
 Ready to explore and provide feedback
 on general value, and features.
 

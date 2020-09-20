@@ -127,7 +127,7 @@ class Sum(Aggregate):
                 delta = - getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
 
             if delta != 0.0:
-                parent_role_name = self.get_parent_role_from_child_role_name(
+                parent_role_name = self.get_parent_role_from_child_role_name(  # FIXME remove this
                     child_logic_row=parent_adjustor.child_logic_row,
                     child_role_name=self._child_role_name
                 )
@@ -138,4 +138,7 @@ class Sum(Aggregate):
                 setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
                 # parent_adjustor.child_logic_row.log(f'adjust_from_updated_child adjusts {str(self)}')
         else:
-            raise Exception("TODO major sum / re-parent not implemented")
+            self.adjust_from_updated_reparented_child(parent_adjustor=parent_adjustor)
+
+    def adjust_from_updated_reparented_child(self, parent_adjustor: ParentRoleAdjuster):
+        raise Exception("TODO major sum / re-parent not implemented")

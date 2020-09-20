@@ -24,7 +24,7 @@ def activate_basic_check_credit_rules():
     * move order to new customer, etc
     """
 
-    def units_shipped(row: Product, old_row: Product, logic_row: LogicRow):
+    def units_in_stock(row: Product, old_row: Product, logic_row: LogicRow):
         result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
         return result
 
@@ -50,7 +50,7 @@ def activate_basic_check_credit_rules():
 
     Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
              where="row.ShippedDate is not None")
-    Rule.formula(derive=Product.UnitsInStock, calling=units_shipped)
+    Rule.formula(derive=Product.UnitsInStock, calling=units_in_stock)
 
     Rule.commit_row_event(on_class=Order, calling=congratulate_sales_rep)
 
