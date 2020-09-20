@@ -60,8 +60,13 @@ class Sum(Aggregate):
         return result
 
     def adjust_parent(self, parent_adjustor: ParentRoleAdjuster):
+        """
+        Set parent_adjustor iff adjustment update is required for this aggregate
+            * Insert & Delete - value non-zero
+            * Update - summed field, where or pk changes
+        if set, the parent will be updated (for possibly multiple adjusts for this role)
+        """
         # parent_adjustor.child_logic_row.log(str(self))  # this is where the work is
-        delta = 0.0
         if parent_adjustor.child_logic_row.ins_upd_dlt == "ins":
             self.adjust_from_inserted_child(parent_adjustor)
         elif parent_adjustor.child_logic_row.ins_upd_dlt == "dlt":
@@ -72,7 +77,6 @@ class Sum(Aggregate):
             raise Exception("Internal error - unexpected ins_upd_dlt value")
 
     def adjust_from_inserted_child(self, parent_adjustor: ParentRoleAdjuster):
-        delta = 0.0
         where = self._where_cond(parent_adjustor.child_logic_row.row)
         delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
         if where and delta != 0.0:
@@ -105,7 +109,6 @@ class Sum(Aggregate):
             # print(f'adjust_from_deleted/abandoned_child adjusts {str(self)}')
 
     def adjust_from_updated_child(self, parent_adjustor: ParentRoleAdjuster):
-        delta = 0.0
         parent_role_name = parent_adjustor.parent_role_name
         if parent_adjustor.child_logic_row.is_different_parent(parent_role_name) is False:
             where = self._where_cond(parent_adjustor.child_logic_row.row)
@@ -113,7 +116,6 @@ class Sum(Aggregate):
             if where != False and where != True:
                 raise Exception("where clause must return boolean: " +
                                 str(where) + ", from " + self.__str__())
-            delta = 0.0
             if where and old_where:
                 delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field) - \
                     getattr(parent_adjustor.child_logic_row.old_row, self._child_summed_field)
@@ -121,7 +123,7 @@ class Sum(Aggregate):
                 delta = 0.0
             elif where:
                 delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
-            else:
+            else:  # no longer meets where - decrement
                 delta = - getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
 
             if delta != 0.0:
