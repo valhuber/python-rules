@@ -131,7 +131,7 @@ if post_anatr.Balance == 557.50:
     assert True
 else:
     print("\n*** ERROR***")
-    msg = "ERROR - incorrect adjusted Customer Result, " + "should be 1362.50"
+    msg = "ERROR - incorrect adjusted Customer Result, " + "should be 557.50"
     logic_row.log(msg)
     assert False
 
