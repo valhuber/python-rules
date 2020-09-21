@@ -56,7 +56,7 @@ TODO major - designates significant unimplemented
         ....Order[11011] {Update - Adjusting OrderHeader} AmountTotal:  [960.0000000000-->] 557.5000000000, CustomerId: ANATR, EmployeeId: 3, Freight: 1.2100000000, Id: 11011, OrderDate: 2014-04-09, RequiredDate: 2014-05-07, ShipAddress: Obere Str. 57, ShipCity: Berlin, ShipCountry: Germany, ShipName: Alfred's Futterkiste, ShipPostalCode: 12209, ShipRegion: Western Europe, ShipVia: 1, ShippedDate: None  row@: 0x105f4eb80 - 2020-09-20 19:26:16,291 - logic_logger - DEBUG
         ......Customer[ANATR] {Update - Adjusting Customer} Address: Avda. de la Constitución 2222, Balance:  [0E-10-->] -402.5000000000, City: México D.F., CompanyName: Ana Trujillo Emparedados y helados, ContactName: Ana Trujillo, ContactTitle: Owner, Country: Mexico, CreditLimit: 1000.0000000000, Fax: (5) 555-3745, Id: ANATR, Phone: (5) 555-4729, PostalCode: 05021, Region: Central America  row@: 0x105f7e880 - 2020-09-20 19:26:16,295 - logic_logger - DEBUG
                         ^
-                        -- that's it... adjusting the new customer, should be old?
+                        -- that's it... adjusting the new customer, works when orders go first (below)
 
         reparent order (upd_order_customer) worked...
         ..Order[11011] {Update - client} AmountTotal:  [960.0000000000-->] 557.5000000000, CustomerId:  [ALFKI-->] ANATR, EmployeeId: 3, Freight: 1.2100000000, Id: 11011, OrderDate: 2014-04-09, RequiredDate: 2014-05-07, ShipAddress: Obere Str. 57, ShipCity: Berlin, ShipCountry: Germany, ShipName: Alfred's Futterkiste, ShipPostalCode: 12209, ShipRegion: Western Europe, ShipVia: 1, ShippedDate: None  row@: 0x105f4eb80 - 2020-09-20 19:26:16,298 - logic_logger - DEBUG

@@ -19,6 +19,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     logic_engine.logic_logger.debug("\nLogic Phase (sqlalchemy before_flush)\t\t\t")
     row_cache = RowCache()
+    what_is = a_session.dirty
     for each_instance in a_session.dirty:
         table_name = each_instance.__tablename__
         old_row = get_old_row(each_instance)
