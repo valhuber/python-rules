@@ -290,7 +290,7 @@ the engine will reorganize execution order and database access, automatically
 
 
 ## Installation
-Relies on `from __future__ import annotations`, so requires Python 3.7.
+Relies on `from __future__ import annotations`, so requires Python 3.8.
 
 Using your IDE or command line: 
 ```
