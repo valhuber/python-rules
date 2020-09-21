@@ -132,6 +132,7 @@ def prt(a_msg: str) -> str:
 
 
 def row_prt(obj: object, a_msg: str = ""):
+    """ returns string of msg + row """
     msg = row_to_string(obj)
     print(a_msg + ", " + msg)
 

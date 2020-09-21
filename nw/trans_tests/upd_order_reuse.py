@@ -58,18 +58,25 @@ Illustrate re-use with a number of changes:
 
 pre_alfki = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
 pre_anatr = session.query(models.Customer).filter(models.Customer.Id == "ANATR").one()
+
+logic_row = LogicRow(row=pre_alfki, old_row=pre_alfki,
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+logic_row.log("starting")
+
+logic_row = LogicRow(row=pre_anatr, old_row=pre_anatr,
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+logic_row.log("starting")
+
+pre_order = session.query(models.Order).filter(models.Order.Id == 11011).one()  # type : Order
+logic_row = LogicRow(row=pre_order, old_row=pre_order,
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+logic_row.log("starting")
 session.expunge(pre_alfki)
 session.expunge(pre_anatr)
-
-test_order = session.query(models.Order).filter(models.Order.Id == 11011).one()  # type : Order
-if (test_order.CustomerId == "ANATR"):
-    print(prt("Moving Order back to ALFKI"))
-    test_order.CustomerId = "ALFKI"
-    session.commit()
-else:
-    session.expunge(test_order)
+session.expunge(pre_order)
 
 print("")
+
 test_order = session.query(models.Order).filter(models.Order.Id == 11011).one()  # type : Order
 test_order_details = test_order.OrderDetailList
 changed_order_detail = None
@@ -78,51 +85,56 @@ for each_order_detail in test_order_details:
         each_order_detail.ProductId = 48   # Chocolade, @ $12.75
         each_order_detail.Quantity = 10    # 40 x 13.25 => 10 x 12.75
         break
-    elif each_order_detail.ProductId == 48:
-        each_order_detail.ProductId = 58
-        each_order_detail.Quantity = 40
-        break
 
 pre_amount_total = test_order.AmountTotal
-post_amount_total = pre_amount_total +\
-                    (Decimal(40.0) * Decimal(13.25) -
-                     Decimal(10.0) * Decimal(12.75))
+post_amount_total = pre_amount_total -\
+                    Decimal(40.0) * Decimal(13.25) +\
+                    Decimal(10.0) * Decimal(12.75)
 
-if test_order.CustomerId  == "ALFKI":
-    test_order.CustomerId = "ANATR"
-else:
-    test_order.CustomerId = "ALFKI"
-print(prt("Reparenting altered order - new CustomerId: " + test_order.CustomerId))
+test_order.CustomerId = "ANATR"
+
+print("\n" + prt("Reparenting *altered* order - new CustomerId: " + test_order.CustomerId))
+print(f'order amount {pre_amount_total} projected to be {post_amount_total}')
 insp = inspect(test_order)
-session.commit()
 
-print("")
+session.commit()
+print('')
+
+msg = 'Committed... order.amountTotal ' + \
+      str(pre_amount_total) + ' -> ' + \
+      str(post_amount_total)
+logic_row = LogicRow(row=test_order, old_row=pre_order,
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+logic_row.log(msg)
+print("\n")
+
+
 post_alfki = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
-logic_row = LogicRow(row=pre_alfki, old_row=post_alfki,
+logic_row = LogicRow(row=post_alfki, old_row=pre_alfki,
                      ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
 
-if abs(post_alfki.Balance - pre_amount_total) == 0:
+if post_alfki.Balance == 0:
     logic_row.log("Correct non-adjusted Customer Result")
     assert True
 else:
-    row_prt(post_alfki, "\nERROR - incorrect adjusted Customer Result")
-    print("\n--> probable cause: Order customer update not written")
-    row_prt(pre_alfki, "\npre_alfki")
+    print("\n*** ERROR***")
+    msg = "ERROR - incorrect adjusted Customer Result, " + "should be 0"
+    logic_row.log(msg)
     assert False
 
 post_anatr = session.query(models.Customer).filter(models.Customer.Id == "ANATR").one()
-logic_row = LogicRow(row=pre_anatr, old_row=post_alfki,
+logic_row = LogicRow(row=post_anatr, old_row=pre_anatr,
                      ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
 
-if abs(post_anatr.Balance - post_amount_total) == 0:
+if post_anatr.Balance == 557.50:
     logic_row.log("Correct non-adjusted Customer Result")
     assert True
 else:
-    row_prt(post_anatr, "\nERROR - incorrect adjusted Customer Result")
-    print("\n--> probable cause: Order customer update not written")
-    row_prt(pre_anatr, "\npre_anatr")
+    print("\n*** ERROR***")
+    msg = "ERROR - incorrect adjusted Customer Result, " + "should be 1362.50"
+    logic_row.log(msg)
     assert False
 
-print("\nupd_order_customer, ran to completion")
+print("\nupd_order_customer_reuse, ran to completion")
 
 
