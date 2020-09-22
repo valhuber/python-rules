@@ -100,7 +100,7 @@ class CustomerModelView(ModelView):
 appbuilder.add_view(
       CustomerModelView, "Customer List", icon="fa-folder-open-o", category="Menu")
 
-
+""" for debug
 class MyFormView(CustomerModelView):
    # form = MyForm
    form_title = 'This is my first form view'
@@ -121,7 +121,7 @@ class MyFormView(CustomerModelView):
 appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label='My form View Label',
                     category="My Forms", category_icon="fa-cogs")
 
-
+"""
 
 class CustomerDemographicModelView(ModelView):
    datamodel = SQLAInterface(CustomerDemographic)

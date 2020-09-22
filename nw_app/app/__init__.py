@@ -50,13 +50,13 @@ logging.getLogger().setLevel(logging.DEBUG)
 app = Flask(__name__)
 app.config.from_object("config")
 db = SQLA(app)
-if use_rules:
-    rule_bank_setup.setup(session, db.engine)
-    activate_basic_check_credit_rules()
-    rule_bank_setup.validate(session, db.engine)  # checks for cycles, etc
 
 appbuilder = AppBuilder(app, db.session)
 
+if use_rules:
+    rule_bank_setup.setup(db.session, db.engine)
+    activate_basic_check_credit_rules()
+    rule_bank_setup.validate(db.session, db.engine)  # checks for cycles, etc
 
 """
 from sqlalchemy.engine import Engine
