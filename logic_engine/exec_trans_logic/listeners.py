@@ -18,6 +18,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
         * performance / optimization (1 row adjustments, not expensive select sum/count)
     """
     logic_engine.logic_logger.debug("\nLogic Phase (sqlalchemy before_flush)\t\t\t")
+    # print("\n***************** sqlalchemy calls logic_engine\n")
     row_cache = RowCache()
     what_is = a_session.dirty
     for each_instance in a_session.dirty:
