@@ -76,8 +76,8 @@ basedir = os.path.dirname(basedir)
 """
     IMPORTANT - create nw.db from a fresh copy
 """
-nw_loc = os.path.join(basedir, "nw-app/nw.db")
-nw_source = os.path.join(basedir, "nw-app/nw.db copy")
+nw_loc = os.path.join(basedir, "nw_app/nw.db")
+nw_source = os.path.join(basedir, "nw_app/nw.db copy")
 copyfile(src=nw_source, dst=nw_loc)
 
 conn_string = "sqlite:///" + nw_loc

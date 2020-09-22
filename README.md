@@ -272,7 +272,7 @@ This project has already generated such an app, which you can run like this
 (note: work in progress, not currently enforcing rules).
 
 ```
-cd nw-app
+cd nw_app
 export FLASK_APP=app
 flask run
 ```

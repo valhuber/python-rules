@@ -2,7 +2,7 @@
 """
 Fab QuickStart 0.1.2
 
-Current Working Directory: /Users/val/python/vsc/logic-nw/nw-app
+Current Working Directory: /Users/val/python/vsc/logic-nw/nw_app
 
 From: /Users/val/python/vsc/logic-explore/venv/bin/fab-quick-start
 
@@ -76,7 +76,7 @@ appbuilder.add_view(
 
 class OrderModelView(ModelView):
    datamodel = SQLAInterface(Order)
-   list_columns = ["Id", "ShipName", "AmountTotal", "OrderDate", "ShippedDate"]
+   list_columns = ["ShipName", "Customer.CompanyName", "AmountTotal", "OrderDate", "RequiredDate", "ShippedDate"]
    show_columns = ["ShipName", "Customer.CompanyName", "OrderDate", "RequiredDate", "ShippedDate", "ShipVia", "Freight", "ShipAddress", "ShipCity", "ShipRegion", "ShipPostalCode", "ShipCountry", "AmountTotal", "EmployeeId", "Id", "CustomerId"]
    edit_columns = ["ShipName", "OrderDate", "RequiredDate", "ShippedDate", "ShipVia", "Freight", "ShipAddress", "ShipCity", "ShipRegion", "ShipPostalCode", "ShipCountry", "AmountTotal", "EmployeeId", "Id", "CustomerId"]
    add_columns = ["ShipName", "OrderDate", "RequiredDate", "ShippedDate", "ShipVia", "Freight", "ShipAddress", "ShipCity", "ShipRegion", "ShipPostalCode", "ShipCountry", "AmountTotal", "EmployeeId", "Id", "CustomerId"]
@@ -91,7 +91,7 @@ appbuilder.add_view(
 
 class CustomerModelView(ModelView):
    datamodel = SQLAInterface(Customer)
-   list_columns = ["Id", "CompanyName", "ContactName", "Balance", "CreditLimit"]
+   list_columns = ["CompanyName", "ContactName", "Balance", "CreditLimit", "Id"]
    show_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
    edit_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
    add_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
