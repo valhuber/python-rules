@@ -15,10 +15,11 @@ from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_f
 
 from logic_engine.util import prt
 
-from nw.nw_logic.models import Order
+# from nw.nw_logic.models import Order
 
 '''
-These listeners are part of the hand-coded logic alternative.
+These listeners are part of the hand-coded logic alternative
+(Not required in a rules-based approach)
 '''
 
 
