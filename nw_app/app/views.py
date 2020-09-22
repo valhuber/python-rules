@@ -16,9 +16,9 @@ Non Favorites: ['id']
 At: 2020-08-19 13:53:32.327988
 
 """
-
+from flask import flash
 from flask_appbuilder import ModelView
-from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.models.sqla.interface import SQLAInterface, log
 from . import appbuilder, db
 from .models import *
 
@@ -101,6 +101,25 @@ appbuilder.add_view(
       CustomerModelView, "Customer List", icon="fa-folder-open-o", category="Menu")
 
 
+class MyFormView(CustomerModelView):
+   # form = MyForm
+   form_title = 'This is my first form view'
+   message = 'My form submitted'
+
+   def form_get(self, form):
+      form.field1.data = 'This was prefilled'
+      log.fatal("hoo haa")
+      # raise Exception("my exception")
+
+   def form_post(self, form):
+      # post process form
+      log.fatal("haa hoo")
+      flash(self.message, 'info')
+      # raise Exception("my exception")
+
+
+appbuilder.add_view(MyFormView, "My form View", icon="fa-group", label='My form View Label',
+                    category="My Forms", category_icon="fa-cogs")
 
 
 
