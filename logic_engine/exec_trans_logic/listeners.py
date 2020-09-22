@@ -8,6 +8,15 @@ from logic_engine.rule_type.row_event import CommitRowEvent
 from logic_engine.util import get_old_row, prt
 
 
+def before_commit(a_session: session):
+    """
+    Unused
+        * not called for auto-commit transactions
+        * called prior to before_flush
+    """
+    logic_engine.logic_logger.debug("\nBefore Commit Phase          \t\t\t\t\t")
+
+
 def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Logic Execution processes LogicRows: row and old_row
@@ -17,7 +26,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
         * performance / pruning (skip rules iff no dependent values change)
         * performance / optimization (1 row adjustments, not expensive select sum/count)
     """
-    logic_engine.logic_logger.debug("\nLogic Phase (sqlalchemy before_flush)\t\t\t")
+    logic_engine.logic_logger.debug("Logic Phase (sqlalchemy before_flush)\t\t\t")
     # print("\n***************** sqlalchemy calls logic_engine\n")
     row_cache = RowCache()
     what_is = a_session.dirty
