@@ -1,13 +1,22 @@
 # coding: utf-8
 
-'''
+"""
 WARNING: used by FAB, but logic uses version in nw_logic.
 The primary copy is nw_logic -- copy changes here.
-'''
 
+
+
+on relationships...
+  * declare them in the parent (not child), eg, for Order:
+  *    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
+
+"""
+
+import sqlalchemy_utils
 from sqlalchemy import Boolean, Column, DECIMAL, DateTime, Float, ForeignKey, Integer, LargeBinary, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.testing import db
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -38,6 +47,9 @@ class Customer(Base):
     Balance = Column(DECIMAL)
     CreditLimit = Column(DECIMAL)
 
+    #  OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
+    OrderList = relationship("Order", cascade_backrefs=True, backref="Customer")
+
 
 class CustomerDemographic(Base):
     __tablename__ = 'CustomerDemographic'
@@ -65,9 +77,18 @@ class Employee(Base):
     Extension = Column(String(8000))
     Photo = Column(LargeBinary)
     Notes = Column(String(8000))
-    ReportsTo = Column(Integer)
+    # ReportsTo = Column(Integer)
+    ReportsTo = Column(ForeignKey('Employee.Id'), nullable=False)
     PhotoPath = Column(String(8000))
 
+    OrderList = relationship("Order", cascade_backrefs=True, backref="SalesRep")
+    # https://stackoverflow.com/questions/2638217/sqlalchemy-mapping-self-referential-relationship-as-one-to-many-declarative-f
+    Manager = relationship('Employee', remote_side='Employee.Id',
+                                      backref='Manages')  # parent Company
+
+# not sure about this... adding backref="Order" causes this failure:  FIXME cleanup
+# "Error creating backref 'Employee' on relationship 'Employee.OrderList':
+#   property of that name exists on mapper 'mapped class Order->Order'"
 
 class Product(Base):
     __tablename__ = 'Product'
@@ -82,6 +103,10 @@ class Product(Base):
     UnitsOnOrder = Column(Integer, nullable=False)
     ReorderLevel = Column(Integer, nullable=False)
     Discontinued = Column(Integer, nullable=False)
+    UnitsShipped = Column(Integer, nullable=False)
+
+    OrderList = relationship("OrderDetail", cascade_backrefs=True, backref="ProductOrdered")
+
 
 
 class Region(Base):
@@ -122,6 +147,65 @@ class Territory(Base):
     Id = Column(String(8000), primary_key=True)
     TerritoryDescription = Column(String(8000))
     RegionId = Column(Integer, nullable=False)
+
+
+class CustomerCustomerDemo(Base):
+    __tablename__ = 'CustomerCustomerDemo'
+
+    Id = Column(String(8000), primary_key=True)
+    CustomerTypeId = Column(ForeignKey('Customer.Id'))
+
+    Customer = relationship('Customer')
+
+
+class EmployeeTerritory(Base):
+    __tablename__ = 'EmployeeTerritory'
+
+    Id = Column(String(8000), primary_key=True)
+    EmployeeId = Column(ForeignKey('Employee.Id'), nullable=False)
+    TerritoryId = Column(ForeignKey('Territory.Id'))
+
+    Employee = relationship('Employee')
+    Territory = relationship('Territory')
+
+
+class Order(Base):
+    __tablename__ = 'Order'
+
+    Id = Column(Integer, primary_key=True)  #, autoincrement=True)
+    CustomerId = Column(ForeignKey('Customer.Id'))
+    EmployeeId = Column(ForeignKey('Employee.Id'))
+    OrderDate = Column(String(8000))
+    RequiredDate = Column(String(8000))
+    ShippedDate = Column(String(8000))
+    ShipVia = Column(Integer)
+    Freight = Column(DECIMAL, nullable=False)
+    ShipName = Column(String(8000))
+    ShipAddress = Column(String(8000))
+    ShipCity = Column(String(8000))
+    ShipRegion = Column(String(8000))
+    ShipPostalCode = Column(String(8000))
+    ShipCountry = Column(String(8000))
+    AmountTotal = Column(DECIMAL)
+
+    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
+
+
+class OrderDetail(Base):
+    __tablename__ = 'OrderDetail'
+
+    Id = Column(Integer, primary_key=True)  #, autoincrement=True)
+    OrderId = Column(ForeignKey('Order.Id'), nullable=False)
+    ProductId = Column(ForeignKey('Product.Id'), nullable=False)
+    UnitPrice = Column(DECIMAL, nullable=False)
+    Quantity = Column(Integer, nullable=False)
+    Discount = Column(Float, nullable=False)
+    Amount = Column(DECIMAL)
+    ShippedDate = Column(String(8000))
+
+    # Order = relationship('Order', back_populates="OrderDetailList")  FIXME cleanup
+    # Product = relationship('Product')
+
 
 
 class AbPermission(Base):
@@ -179,49 +263,6 @@ class AbViewMenu(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
 
-
-class CustomerCustomerDemo(Base):
-    __tablename__ = 'CustomerCustomerDemo'
-
-    Id = Column(String(8000), primary_key=True)
-    CustomerTypeId = Column(ForeignKey('Customer.Id'))
-
-    Customer = relationship('Customer')
-
-
-class EmployeeTerritory(Base):
-    __tablename__ = 'EmployeeTerritory'
-
-    Id = Column(String(8000), primary_key=True)
-    EmployeeId = Column(ForeignKey('Employee.Id'), nullable=False)
-    TerritoryId = Column(ForeignKey('Territory.Id'))
-
-    Employee = relationship('Employee')
-    Territory = relationship('Territory')
-
-
-class Order(Base):
-    __tablename__ = 'Order'
-
-    Id = Column(Integer, primary_key=True)
-    CustomerId = Column(ForeignKey('Customer.Id'))
-    EmployeeId = Column(Integer, nullable=False)
-    OrderDate = Column(String(8000))
-    RequiredDate = Column(String(8000))
-    ShippedDate = Column(String(8000))
-    ShipVia = Column(Integer)
-    Freight = Column(DECIMAL, nullable=False)
-    ShipName = Column(String(8000))
-    ShipAddress = Column(String(8000))
-    ShipCity = Column(String(8000))
-    ShipRegion = Column(String(8000))
-    ShipPostalCode = Column(String(8000))
-    ShipCountry = Column(String(8000))
-    AmountTotal = Column(DECIMAL)
-
-    Customer = relationship('Customer')
-
-
 class AbPermissionView(Base):
     __tablename__ = 'ab_permission_view'
     __table_args__ = (
@@ -248,21 +289,6 @@ class AbUserRole(Base):
 
     role = relationship('AbRole')
     user = relationship('AbUser')
-
-
-class OrderDetail(Base):
-    __tablename__ = 'OrderDetail'
-
-    Id = Column(String(8000), primary_key=True)
-    OrderId = Column(ForeignKey('Order.Id'), nullable=False)
-    ProductId = Column(ForeignKey('Product.Id'), nullable=False)
-    UnitPrice = Column(DECIMAL, nullable=False)
-    Quantity = Column(Integer, nullable=False)
-    Discount = Column(Float, nullable=False)
-    Amount = Column(DECIMAL)
-
-    Order = relationship('Order')
-    Product = relationship('Product')
 
 
 class AbPermissionViewRole(Base):
