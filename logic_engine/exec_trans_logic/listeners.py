@@ -26,23 +26,34 @@ def before_flush(a_session: session, a_flush_context, an_instances):
         * performance / pruning (skip rules iff no dependent values change)
         * performance / optimization (1 row adjustments, not expensive select sum/count)
     """
+
+    """
+    Logic Phase
+    """
     logic_engine.logic_logger.debug("Logic Phase (sqlalchemy before_flush)\t\t\t")
     # print("\n***************** sqlalchemy calls logic_engine\n")
     row_cache = RowCache()
     what_is = a_session.dirty
-    for each_instance in a_session.dirty:
-        table_name = each_instance.__tablename__
-        old_row = get_old_row(each_instance)
-        logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd", nest_level=0, a_session=a_session,
-                             row_cache=row_cache)
-        logic_row.update(reason="client")
+    bug_explore = None  #  for debugging upd_order_reuse ==> [None, None]
+    if bug_explore is not None:  # temp hack - order rows to explore bug (upd_order_reuse)
+        temp_debug(a_session, bug_explore, row_cache)
+    else:
+        for each_instance in a_session.dirty:
+            table_name = each_instance.__tablename__
+            old_row = get_old_row(each_instance)
+            logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                                 nest_level=0, a_session=a_session, row_cache=row_cache)
+            logic_row.update(reason="client")
 
     for each_instance in a_session.new:
         table_name = each_instance.__tablename__
-        logic_row = LogicRow(row=each_instance, old_row=None, ins_upd_dlt="ins", nest_level=0, a_session=a_session,
-                             row_cache=row_cache)
+        logic_row = LogicRow(row=each_instance, old_row=None, ins_upd_dlt="ins",
+                             nest_level=0, a_session=a_session, row_cache=row_cache)
         logic_row.insert(reason="client")
 
+    """
+    Commit Logic Phase
+    """
     logic_engine.logic_logger.debug("Commit Logic Phase   \t\t\t")
     for each_logic_row_key in row_cache.row_list:
         each_logic_row = row_cache.row_list[each_logic_row_key]
@@ -52,4 +63,26 @@ def before_flush(a_session: session, a_flush_context, an_instances):
             each_logic_row.log("Commit Event")
             each_row_event.execute(each_logic_row)
 
+    """
+    Proceed with sqlalchemy flush processing
+    """
     logic_engine.logic_logger.debug("Flush Phase          \t\t\t")
+
+def temp_debug(a_session, bug_explore, row_cache):
+    for each_instance in a_session.dirty:
+        table_name = each_instance.__tablename__
+        if table_name.startswith("OrderDetail"):
+            bug_explore[0] = each_instance
+        else:
+            bug_explore[1] = each_instance
+    each_instance = bug_explore[0]
+    old_row = get_old_row(each_instance)
+    logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                         nest_level=0, a_session=a_session, row_cache=row_cache)
+    logic_row.update(reason="client")
+    each_instance = bug_explore[1]
+    old_row = get_old_row(each_instance)
+    logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                         nest_level=0, a_session=a_session, row_cache=row_cache)
+    logic_row.update(reason="client")
+

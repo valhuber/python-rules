@@ -17,13 +17,18 @@ from logic_engine.rule_type.row_event import EarlyRowEvent
 
 class LogicRow:
     """
-    Wraps row, with old_row, ins_upd_dlt, nest_level, session, etc - passed to user logic.
-    Methods for insert(), update and delete - called from before_flush listeners, to execute rules
+    Wraps row and  old_row, plus methods for insert, update and delete - rule enforcement
+
+    Additional instance variables: ins_upd_dlt, nest_level, session, etc - passed to user logic.
     Helper Methods (get_parent_logic_row(role_name), log, etc)
+    Called from before_flush listeners, and here for parent/child chaining
     """
 
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int,
                  a_session: session, row_cache: object):
+        """
+        Note adds self to row_cache (if supplied), for later commit-phase logic
+        """
         self.session = a_session
         self.row = row  # type(base)
         """ mapped row """
@@ -323,6 +328,8 @@ class LogicRow:
 
     def adjust_parent_aggregates(self):
         """
+        Chain to parents - adjust aggregates (sums, counts)
+
         Objective: 1 (one) update per role, for N aggregates along that role.
 
         For each child-to-parent role,
@@ -346,9 +353,9 @@ class LogicRow:
         self.early_row_events()
         self.copy_rules()
         self.formula_rules()
-        self.adjust_parent_aggregates()
+        self.adjust_parent_aggregates()  # parent chaining (sum / count adjustments)
         self.constraints()
-        self.cascade_to_children()
+        self.cascade_to_children()  # child chaining (cascade changed parent references)
 
     def insert(self, reason: str = None):
         self.reason = reason

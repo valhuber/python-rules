@@ -8,6 +8,10 @@ from logic_engine.exec_row_logic.logic_row import LogicRow
 
 
 class RowCache():
+    """
+    Lists of all the logic_rows processed in this transaction.
+    Used to drive commit events/constraints.
+    """
 
     def __init__(self):
         self.row_list = {}  # type: Dict[base, 'LogicRow']

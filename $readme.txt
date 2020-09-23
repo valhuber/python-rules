@@ -4,48 +4,6 @@ TODO major - designates significant unimplemented
 9/20 intermittent failure in upd_order_reuse - perhaps ordering of rows in listener
 
     Failed run:
-        /Users/val/python/pycharm/python-rules/venv/bin/python "/Applications/PyCharm CE.app/Contents/plugins/python-ce/helpers/pydev/pydevd.py" --multiproc --qt-support=auto --client 127.0.0.1 --port 56939 --file /Users/val/python/pycharm/python-rules/nw/trans_tests/upd_order_reuse.py
-        pydev debugger: process 21177 is connecting
-        Connected to pydev debugger (build 202.7319.64)
-        NOT Fixing path (default PyCharm, set in VSC Launch Config)
-        Run Environment info...
-        Current Working Directory: /Users/val/python/pycharm/python-rules/nw/trans_tests
-        sys.path: (Python imports)
-        /Users/val/python/pycharm/python-rules/nw/trans_tests
-        /Applications/PyCharm CE.app/Contents/plugins/python-ce/helpers/pydev
-        /Users/val/python/pycharm/python-rules
-        /Applications/PyCharm CE.app/Contents/plugins/python-ce/helpers/third_party/thriftpy
-        /Applications/PyCharm CE.app/Contents/plugins/python-ce/helpers/pydev
-        /Users/val/Library/Caches/JetBrains/PyCharmCE2020.2/cythonExtensions
-        /Users/val/python/pycharm/python-rules/nw/trans_tests
-        /Users/val/.pyenv/versions/3.8.3/lib/python38.zip
-        /Users/val/.pyenv/versions/3.8.3/lib/python3.8
-        /Users/val/.pyenv/versions/3.8.3/lib/python3.8/lib-dynload
-        /Users/val/python/pycharm/python-rules/venv/lib/python3.8/site-packages
-        From: /Users/val/python/pycharm/python-rules/nw/trans_tests/upd_order_reuse.py
-        Using Python: 3.8.3 (default, Aug  5 2020, 16:59:52)
-        [Clang 11.0.3 (clang-1103.0.32.62)]
-        At: 2020-09-20 19:26:14.934124
-        Validate Rule BankAbstractRule Bank[0x105d01b20] (loaded 2020-09-20 19:26:15.433276)
-        Mapped Class[Customer] rules:
-          Constraint Function: None
-          Derive Customer.Balance as Sum(Order.AmountTotal Where <function activate_basic_check_credit_rules.<locals>.<lambda> at 0x105e32c10>)
-        Mapped Class[Order] rules:
-          Derive Order.AmountTotal as Sum(OrderDetail.Amount Where None)
-          RowEvent Function: <function activate_basic_check_credit_rules.<locals>.congratulate_sales_rep at 0x105d10430>
-        Mapped Class[OrderDetail] rules:
-          Derive OrderDetail.Amount as Formula (1): Rule.formula(derive=OrderDetail.Amount, as_expres [...]
-          Derive OrderDetail.UnitPrice as Copy(ProductOrdered.UnitPrice)
-          Derive OrderDetail.ShippedDate as Formula (2): row.OrderHeader.ShippedDate
-        Mapped Class[Product] rules:
-          Derive Product.UnitsShipped as Sum(OrderDetail.Quantity Where row.ShippedDate is not None)
-          Derive Product.UnitsInStock as Formula (1): <function>
-        @__init__.py#<module>(): session created, listeners registered
-        ..Customer[ALFKI] {starting} Address: Obere Str. 57, Balance: 960.0000000000, City: Berlin, CompanyName: Alfreds Futterkiste, ContactName: Maria Anders, ContactTitle: Sales Representative, Country: Germany, CreditLimit: 2000.0000000000, Fax: 030-0076545, Id: ALFKI, Phone: 030-0074321, PostalCode: 12209, Region: Western Europe  row@: 0x105f060a0 - 2020-09-20 19:26:16,259 - logic_logger - DEBUG
-        ..Customer[ANATR] {starting} Address: Avda. de la Constitución 2222, Balance: 0E-10, City: México D.F., CompanyName: Ana Trujillo Emparedados y helados, ContactName: Ana Trujillo, ContactTitle: Owner, Country: Mexico, CreditLimit: 1000.0000000000, Fax: (5) 555-3745, Id: ANATR, Phone: (5) 555-4729, PostalCode: 05021, Region: Central America  row@: 0x105f060d0 - 2020-09-20 19:26:16,260 - logic_logger - DEBUG
-        ..Order[11011] {starting} AmountTotal: 960.0000000000, CustomerId: ALFKI, EmployeeId: 3, Freight: 1.2100000000, Id: 11011, OrderDate: 2014-04-09, RequiredDate: 2014-05-07, ShipAddress: Obere Str. 57, ShipCity: Berlin, ShipCountry: Germany, ShipName: Alfred's Futterkiste, ShipPostalCode: 12209, ShipRegion: Western Europe, ShipVia: 1, ShippedDate: None  row@: 0x105f4ea90 - 2020-09-20 19:26:16,267 - logic_logger - DEBUG
-        /Users/val/python/pycharm/python-rules/venv/lib/python3.8/site-packages/sqlalchemy/sql/sqltypes.py:661: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
-          util.warn(
         @upd_order_reuse.py#<module>(): Reparenting *altered* order - new CustomerId: ANATR
         order amount 960.0000000000 projected to be 557.5000000000
         Logic Phase (sqlalchemy before_flush)			 - 2020-09-20 19:26:16,279 - logic_logger - DEBUG
