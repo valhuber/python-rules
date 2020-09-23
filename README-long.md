@@ -1,5 +1,4 @@
 # Rules to Automate Business Logic 
-##### Transaction Logic: half the system
 For most transaction-oriented database applications, backend database logic
 is a substantial portion of the effort.
 It includes _multi-table_ derivation and constraint logic,
@@ -10,38 +9,46 @@ database triggers, and/or stored procedures.
 The prevailing assumption is that such *domain-specific logic must surely be 
 domain-specific code.*  
 
-##### Problem: Code-intensive - time-consuming, error prone
 The problem is that this is a lot of code.  Often nearly half the
 effort for a transactional database-oriented systems,
 it is time-consuming, complex and error-prone.
 
-##### Rules: 40X more concise, extensible, performant, manageable
 This project introduces a _declarative alternative_:
 you specify a set of **_spreadsheet-like rules,_**
 which are then executed by a login engine operating
 as a plugin to sqlalchemy.  As in a spreadsheet,
-there are dramatic gains in conciseness and clarity:
+there are dramatic gains in conciseness and clarity.
+     <br/>   
 
-* **5 spreadsheet-like rules** implement the check-credit requirement (shown below).
-The same logic requires **200 hundred of lines** of code
-[(shown here)](../../wiki/by-code) - a factor of 40:1.
+#### Rules: 40X more concise, automatic optimization and re-use
 
-* This can represent meaningful improvements in project delivery and agility.
+This declarative, *rule-oriented* approach contrasts sharply with
+traditional hand-coded *procedural* `after_flush` events or triggers:
+
+| Consideration |      Declarative Rules    | Procedural (`after_flush`, Triggers, ...) |
+| ------------- | ------------- | --------- |
+| **Conciseness**  | **5 spreadsheet-like rules** implement the check-credit requirement (shown below) | The same logic requires **200 hundred of lines** of code [(shown here)](https://github.com/valhuber/python-rules/wiki/by-code) - a factor of 40:1|
+| **Performance** | SQLs are *automatically pruned and optimized* (examples below)| Optimizations require hand-code, often over-looked due to project time pressure |
+| **Quality** | Rules are *automatically re-used* over all transactions, minimizing missed corner-cases| Considerable test and debug is required to find and address all corner cases, with high risk of bugs |
+| **Agility** | Rule execution is *automatically re-ordered* per dependencies, simplifying iteration cycles<br><br>Business Users can read the rules, and collaborate<br><br>Collaboration is further supported by running screens - see also Fab-QuickStart below | Changes require code to be re-engineered, at substantial cost and time |
+| **Architecture** | Rules are extracted from UI controllers, so logic is _automatically re-used_ between apps and APIs | Manual logic is often coded in UI controllers; this eliminates re-use, leading to bugs and inconsistencies |
+
+This can represent a meaningful reduction in project delivery.
 Experience has shown that such rules can address *over 95%* of
-the backend logic, reducing such logic by *40X*.
+the backend logic, reducing such logic by **40X** (200 vs. 5).
+     <br/> 
+     
+     
+#### Extensible, Manageable, Debuggable
 
-Skeptical?  You should be.  There are many types of rule engines,
-and experience has shown they are not appropriate to transaction processing.
-For more information, [see Rule Engines](../../wiki/Rules-Engines).
-
-This implementation is specifically designed to meet
-the demands of transaction processing:
-* Performance - rule execution is optimized to eliminate and optimize SQL
-* Extensibility - use Python to extend rule automation
-* Manageability - use Python tools for code editing,
-debugging, code management, etc
-
-For more information, [see the Rules Engine Overview](../../wiki/Home).
+Importantly, logic is:
+* **Low Code:** Rules are complemented by Python events,
+providing _extensibility,_ so you can address the last 5%
+* **Manageable:** logic is expressed in Python, enabling the use of
+standard IDE and Source Code Control systems
+* **Debuggable:** Debug your logic with logs that show which rules execute,
+and breakpoints in formula/constraint/action rules
+expressed in Python
 
 
 ## Architecture
@@ -67,7 +74,7 @@ _those_ changes.  Note these might be in different tables,
 providing automation for _multi-table logic_.
 
 Logic does not apply to updates outside sqlalchemy,
-nor to sqlalchemy batch updates or unmapped sql updates.
+or to sqlalchemy batch updates or unmapped sql updates.
 
 
 ## Declaring Logic as Spreadsheet-like Rules
@@ -78,57 +85,46 @@ For those not familiar, this is basically
 Customers, Orders, OrderDetails and Products,
 as shown in the diagrams below.
 
-##### Declare rules using Python
 Logic is declared as spreadsheet-like rules as shown below
-from  [`nw/nw_logic/nw_rules_bank.py`](nw/nw_logic/nw_rules_bank.py),
-which implements the *check credit* requirement:
+from  [`nw_rules_bank.py`](nw/nw_logic/nw_rules_bank.py),
+activated in [`__init__.py`](nw/nw_logic/__init__.py).
+The logic below implements the *check credit* requirement:
+* *the balance must not exceed the credit limit,*
+* *where the balance is the sum of the unshipped order totals*
+* *which is the rollup of OrderDetail Price * Quantities:*
 ```python
-def activate_basic_check_credit_rules():
-    """ Check Credit Requirement:
-        * the balance must not exceed the credit limit,
-        * where the balance is the sum of the unshipped order totals
-        * which is the rollup of OrderDetail Price * Quantities:
-    """
+Rule.constraint(validate=Customer, as_condition=lambda row: row.Balance <= row.CreditLimit,
+                error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
+Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal,
+         where=lambda row: row.ShippedDate is None)  # *not* a sql select sum
 
-    Rule.constraint(validate=Customer, as_condition=lambda row: row.Balance <= row.CreditLimit,
-                    error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
-    Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal,
-             where=lambda row: row.ShippedDate is None)  # *not* a sql select sum
-    
-    Rule.sum(derive=Order.AmountTotal, as_sum_of=OrderDetail.Amount)
-   
-    Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
-    Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
-```
+Rule.sum(derive=Order.AmountTotal, as_sum_of=OrderDetail.Amount)
 
-The specification is fully executable, and governs around a
-dozen transactions.  Let's look at **Add Order (Check Credit) -**
-enter an Order / OrderDetails,
-and rollup to AmountTotal / Balance to check CreditLimit.
-
-This representatively complex transaction illustrates
-common logic execution patterns, described below.
-
-##### Activate Rules
-To test our rules, we use
-[`nw/nw_trans_tests/add_order.py`](nw/nw_trans_tests/add_order.py).
-It activates the rules using this import:
-```python
-from nw.nw_logic import session  # opens db, activates logic listener <--
+Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
+Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
 ```
  
-This executes [`nw/nw_logic/__init__.py`](nw/nw_logic/__init__.py),
-which sets up the rule engine:
+We add 3 more rules to manage UnitsInStock:
+* _when orders are shipped, reduce the UnitsInStock for the ordered items_
 ```python
-by_rules = True  # True => use rules, False => use hand code (for comparison)
-if by_rules:
-    rule_bank_setup.setup(session, engine)     # setup rules engine
-    activate_basic_check_credit_rules()        # loads rules above
-    rule_bank_setup.validate(session, engine)  # checks for cycles, etc
-else:
-    # ... conventional after_flush listeners (to see rules/code contrast)
+Rule.formula(derive=OrderDetail.ShippedDate, as_expression=lambda row: row.OrderHeader.ShippedDate)
+
+Rule.sum(derive=Product.UnitsShipped, as_sum_of=OrderDetail.Quantity,
+         where="row.ShippedDate is not None")
+Rule.formula(derive=Product.UnitsInStock, calling=units_in_stock)
 ```
-This is what replaces 200 lines of conventional code.  Let's see how it operates.
+The specification is fully executable, and governs around a
+dozen transactions.  Here we look at 2 simple examples:
+
+* **Add Order (Check Credit) -** enter an order/orderdetails,
+and rollup to AmountTotal / Balance to check CreditLimit
+
+* **Ship / Unship an Order (Adjust Balance) -** when an Order's `DateShippped`
+is changed, adjust the Customers `Balance`
+
+These representatively complex transactions illustrate
+common logic execution patterns, described in the following sections.
+
 
 ## Logic Execution: Watch, React, Chain
 The engine operates much as you might imagine a spreadsheet:
@@ -142,7 +138,11 @@ The engine operates much as you might imagine a spreadsheet:
 *these* are re-executed.  Note this can be in other tables, thus
 automating multi-table transaction logic.
 
-Let's see how.
+   * Unlike coarse-grained triggers or event handlers at the table level,
+   derivations are fine-grained at the attribute level.
+   * This enables the rules system to automate efficiencies like pruning
+   and adjustment, as described below
+   
    
 #### Example: Add Order - Multi-Table Adjustment, Chaining
 
@@ -153,10 +153,10 @@ Let's see how.
 so it is copied
 
 1. OrderDetails are referenced by the Orders' `AmountTotal` sum rule,
-so `AmountTotal` is adjusted (chaining)
+so `AmountTotal` is adjusted
 
 1. The `AmountTotal` is referenced by the Customers' `Balance`,
-so it is adjusted (chaining)
+so it is adjusted
 
 1. And the Credit Limit constraint is checked 
 (exceptions are raised if constraints are violated)
@@ -166,14 +166,15 @@ logic ordering, the SQL commands to read and adjust rows, and the chaining
 are fully automated by the engine, based solely on the rules above.
 This is how 5 rules represent the same logic as 200 lines of code.
 
-Let's explore the multi-table chaining, and how
-it's optimized.
+Key points are discussed in the sub-sections below.
 
-##### Optimizations: Multi-table _Adjustment_ (vs. nested `sum` queries)
-The `sum` rule that "watches" `OrderDetail.AmountTotal` is in
+##### Multi-Table Logic
+The `sum` rule that "watches" `OrderDetail.AmountTotal` changes is in
 a different table: `Orders`.  So, the "react" logic has to
-perform a multi-table transaction.  And this means we need to
+perform a multi-table transaction, which means we need to
 be careful about performance.
+
+##### Optimizations: Adjustment (vs. nested `sum` queries)
 
 Note that rules declare _end conditions_, enabling / _obligating_
 the engine to optimize execution (like a SQL query optimizer). 
@@ -199,16 +200,64 @@ often by orders of magnitude:
 for more information on Rule Execution.
 
 
+#### Example: Ship Order - Pruning, Adjustment and Cascade
+
+<figure><img src="images/ship-order.png" width="500"><figcaption>The <b>ship / unship order</b> example illustrates pruning and adjustment:<br/></figcaption></figure>  
+  <br/>
+
+If `DueDate` is altered, nothing is dependent on that,
+so the rule is **pruned** from the logic execution.  The result
+is a 1 row transaction - zero SQL overhead from rules.
+
+If `ShippedDate` is altered,
+2 kinds of multi-table logic are triggered - _adjustment and cascade:_
+
+   1. the logic engine **adjusts** the `Customer.Balance` with a 1 row update,
+   as described above
+   
+       * Note that in this case, the triggering event is a change to the `where` condition,
+   rather than a change to the summed value
+   
+       * The _watch_ logic is monitoring changes to summed fields, where conditions,
+       foreign keys, and inserts / updates / delete.  This eliminates large amounts
+       of clumsy, boring and error prone code
+   
+   2. the `ShippedDate` is _also_ referenced by the `OrderDetail.ShippedDate` rule,
+   so the system **cascades** the change to each `OrderDetail`
+   to reevaluate referring rules
+   
+   3. This **further _chains_** to _adjust_ `Product.UnitsInStock`,
+       whose change recomputes `Product.UnitsInStock` (see below)
+ 
+
+##### State Transition Logic (old values)
+Logic often depends on the old vs. new state of a row.
+For example, here is the function used to compute `Product.UnitsInStock`:
+```python
+def units_in_stock(row: Product, old_row: Product, logic_row: LogicRow):
+    result = row.UnitsInStock - (row.UnitsShipped - old_row.UnitsShipped)
+    return result
+```
+Note this logic is in Python: you can invoke Python functions,
+set breakpoints, etc.
+
+#### DB-generated Keys
+DB-generated keys are often tricky (how do you insert
+items if you don't know the db-generated orderId?), shown here in `Order`
+and `OrderDetail`.  These were well-handled by sqlalchemy,
+where adding OrderDetail rows into the Orders' collection automatically
+set the foreign keys.
+
 ## An Agile Perspective
-The core tenant of agile is _working software,_
-driving _collaboration,_ for _rapid iterations._
+The core tenant of agile is working software,
+driving collaboration, for rapid iterations.
 Here's how rules can help.
 
-##### Working Software _Now_
+#### Working Software _Now_
 The examples above illustrate how just a few rules can replace 
 [pages of code](https://github.com/valhuber/python-rules/wiki/by-code).
 
-##### Collaboration - Running Screens
+#### Collaboration - Running Screens
 
 Certainly business users are more easily able to
 read rules than code.  But honestly, rules are
@@ -217,10 +266,11 @@ pretty abstract.
 Business users relate best to actual working pages -
 _their_ intepretation of working software.
 The [fab-quick-start](https://github.com/valhuber/fab-quick-start/wiki))
-project enables you to build a basic web app in minutes.
+project enables you to build basic web app in minutes.
 
 This project has already generated such an app, which you can run like this
-(note: work in progress - constraint error messages not properly shown).
+(note: work in progress - rules enforced,
+constraint message not properly shown).
 
 ```
 cd nw_app
@@ -228,7 +278,7 @@ export FLASK_APP=app
 flask run
 ```
 
-##### Iteration - Automatic Ordering
+#### Iteration
 Rules are _self-organizing_ - they recognize their interdependencies,
 and order their execution and database access (pruning, adjustments etc)
 accordingly.  This means:
@@ -252,7 +302,7 @@ To get started, you will need:
 
 * An IDE - any will do (I've used [PyCharm](https://www.jetbrains.com/pycharm/download) and [VSCode](https://code.visualstudio.com), install notes [here](https://github.com/valhuber/fab-quick-start/wiki/IDE-Setup)) - ide will do, though different install / generate / run instructions apply for running programs
 
-Issues?  [Try here](https://github.com/valhuber/fab-quick-start/wiki/Mac-Python-Install-Issues).
+Issues?  [Try here](https://github.com/valhuber/fab-quick-start/wiki/Mac-Python-Install-Issues)
 
 
 Using your IDE or command line: 
@@ -283,7 +333,7 @@ Essential functions running on 9/6/2020:
 multi-table transactions -
 key paths of copy, formula, constraint, sum and event rules. 
 
-Not complete, under active development.  Key remaining items include
+Not complete, under active development.  Key remaining items
 delete, and fix constraint messages with Flask / Flask AppBuilder.
 
 Ready to explore and provide feedback
