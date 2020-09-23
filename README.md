@@ -111,7 +111,7 @@ common logic execution patterns, described below.
 
 ##### Activate Rules
 To test our rules, we use
-[`nw/nw_trans_tests/add_order.py`](nw/nw_trans_tests/add_order.py).
+[`nw/trans_tests/add_order.py`](nw/trans_tests/add_order.py).
 It activates the rules using this import:
 ```python
 from nw.nw_logic import session  # opens db, activates logic listener <--
