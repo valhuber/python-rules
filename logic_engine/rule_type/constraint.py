@@ -1,6 +1,8 @@
 import inspect
 from typing import Callable
 
+import sqlalchemy
+
 import logic_engine.exec_row_logic.logic_row as LogicRow
 
 from logic_engine.rule_bank.rule_bank import RuleBank
@@ -51,7 +53,9 @@ class Constraint(AbstractRule):
         elif not value:
             row = logic_row.row
             msg = eval(f'f"""{self._error_msg}"""')
-            raise Exception("Constraint failed: " + msg)  # FIXME design exception type?
+            from sqlalchemy import exc
+            exception = exc.DBAPIError(msg, None, None)  # 'statement', 'params', and 'orig'
+            raise  exception
         else:
             raise Exception(f'Constraint did not return boolean: {str(self)}')
         logic_row.log_engine(f'Constraint END {str(self)} on {str(logic_row)}')

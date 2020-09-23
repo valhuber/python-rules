@@ -221,8 +221,7 @@ _their_ intepretation of working software.
 The [fab-quick-start](https://github.com/valhuber/fab-quick-start/wiki)
 project enables you to build a basic web app in minutes.
 
-This project has already generated such an app, which you can run like this
-(note: work in progress - constraint error messages not properly shown).
+This project has already generated such an app, which you can run like this:
 
 ```
 cd nw_app
@@ -286,7 +285,7 @@ multi-table transactions -
 key paths of copy, formula, constraint, sum and event rules. 
 
 Not complete, under active development.  Key remaining items include
-delete, and fix constraint messages with Flask / Flask AppBuilder.
+delete.
 
 Ready to explore and provide feedback
 on general value, and features.
