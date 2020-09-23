@@ -36,10 +36,12 @@ For more information, [see Rule Engines](../../wiki/Rules-Engines).
 
 This implementation is specifically designed to meet
 the demands of transaction processing:
-* Performance - rule execution is optimized to eliminate and optimize SQL
-* Extensibility - use Python to extend rule automation
-* Manageability - use Python tools for code editing,
+* Scalable - rule execution is optimized to eliminate and optimize SQL
+* Extensible - use Python to extend rule automation
+* Manageable - use Python tools for code editing,
 debugging, code management, etc
+* Agile - iterate just by changing the rules; the system
+re-orders execution with automatic dependency management, and re-optimizes
 
 For more information, [see the Rules Engine Overview](../../wiki/Home).
 
