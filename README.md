@@ -216,7 +216,7 @@ pretty abstract.
 
 Business users relate best to actual working pages -
 _their_ intepretation of working software.
-The [fab-quick-start](https://github.com/valhuber/fab-quick-start/wiki))
+The [fab-quick-start](https://github.com/valhuber/fab-quick-start/wiki)
 project enables you to build a basic web app in minutes.
 
 This project has already generated such an app, which you can run like this
