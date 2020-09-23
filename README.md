@@ -229,6 +229,8 @@ export FLASK_APP=app
 flask run
 ```
 
+Login: user = admin, password = p
+
 ##### Iteration - Automatic Ordering
 Rules are _self-organizing_ - they recognize their interdependencies,
 and order their execution and database access (pruning, adjustments etc)
