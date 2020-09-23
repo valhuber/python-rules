@@ -60,16 +60,16 @@ pre_alfki = session.query(models.Customer).filter(models.Customer.Id == "ALFKI")
 pre_anatr = session.query(models.Customer).filter(models.Customer.Id == "ANATR").one()
 
 logic_row = LogicRow(row=pre_alfki, old_row=pre_alfki,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 logic_row.log("starting")
 
 logic_row = LogicRow(row=pre_anatr, old_row=pre_anatr,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 logic_row.log("starting")
 
 pre_order = session.query(models.Order).filter(models.Order.Id == 11011).one()  # type : Order
 logic_row = LogicRow(row=pre_order, old_row=pre_order,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 logic_row.log("starting")
 session.expunge(pre_alfki)
 session.expunge(pre_anatr)
@@ -104,14 +104,14 @@ msg = 'Committed... order.amountTotal ' + \
       str(pre_amount_total) + ' -> ' + \
       str(post_amount_total)
 logic_row = LogicRow(row=test_order, old_row=pre_order,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 logic_row.log(msg)
 print("\n")
 
 
 post_alfki = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
 logic_row = LogicRow(row=post_alfki, old_row=pre_alfki,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
 if post_alfki.Balance == 0:
     logic_row.log("Correct non-adjusted Customer Result")
@@ -124,7 +124,7 @@ else:
 
 post_anatr = session.query(models.Customer).filter(models.Customer.Id == "ANATR").one()
 logic_row = LogicRow(row=post_anatr, old_row=pre_anatr,
-                     ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+                     ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
 if post_anatr.Balance == 557.50:
     logic_row.log("Correct non-adjusted Customer Result")

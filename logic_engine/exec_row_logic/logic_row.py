@@ -25,9 +25,9 @@ class LogicRow:
     """
 
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int,
-                 a_session: session, row_cache: object):
+                 a_session: session, row_sets: object):
         """
-        Note adds self to row_cache (if supplied), for later commit-phase logic
+        Note adds self to row_sets (if supplied), for later commit-phase logic
         """
         self.session = a_session
         self.row = row  # type(base)
@@ -40,9 +40,9 @@ class LogicRow:
         self.reason = "?"  # set by insert, update and delete
         """ if starts with cascade, triggers cascade processing """
 
-        self.row_cache = row_cache
-        if row_cache is not None:  # eg, for debug as in upd_order_shipped test
-            row_cache.add(logic_row=self)
+        self.row_sets = row_sets
+        if row_sets is not None:  # eg, for debug as in upd_order_shipped test
+            row_sets.add_processed(logic_row=self)
 
         rb = RuleBank()
         self.rb = rb
@@ -144,7 +144,7 @@ class LogicRow:
                 setattr(row, role_name, parent_row)
         old_parent = self.make_copy(parent_row)
         parent_logic_row = LogicRow(row=parent_row, old_row=old_parent, ins_upd_dlt="*", nest_level=1 + self.nest_level,
-                                    a_session=self.session, row_cache=self.row_cache)
+                                    a_session=self.session, row_sets=self.row_sets)
         return parent_logic_row
 
     def early_row_events(self):
@@ -220,7 +220,7 @@ class LogicRow:
                     old_child = self.make_copy(each_child_row)
                     each_logic_row = LogicRow(row=each_child_row, old_row=old_child, ins_upd_dlt="upd",
                                               nest_level=1 + self.nest_level,
-                                              a_session=self.session, row_cache=self.row_cache)
+                                              a_session=self.session, row_sets=self.row_sets)
                     each_logic_row.update(reason=reason)
 
     def is_parent_cascading(self, parent_role_name: str):
@@ -403,19 +403,35 @@ class ParentRoleAdjuster:
     def save_altered_parents(self):
         """
         Save (chain) parent iff parent_logic_row has been set by sum/count executor.
-        This can update parent, and previous parent (eg, foreign key changed)
+        This can update parent, and previous parent (ie, foreign key changed)
+
+        Dragons lurk herein
+        ===================
+            upd_order_reuse changes OrderDetail.ProductId, and Order.CustomerId
+            listeners do not guarantee order
+            Failures were seen for OrderDetail first
+                It adjusted to the New Customer
+            Fix is defer adjustment logic iff the parent row is in the submitted list
         """
         if self.parent_logic_row is None:  # save *only altered* parents (often does nothing)
             pass
             # self.child_logic_row.log("adjust not required for parent_logic_row: " + str(self))
         else:
-            self.parent_logic_row.ins_upd_dlt = "upd"
-            self.parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
-            # no after_flush: https://stackoverflow.com/questions/63563680/sqlalchemy-changes-in-before-flush-not-triggering-before-flush
+            parent_logic_row = self.parent_logic_row
+            if (parent_logic_row.row_sets.is_submitted(parent_logic_row.row)):  # see dragon alert, above
+                self.child_logic_row.log("Adjustment deferred for " + self.parent_role_name)
+            else:
+                parent_logic_row.ins_upd_dlt = "upd"
+                parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
+                # no after_flush: https://stackoverflow.com/questions/63563680/sqlalchemy-changes-in-before-flush-not-triggering-before-flush
         if self.previous_parent_logic_row is None:
             pass
             # self.child_logic_row.log("save-adjusted not required for previous_parent_logic_row: " + str(self))
         else:
-            current_session = self.child_logic_row.session
-            self.previous_parent_logic_row.ins_upd_dlt = "upd"
-            self.previous_parent_logic_row.update(reason="Adjusting " + self.parent_role_name)
+            previous_parent_logic_row = self.previous_parent_logic_row
+            if (previous_parent_logic_row.row_sets.is_submitted(previous_parent_logic_row.row)):
+                self.child_logic_row.log("Adjustment deferred for " + self.parent_role_name)
+            else:
+                current_session = self.child_logic_row.session
+                previous_parent_logic_row.ins_upd_dlt = "upd"
+                previous_parent_logic_row.update(reason="Adjusting " + self.parent_role_name)

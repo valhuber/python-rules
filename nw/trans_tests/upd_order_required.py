@@ -68,7 +68,7 @@ session.commit()
 
 print("")
 post_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
-logic_row = LogicRow(row=pre_cust, old_row=post_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_cache=None)
+logic_row = LogicRow(row=pre_cust, old_row=post_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
 if abs(post_cust.Balance - pre_cust.Balance) == 0:
     logic_row.log("Correct non-adjusted Customer Result")
