@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/python-rules.iml" filepath="$PROJECT_DIR$/.idea/python-rules.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../python-rules.wiki/.idea/python-rules.wiki.iml" filepath="$PROJECT_DIR$/../python-rules.wiki/.idea/python-rules.wiki.iml" />
     </modules>
   </component>
 </project>
