@@ -347,6 +347,8 @@ class LogicRow:
                 each_aggregate.adjust_parent(parent_adjuster)  # adjusts each_parent iff req'd
             parent_adjuster.save_altered_parents()
 
+    def user_row_update(self, row: base) -> 'LogicRow':
+        result = LogicRow(row, copy(row))
     def update(self, reason: str = None):
         self.reason = reason
         self.log("Update - " + reason)
@@ -367,7 +369,6 @@ class LogicRow:
         self.adjust_parent_aggregates()
         self.constraints()
         # self.cascade_to_children()
-
 
     def delete(self, reason: str = None):  # TODO major
         self.reason = reason
