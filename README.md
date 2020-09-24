@@ -287,7 +287,7 @@ multi-table transactions -
 key paths of copy, formula, constraint, sum and event rules. 
 
 Not complete, under active development.  Key remaining items include
-delete.
+delete and count.
 
 Ready to explore and provide feedback
 on general value, and features.
