@@ -32,11 +32,7 @@ if use_rules:
     from logic_engine.util import row_prt, prt
     from nw.nw_logic import session  # opens db, activates logic listener <--
 
-    """
-    fails: circular imports
-        withdraw -> logic_row -> rule_bank -> util -> nw_logic/init -> rule_bank_setup -> RuleBank
-    """
-    from logic_engine.rule_bank import rule_bank_withdraw  # FIXME design why required to avoid circular imports??
+    from logic_engine.rule_bank import rule_bank_withdraw  # required to avoid circular imports
     from logic_engine.rule_bank import rule_bank_setup
     from nw.nw_logic import activate_basic_check_credit_rules
 
