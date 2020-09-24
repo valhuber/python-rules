@@ -37,7 +37,6 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     for each_instance in a_session.dirty:
         row_sets.add_submitted(each_instance)
 
-    what_is = a_session.dirty
     bug_explore = None  # [None, None]
     if bug_explore is not None:  # temp hack - order rows to explore bug (upd_order_reuse)
         temp_debug(a_session, bug_explore, row_sets)
@@ -72,7 +71,11 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     logic_engine.logic_logger.debug("Flush Phase          \t\t\t")
 
+
 def temp_debug(a_session, bug_explore, row_cache):
+    """
+    see description in nw/trans_tests/upd_order_reuse
+    """
     for each_instance in a_session.dirty:
         table_name = each_instance.__tablename__
         if table_name.startswith("OrderDetail"):
