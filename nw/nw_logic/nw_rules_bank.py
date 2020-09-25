@@ -55,6 +55,11 @@ def activate_basic_check_credit_rules():
 
     Rule.commit_row_event(on_class=Order, calling=congratulate_sales_rep)
 
+    Rule.count(derive=Customer.UnpaidOrderCount, as_count_of=Order,
+             where=lambda row: row.ShippedDate is None)  # *not* a sql select sum...
+
+    Rule.count(derive=Customer.OrderCount, as_count_of=Order)
+
 
 class InvokePythonFunctions:  # use functions for more complex rules, type checking, etc (not used)
 
