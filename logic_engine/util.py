@@ -20,7 +20,7 @@ class ObjectView(object):
         return str(self.__dict__)
 
 
-def get_old_row(obj) -> ObjectView:  # FIXME design
+def get_old_row(obj) -> ObjectView:  # FIXME design verify approach
     """
     obtain old_row (during before_flush) from sqlalchemy row
 

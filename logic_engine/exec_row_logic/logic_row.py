@@ -19,9 +19,16 @@ class LogicRow:
     """
     Wraps row and  old_row, plus methods for insert, update and delete - rule enforcement
 
-    Additional instance variables: ins_upd_dlt, nest_level, session, etc - passed to user logic.
+    Passed to user logic, mainly to make updates - with logic, for example
+
+        row = sqlalchemy read
+        logic_row.update(row=row, msg="my log message")
+
+    Additional instance variables: ins_upd_dlt, nest_level, session, etc.
+
     Helper Methods (get_parent_logic_row(role_name), log, etc)
-    Called from before_flush listeners, and here for parent/child chaining
+
+    Called client, from before_flush listeners, and here for parent/child chaining
     """
 
     def __init__(self, row: base, old_row: base, ins_upd_dlt: str, nest_level: int,
@@ -347,28 +354,55 @@ class LogicRow:
                 each_aggregate.adjust_parent(parent_adjuster)  # adjusts each_parent iff req'd
             parent_adjuster.save_altered_parents()
 
-    def user_row_update(self, row: base) -> 'LogicRow':
-        result = LogicRow(row, copy(row))
-    def update(self, reason: str = None):
-        self.reason = reason
-        self.log("Update - " + reason)
-        self.early_row_events()
-        self.copy_rules()
-        self.formula_rules()
-        self.adjust_parent_aggregates()  # parent chaining (sum / count adjustments)
-        self.constraints()
-        self.cascade_to_children()  # child chaining (cascade changed parent references)
+    def user_row_update(self, row: base, ins_upd_dlt: str) -> 'LogicRow':
+        result_logic_row = LogicRow(row = row,
+                                    old_row = self.make_copy(row),
+                                    nest_level=self.nest_level+1,
+                                    a_session=self.session,
+                                    row_sets=self.row_sets,
+                                    ins_upd_dlt=ins_upd_dlt)
+        return result_logic_row
 
-    def insert(self, reason: str = None):
-        self.reason = reason
-        self.log("Insert - " + reason)
-        self.load_parents()
-        self.early_row_events()
-        self.copy_rules()
-        self.formula_rules()
-        self.adjust_parent_aggregates()
-        self.constraints()
-        # self.cascade_to_children()
+    def update(self, reason: str = None, row: base = None):
+        """
+        make updates - with logic - in events, for example
+
+        row = sqlalchemy read
+        logic_row.update(row=row, msg="my log message")
+        """
+        if row is not None:
+            user_logic_row = self.user_row_update(row=row, ins_upd_dlt="upd")
+            user_logic_row.update(reason=reason)
+        else:
+            self.reason = reason
+            self.log("Update - " + reason)
+            self.early_row_events()
+            self.copy_rules()
+            self.formula_rules()
+            self.adjust_parent_aggregates()  # parent chaining (sum / count adjustments)
+            self.constraints()
+            self.cascade_to_children()  # child chaining (cascade changed parent references)
+
+    def insert(self, reason: str = None, row: base = None):
+        """
+        make updates - with logic - in events, for example
+
+        row = sqlalchemy read
+        logic_row.update(row=row, msg="my log message")
+        """
+        if row is not None:
+            user_logic_row = self.user_row_update(row=row, ins_upd_dlt="ins")
+            user_logic_row.insert(reason=reason)
+        else:
+            self.reason = reason
+            self.log("Insert - " + reason)
+            self.load_parents()
+            self.early_row_events()
+            self.copy_rules()
+            self.formula_rules()
+            self.adjust_parent_aggregates()
+            self.constraints()
+            # self.cascade_to_children()
 
     def delete(self, reason: str = None):  # TODO major
         self.reason = reason
