@@ -9,6 +9,25 @@ from flask_appbuilder.security.manager import (
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+import logging
+import sys
+from logic_engine import logic_logger
+from logic_engine import engine_logger
+
+logic_logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
+handler.setFormatter(formatter)
+logic_logger.addHandler(handler)
+
+engine_logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelname)s')
+handler.setFormatter(formatter)
+engine_logger.addHandler(handler)
+
 # Your App secret key
 SECRET_KEY = "\2\1thisismyscretkey\1\2\e\y\y\h"
 
