@@ -382,6 +382,8 @@ class LogicRow:
             self.adjust_parent_aggregates()  # parent chaining (sum / count adjustments)
             self.constraints()
             self.cascade_to_children()  # child chaining (cascade changed parent references)
+            if self.row_sets is not None:  # eg, for debug as in upd_order_shipped test
+                self.row_sets.remove_submitted(logic_row=self)
 
     def insert(self, reason: str = None, row: base = None):
         """

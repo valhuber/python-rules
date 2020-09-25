@@ -37,7 +37,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     for each_instance in a_session.dirty:
         row_sets.add_submitted(each_instance)
 
-    bug_explore = None  # [None, None]
+    bug_explore = None  # None to disable, [None, None] to enable
     if bug_explore is not None:  # temp hack - order rows to explore bug (upd_order_reuse)
         temp_debug(a_session, bug_explore, row_sets)
     else:
@@ -82,14 +82,26 @@ def temp_debug(a_session, bug_explore, row_cache):
             bug_explore[0] = each_instance
         else:
             bug_explore[1] = each_instance
-    each_instance = bug_explore[0]
-    old_row = get_old_row(each_instance)
-    logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
-                         nest_level=0, a_session=a_session, row_sets=row_cache)
-    logic_row.update(reason="client")
-    each_instance = bug_explore[1]
-    old_row = get_old_row(each_instance)
-    logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
-                         nest_level=0, a_session=a_session, row_sets=row_cache)
-    logic_row.update(reason="client")
-
+    order_detail_first = False  # true triggers defer
+    if order_detail_first:
+        each_instance = bug_explore[0]
+        old_row = get_old_row(each_instance)
+        logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                             nest_level=0, a_session=a_session, row_sets=row_cache)
+        logic_row.update(reason="client")
+        each_instance = bug_explore[1]
+        old_row = get_old_row(each_instance)
+        logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                             nest_level=0, a_session=a_session, row_sets=row_cache)
+        logic_row.update(reason="client")
+    else:
+        each_instance = bug_explore[1]
+        old_row = get_old_row(each_instance)
+        logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                             nest_level=0, a_session=a_session, row_sets=row_cache)
+        logic_row.update(reason="client")
+        each_instance = bug_explore[0]
+        old_row = get_old_row(each_instance)
+        logic_row = LogicRow(row=each_instance, old_row=old_row, ins_upd_dlt="upd",
+                             nest_level=0, a_session=a_session, row_sets=row_cache)
+        logic_row.update(reason="client")

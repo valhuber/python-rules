@@ -35,3 +35,8 @@ class RowSets():
     def is_submitted(self, row: base) -> bool:
         result = row in self.submitted_row
         return result
+
+    def remove_submitted(self, logic_row: LogicRow):
+        if logic_row.row in self.submitted_row:
+            self.submitted_row.remove(logic_row.row)
+
