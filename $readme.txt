@@ -23,6 +23,10 @@ update Customer set Balance =
 (select sum("Order".amounttotal) from "Order" where Customer.id = "Order".customerid
 and "Order".shippeddate is null);
 
+update Customer set UnpaidOrderCount =
+(select count("Order".amounttotal) from "Order" where Customer.id = "Order".customerid
+and "Order".shippeddate is null);
+
 update Customer set Balance = 0 where balance is null;
 update Customer set Balance = 960  where id="ALFKI";
 
