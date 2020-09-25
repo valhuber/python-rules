@@ -288,7 +288,6 @@ key paths of copy, formula, constraint, sum and event rules.
 
 Not complete, under active development.  Key remaining items include:
 * delete
-* count
 * pip-able
 
 Ready to explore and provide feedback
