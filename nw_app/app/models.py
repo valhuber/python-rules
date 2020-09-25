@@ -11,7 +11,6 @@ on relationships...
   *    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
 
 """
-
 import sqlalchemy_utils
 from sqlalchemy import Boolean, Column, DECIMAL, DateTime, Float, ForeignKey, Integer, LargeBinary, String, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -46,6 +45,8 @@ class Customer(Base):
     Fax = Column(String(8000))
     Balance = Column(DECIMAL)
     CreditLimit = Column(DECIMAL)
+    OrderCount = Column(Integer)
+    UnpaidOrderCount = Column(Integer)
 
     #  OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
     OrderList = relationship("Order", cascade_backrefs=True, backref="Customer")
@@ -303,3 +304,4 @@ class AbPermissionViewRole(Base):
 
     permission_view = relationship('AbPermissionView')
     role = relationship('AbRole')
+

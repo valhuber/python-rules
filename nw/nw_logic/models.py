@@ -43,6 +43,8 @@ class Customer(Base):
     Fax = Column(String(8000))
     Balance = Column(DECIMAL)
     CreditLimit = Column(DECIMAL)
+    OrderCount = Column(Integer)
+    UnpaidOrderCount = Column(Integer)
 
     #  OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
     OrderList = relationship("Order", cascade_backrefs=True, backref="Customer")
