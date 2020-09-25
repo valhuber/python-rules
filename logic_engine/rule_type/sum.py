@@ -8,6 +8,14 @@ from logic_engine.rule_type.aggregate import Aggregate
 
 
 class Sum(Aggregate):
+    """
+    Create rule instance and save in RuleBank, eg
+
+        Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal,
+             where=lambda row: row.ShippedDate is None)  # *not* a sql select sum...
+
+    Execute adjust_parent
+    """
 
     def __init__(self, derive: InstrumentedAttribute, as_sum_of: any, where: any):
         super(Sum, self).__init__(derive=derive, where=where)
@@ -17,22 +25,8 @@ class Sum(Aggregate):
             self._child_summed_field = self._as_sum_of.split(".")[1]
         elif isinstance(as_sum_of, InstrumentedAttribute):
             self._child_summed_field = as_sum_of.key
-            attrs = as_sum_of.parent.attrs
-            found_attr = None
-            for each_attr in attrs:
-                if isinstance(each_attr, RelationshipProperty):
-                    pass
-                    parent_class_nodal_name = each_attr.entity.class_
-                    parent_class_name = self.get_class_name(parent_class_nodal_name)
-                    if parent_class_name == self.table:
-                        if found_attr is not None:
-                            raise Exception("TODO - disambiguate relationship")
-                        found_attr = each_attr
-            if found_attr is None:
-                raise Exception("Invalid 'as_sum_of' - not a reference to: " + self.table +
-                                " in " + self.__str__())
-            else:
-                self._child_role_name = found_attr.back_populates
+            child_attrs = as_sum_of.parent.attrs
+            self._child_role_name = self.get_child_role_name(child_attrs=child_attrs)
         else:
             raise Exception("as_sum_of must be either string, or <mapped-class.column>: " +
                             str(as_sum_of))
@@ -59,3 +53,4 @@ class Sum(Aggregate):
                                      get_summed_field=lambda: getattr(parent_adjustor.child_logic_row.row, self._child_summed_field),
                                      get_old_summed_field=lambda: getattr(parent_adjustor.child_logic_row.old_row, self._child_summed_field)
                                      )
+

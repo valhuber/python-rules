@@ -1,6 +1,6 @@
 from typing import Callable
 
-from sqlalchemy.orm import object_mapper
+from sqlalchemy.orm import object_mapper, RelationshipProperty
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from logic_engine.exec_row_logic.logic_row import LogicRow
@@ -157,3 +157,18 @@ class Aggregate(Derivation):
             curr_value = getattr(parent_adjustor.previous_parent_logic_row.row, self._column)
             setattr(parent_adjustor.previous_parent_logic_row.row, self._column, curr_value - delta)
 
+    def get_child_role_name(self, child_attrs):
+        found_attr = None
+        for each_attr in child_attrs:
+            if isinstance(each_attr, RelationshipProperty):
+                pass
+                parent_class_nodal_name = each_attr.entity.class_
+                parent_class_name = self.get_class_name(parent_class_nodal_name)
+                if parent_class_name == self.table:
+                    if found_attr is not None:
+                        raise Exception("TODO - disambiguate relationship")
+                    found_attr = each_attr
+        if found_attr is None:
+            raise Exception("Invalid 'as_sum_of' - not a reference to: " + self.table +
+                            " in " + self.__str__())
+        return found_attr.back_populates

@@ -68,15 +68,27 @@ def toggle_order_shipped():
 
     print("")
     post_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
-    logic_row = LogicRow(row=pre_cust, old_row=post_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
+    logic_row = LogicRow(row=post_cust, old_row=pre_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
     if abs(post_cust.Balance - pre_cust.Balance) == 960:
         logic_row.log("Correct adjusted Customer Result")
         assert True
     else:
-        row_prt(post_cust, "\nERROR - incorrect adjusted Customer Result")
+        row_prt(post_cust, "ERROR - incorrect adjusted Customer Result")
         print("\n--> probable cause: Order customer update not written")
-        row_prt(pre_cust, "\npre_alfki")
+        row_prt(pre_cust, "pre_alfki")
+        assert False
+
+    if post_cust.Balance == 0:
+        pass
+    else:
+        logic_row.log("ERROR - balance should be 0")
+        assert False
+
+    if post_cust.UnpaidOrderCount == 2 and pre_cust.UnpaidOrderCount == 3:
+        pass
+    else:
+        logic_row.log("Error - UnpaidOrderCount should be 2")
         assert False
 
 

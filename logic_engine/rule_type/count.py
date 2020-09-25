@@ -7,6 +7,14 @@ from logic_engine.rule_type.aggregate import Aggregate
 
 
 class Count(Aggregate):
+    """
+    Create rule instance and save in RuleBank, eg
+
+        Rule.count(derive=Customer.UnpaidOrderCount, as_count_of=Order,
+                 where=lambda row: row.ShippedDate is None)  # *not* a sql select sum...
+
+    Execute adjust_parent
+    """
 
     def __init__(self, derive: InstrumentedAttribute, as_count_of: object, where: any):
         super(Count, self).__init__(derive=derive, where=where)
@@ -15,6 +23,12 @@ class Count(Aggregate):
             raise Exception("rule definition error, not mapped class: " + str(as_count_of))
         self._as_count_of = as_count_of
         self._as_count_of_class_name = self.get_class_name(as_count_of)
+        local_attrs = as_count_of._sa_class_manager.local_attrs  # FIXME design
+        for each_local_attr in local_attrs:
+            random_attr = local_attrs[each_local_attr]
+            child_attrs = random_attr.parent.attrs
+            break
+        self._child_role_name = self.get_child_role_name(child_attrs=child_attrs)
 
         rb = RuleBank()
         rb.deposit_rule(self)

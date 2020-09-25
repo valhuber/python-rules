@@ -67,7 +67,7 @@ session.commit()
 
 print("")
 post_alfki = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
-logic_row = LogicRow(row=pre_alfki, old_row=post_alfki, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
+logic_row = LogicRow(row=post_alfki, old_row=pre_alfki, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
 if abs(post_alfki.Balance - pre_alfki.Balance) == 960:
     logic_row.log("Correct non-adjusted Customer Result")
@@ -79,7 +79,7 @@ else:
     assert False
 
 post_anatr = session.query(models.Customer).filter(models.Customer.Id == "ANATR").one()
-logic_row = LogicRow(row=pre_anatr, old_row=post_alfki, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
+logic_row = LogicRow(row=post_anatr, old_row=pre_anatr, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
 if abs(post_anatr.Balance - pre_anatr.Balance) == 960:
     logic_row.log("Correct non-adjusted Customer Result")

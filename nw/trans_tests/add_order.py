@@ -1,6 +1,7 @@
 import sqlalchemy_utils
 
 import nw.nw_logic.models as models
+from logic_engine.exec_row_logic.logic_row import LogicRow
 from logic_engine.util import row_prt, prt
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
@@ -61,13 +62,13 @@ if new_order.AmountTotal != 56:
 row_prt(new_item1, "\nnew Order Detail 1 Result")  # 1 Chai  @ $18
 row_prt(new_item2, "\nnew Order Detail 2 Result")  # 2 Chang @ $19 = $38
 
+logic_row = LogicRow(row=post_cust, old_row=pre_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 if post_cust.Balance == pre_cust.Balance + 56:
-    row_prt(post_cust, "\nCorrect adjusted Customer Result")
+    logic_row.log("Correct adjusted Customer Result")
     assert True
 else:
-    row_prt(post_cust, "\nERROR - incorrect adjusted Customer Result")
+    logic_row.log("ERROR - incorrect adjusted Customer Result")
     print("\n--> probable cause: Order customer update not written")
-    row_prt(pre_cust, "\npre_alfki")
     assert False
 
 print("\nadd_order, ran to completion\n\n")

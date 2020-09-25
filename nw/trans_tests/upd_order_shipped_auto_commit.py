@@ -46,6 +46,7 @@ from logic_engine.util import row_prt, prt
 from nw import nw_logic
 from nw.nw_logic import session, engine  # opens db, activates logic listener <--
 
+
 def toggle_order_shipped():
     """ toggle Shipped Date, to trigger balance adjustment """
     """ also test join.
@@ -58,8 +59,11 @@ def toggle_order_shipped():
     print("")
     test_order = session.query(models.Order).filter(models.Order.Id == 11011).join(models.Employee).one()
     if test_order.ShippedDate is None or test_order.ShippedDate == "":
+        # with restored db, cust[ALFKI] has bal 960 & 3 unpaid orders, Order[11011) is 960, unshipped
         test_order.ShippedDate = str(datetime.now())
-        print(prt("Shipping order - ShippedDate: ['' -> " + test_order.ShippedDate + "]"))
+        print(prt("Shipping order - ShippedDate: ['' -> " + test_order.ShippedDate + "]" +
+                  " for customer balance: " + str(pre_cust.Balance) +
+                  ", with UnpaidOrderCount: " + str(pre_cust.UnpaidOrderCount)))
     else:
         test_order.ShippedDate = None
         print(prt("Returning order - ShippedDate: [ -> None]"))
@@ -68,7 +72,7 @@ def toggle_order_shipped():
 
     print("")
     post_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
-    logic_row = LogicRow(row=pre_cust, old_row=post_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
+    logic_row = LogicRow(row=post_cust, old_row=pre_cust, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
 
     if abs(post_cust.Balance - pre_cust.Balance) == 960:
         logic_row.log("Correct adjusted Customer Result")

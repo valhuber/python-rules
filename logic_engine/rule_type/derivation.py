@@ -4,7 +4,6 @@ from logic_engine.rule_type.abstractrule import AbstractRule
 
 
 class Derivation(AbstractRule):
-    _column = ""  # type: str
 
     def __init__(self, derive: InstrumentedAttribute):
         # names = derive.split('.')

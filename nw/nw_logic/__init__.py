@@ -137,7 +137,7 @@ def before_update(mapper, connection, target):
     state = db.inspect(target)
     changes = {}
 
-    for attr in state.attrs:
+    for attr in state.child_attrs:
         hist = attr.load_history()
 
         if not hist.has_changes():
