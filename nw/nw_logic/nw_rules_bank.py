@@ -109,5 +109,5 @@ class UnusedTests:
         Rule.constraint(validate="AbUser",  # table is ab_user
                         calling=lambda row: row.username != "no_name")
 
-        Rule.count(derive="Customer.OrderCount", as_count_of="Order",
+        Rule.count(derive=Customer.OrderCount, as_count_of=Order,
                    where="ShippedDate not None")

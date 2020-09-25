@@ -31,7 +31,7 @@ class Rule:
         return Sum(derive, as_sum_of, where)
 
     @staticmethod
-    def count(derive: InstrumentedAttribute, as_count_of: str, where: any = None):
+    def count(derive: InstrumentedAttribute, as_count_of: object, where: any = None):
         """
         Derive parent column as count of designated child rows
 
