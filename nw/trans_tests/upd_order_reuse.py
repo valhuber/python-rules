@@ -42,8 +42,8 @@ print("\n" + path_info + "\n\n")
 
 
 import nw.nw_logic.models as models
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.util import row_prt, prt
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.util import row_prt, prt
 from nw import nw_logic
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
@@ -140,8 +140,8 @@ print("\nupd_order_customer_reuse, ran to completion")
 """
 This test uncovered a dragon - a serious and subtle bug.
     Other resources: see....
-        logic_engine/exec_row_logic/logic_row#save_altered_parents
-        logic_engine/exec_trans_logic/listeners
+        python_rules/exec_row_logic/logic_row#save_altered_parents
+        python_rules/exec_trans_logic/listeners
 
 The origin of the bug is that listener dirty rows are not returned in defined order.
     The symptom was that the tests would fail about half the time.
@@ -154,7 +154,7 @@ The origin of the bug is that listener dirty rows are not returned in defined or
         2 - defer adjustments if parent in submitted rows (with a log statement to that effect)
 
 In order to test and make the execution reliably choose the wrong path,
-use the following code in logic_engine/exec_trans_logic/listeners
+use the following code in python_rules/exec_trans_logic/listeners
 and rem
 
     bug_explore = [None, None]   # None (vs [None, None]) means don't activate the bug-catching logic

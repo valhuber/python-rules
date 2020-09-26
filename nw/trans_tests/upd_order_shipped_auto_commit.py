@@ -41,8 +41,8 @@ print("\n" + path_info + "\n\n")
 
 
 import nw.nw_logic.models as models
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.util import row_prt, prt
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.util import row_prt, prt
 from nw import nw_logic
 from nw.nw_logic import session, engine  # opens db, activates logic listener <--
 

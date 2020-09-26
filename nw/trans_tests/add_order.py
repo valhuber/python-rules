@@ -1,8 +1,8 @@
 import sqlalchemy_utils
 
 import nw.nw_logic.models as models
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.util import row_prt, prt
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.util import row_prt, prt
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
 cls = sqlalchemy_utils.functions.get_class_by_table(models.Base, "Product", data=None)

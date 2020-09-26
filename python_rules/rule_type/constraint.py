@@ -3,10 +3,10 @@ from typing import Callable
 
 import sqlalchemy
 
-import logic_engine.exec_row_logic.logic_row as LogicRow
+import python_rules.exec_row_logic.logic_row as LogicRow
 
-from logic_engine.rule_bank.rule_bank import RuleBank
-from logic_engine.rule_type.abstractrule import AbstractRule
+from python_rules.rule_bank.rule_bank import RuleBank
+from python_rules.rule_type.abstractrule import AbstractRule
 
 
 class Constraint(AbstractRule):

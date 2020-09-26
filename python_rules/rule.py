@@ -2,12 +2,12 @@ from typing import Callable
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from logic_engine.rule_type.constraint import Constraint
-from logic_engine.rule_type.copy import Copy
-from logic_engine.rule_type.count import Count
-from logic_engine.rule_type.formula import Formula
-from logic_engine.rule_type.row_event import EarlyRowEvent, RowEvent, CommitRowEvent
-from logic_engine.rule_type.sum import Sum
+from python_rules.rule_type.constraint import Constraint
+from python_rules.rule_type.copy import Copy
+from python_rules.rule_type.count import Count
+from python_rules.rule_type.formula import Formula
+from python_rules.rule_type.row_event import EarlyRowEvent, RowEvent, CommitRowEvent
+from python_rules.rule_type.sum import Sum
 
 
 class Rule:

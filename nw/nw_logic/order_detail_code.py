@@ -1,6 +1,6 @@
 import nw.nw_logic.models as models
 from sqlalchemy.orm import session
-from logic_engine.util import get_old_row, row_prt, row2dict, ObjectView
+from python_rules.util import get_old_row, row_prt, row2dict, ObjectView
 from nw.nw_logic.order_code import order_update
 
 

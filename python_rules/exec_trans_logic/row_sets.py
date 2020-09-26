@@ -4,7 +4,7 @@ from typing import List, TypeVar, Dict
 from sqlalchemy.engine import base
 from sqlalchemy.ext.declarative import declarative_base
 
-from logic_engine.exec_row_logic.logic_row import LogicRow
+from python_rules.exec_row_logic.logic_row import LogicRow
 
 
 class RowSets():

@@ -3,17 +3,17 @@ import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import object_mapper
 
-from logic_engine import engine_logger
-from logic_engine.rule_bank import rule_bank_withdraw
+from python_rules import engine_logger
+from python_rules.rule_bank import rule_bank_withdraw
 from sqlalchemy.orm import mapperlib
 
 # Circular imports prevent these (geesh ** 2):
 # https://stackoverflow.com/questions/33837918/type-hints-solve-circular-dependency
-from logic_engine.rule_bank.rule_bank import RuleBank, TableRules  # circular import
-# from logic_engine.logic import Base  # circular import
-# from logic_engine.rule_bank import rule_bank_setup
-# from logic_engine.rule_type import log_dependency
-from logic_engine.util import prt
+from python_rules.rule_bank.rule_bank import RuleBank, TableRules  # circular import
+# from python_rules.logic import Base  # circular import
+# from python_rules.rule_bank import rule_bank_setup
+# from python_rules.rule_type import log_dependency
+from python_rules.util import prt
 
 
 class AbstractRule(object):

@@ -9,9 +9,9 @@ Alternatives:
     MetaClass
         https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
 
-    Module (import logic_engine)
+    Module (import python_rules)
         Same ref... trying that, simplest
-        import logic_engine
+        import python_rules
         import nw_logic.listeners.py
 
     sqlalchemy Engine Plug-in

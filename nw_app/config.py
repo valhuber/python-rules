@@ -11,8 +11,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 import logging
 import sys
-from logic_engine import logic_logger
-from logic_engine import engine_logger
+from python_rules import logic_logger
+from python_rules import engine_logger
 
 logic_logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)

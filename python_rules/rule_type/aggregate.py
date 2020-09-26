@@ -3,9 +3,9 @@ from typing import Callable
 from sqlalchemy.orm import object_mapper, RelationshipProperty
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.exec_row_logic.logic_row import ParentRoleAdjuster
-from logic_engine.rule_type.derivation import Derivation
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.exec_row_logic.logic_row import ParentRoleAdjuster
+from python_rules.rule_type.derivation import Derivation
 
 
 class Aggregate(Derivation):

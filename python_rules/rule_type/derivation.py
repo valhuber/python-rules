@@ -1,6 +1,6 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from logic_engine.rule_type.abstractrule import AbstractRule
+from python_rules.rule_type.abstractrule import AbstractRule
 
 
 class Derivation(AbstractRule):

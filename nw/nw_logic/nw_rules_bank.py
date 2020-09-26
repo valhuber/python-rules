@@ -1,9 +1,9 @@
 import sqlalchemy
 from sqlalchemy_utils import get_mapper
 
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.rule import Rule
-from logic_engine.rule_bank.rule_bank import RuleBank
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.rule import Rule
+from python_rules.rule_bank.rule_bank import RuleBank
 from nw.nw_logic import models
 from nw.nw_logic.models import Customer, OrderDetail, Product, Order, Employee
 

@@ -3,15 +3,15 @@ from sqlalchemy.ext.declarative import base
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import object_mapper, session, relationships
 
-import logic_engine
-from logic_engine.rule_bank.rule_bank import RuleBank
+import python_rules
+from python_rules.rule_bank.rule_bank import RuleBank
 from sqlalchemy.ext.declarative import declarative_base
 
-# from logic_engine.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
-from logic_engine.rule_bank import rule_bank_withdraw
-from logic_engine.rule_type.constraint import Constraint
-from logic_engine.rule_type.formula import Formula
-from logic_engine.rule_type.row_event import EarlyRowEvent
+# from python_rules.exec_row_logic.parent_role_adjuster import ParentRoleAdjuster
+from python_rules.rule_bank import rule_bank_withdraw
+from python_rules.rule_type.constraint import Constraint
+from python_rules.rule_type.formula import Formula
+from python_rules.rule_type.row_event import EarlyRowEvent
 
 
 class LogicRow:
@@ -108,7 +108,7 @@ class LogicRow:
         """
         output = str(self)
         output = output.replace("]:", "] {" + msg + "}", 1)
-        logic_engine.logic_logger.debug(output)  # more on this later
+        python_rules.logic_logger.debug(output)  # more on this later
 
     def log_engine(self, msg: str):
         """
@@ -116,7 +116,7 @@ class LogicRow:
         """
         output = str(self)
         output = output.replace("]:", "] {" + msg + "}", 1)
-        logic_engine.engine_logger.debug(output)
+        python_rules.engine_logger.debug(output)
 
     def make_copy(self, a_row: base) -> base:
         result_class = a_row.__class__

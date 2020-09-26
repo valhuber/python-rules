@@ -1,11 +1,11 @@
 from sqlalchemy.orm import session
 
-import logic_engine
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.exec_trans_logic.row_sets import RowSets
-from logic_engine.rule_bank import rule_bank_withdraw
-from logic_engine.rule_type.row_event import CommitRowEvent
-from logic_engine.util import get_old_row, prt
+import python_rules
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.exec_trans_logic.row_sets import RowSets
+from python_rules.rule_bank import rule_bank_withdraw
+from python_rules.rule_type.row_event import CommitRowEvent
+from python_rules.util import get_old_row, prt
 
 
 def before_commit(a_session: session):
@@ -14,7 +14,7 @@ def before_commit(a_session: session):
         * not called for auto-commit transactions
         * called prior to before_flush
     """
-    logic_engine.logic_logger.debug("\nLogic Phase:\t\tBEFORE COMMIT          \t\t\t\t\t\t")
+    python_rules.logic_logger.debug("\nLogic Phase:\t\tBEFORE COMMIT          \t\t\t\t\t\t")
 
 
 def before_flush(a_session: session, a_flush_context, an_instances):
@@ -30,8 +30,8 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Logic Phase
     """
-    logic_engine.logic_logger.debug("Logic Phase:\t\tROW LOGIC (sqlalchemy before_flush)\t\t\t")
-    # print("\n***************** sqlalchemy calls logic_engine\n")
+    python_rules.logic_logger.debug("Logic Phase:\t\tROW LOGIC (sqlalchemy before_flush)\t\t\t")
+    # print("\n***************** sqlalchemy calls python_rules\n")
 
     row_sets = RowSets()  # type : RowSet
     for each_instance in a_session.dirty:
@@ -64,10 +64,10 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Commit Logic Phase
     """
-    logic_engine.logic_logger.debug("Logic Phase:\t\tCOMMIT   \t\t\t\t\t\t\t\t\t")
+    python_rules.logic_logger.debug("Logic Phase:\t\tCOMMIT   \t\t\t\t\t\t\t\t\t")
     for each_logic_row_key in row_sets.processed_rows:
         each_logic_row = row_sets.processed_rows[each_logic_row_key]
-        logic_engine.engine_logger.debug("visit: " + each_logic_row.__str__())
+        python_rules.engine_logger.debug("visit: " + each_logic_row.__str__())
         commit_row_events = rule_bank_withdraw.rules_of_class(each_logic_row, CommitRowEvent)
         for each_row_event in commit_row_events:
             each_logic_row.log("Commit Event")
@@ -76,7 +76,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Proceed with sqlalchemy flush processing
     """
-    logic_engine.logic_logger.debug("Logic Phase:\t\tFLUSH   (sqlalchemy flush processing       \t")
+    python_rules.logic_logger.debug("Logic Phase:\t\tFLUSH   (sqlalchemy flush processing       \t")
 
 
 def temp_debug(a_session, bug_explore, row_cache):

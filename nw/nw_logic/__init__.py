@@ -6,14 +6,14 @@ from sqlalchemy import event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import session
 
-from logic_engine.rule_bank import rule_bank_withdraw  # FIXME design why required to avoid circular imports??
-from logic_engine.rule_bank import rule_bank_setup
+from python_rules.rule_bank import rule_bank_withdraw  # FIXME design why required to avoid circular imports??
+from python_rules.rule_bank import rule_bank_setup
 from nw.nw_logic.nw_rules_bank import activate_basic_check_credit_rules
 
 from nw.nw_logic.order_code import order_commit_dirty, order_flush_dirty, order_flush_new, order_flush_delete
 from nw.nw_logic.order_detail_code import order_detail_flush_new, order_detail_flush_delete
 
-from logic_engine.util import prt
+from python_rules.util import prt
 
 # from nw.nw_logic.models import Order
 

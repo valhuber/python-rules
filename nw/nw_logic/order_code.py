@@ -3,7 +3,7 @@ from sqlalchemy import event
 import nw.nw_logic.models as models
 from sqlalchemy.orm import session
 
-from logic_engine.util import get_old_row, row_prt, row2dict, ObjectView
+from python_rules.util import get_old_row, row_prt, row2dict, ObjectView
 
 # https://docs.sqlalchemy.org/en/13/_modules/examples/versioned_history/history_meta.html
 from nw.nw_logic.customer_code import customer_update

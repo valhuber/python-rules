@@ -3,15 +3,15 @@ from typing import TypedDict, List
 import sqlalchemy
 from sqlalchemy.orm import object_mapper
 
-from logic_engine.exec_row_logic.logic_row import LogicRow
-from logic_engine.rule_bank.rule_bank import RuleBank
-from logic_engine.rule_type.constraint import Constraint
-from logic_engine.rule_type.copy import Copy
-from logic_engine.rule_type.count import Count
-from logic_engine.rule_type.formula import Formula
-from logic_engine.rule_type.row_event import EarlyRowEvent
-from logic_engine.rule_type.sum import Sum
-from logic_engine.util import get_child_class_name
+from python_rules.exec_row_logic.logic_row import LogicRow
+from python_rules.rule_bank.rule_bank import RuleBank
+from python_rules.rule_type.constraint import Constraint
+from python_rules.rule_type.copy import Copy
+from python_rules.rule_type.count import Count
+from python_rules.rule_type.formula import Formula
+from python_rules.rule_type.row_event import EarlyRowEvent
+from python_rules.rule_type.sum import Sum
+from python_rules.util import get_child_class_name
 
 """
 There really want to be instance methods on RuleBank, but circular imports...
