@@ -70,7 +70,11 @@ else:
     logic_row.log("ERROR - incorrect adjusted Customer Result")
     print("\n--> probable cause: Order customer update not written")
     assert False
-
+if post_cust.OrderCount == pre_cust.OrderCount + 1 and\
+    post_cust.UnpaidOrderCount == pre_cust.UnpaidOrderCount + 1:
+    pass
+else:
+    logic_row.log("Error - unexpected OrderCounts")
 print("\nadd_order, ran to completion\n\n")
 
 
