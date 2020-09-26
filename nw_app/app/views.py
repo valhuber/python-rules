@@ -91,10 +91,10 @@ appbuilder.add_view(
 
 class CustomerModelView(ModelView):
    datamodel = SQLAInterface(Customer)
-   list_columns = ["Id", "CompanyName", "ContactName", "Balance", "CreditLimit"]
-   show_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
-   edit_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
-   add_columns = ["CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Balance", "CreditLimit", "Id"]
+   list_columns = ["Id", "CompanyName", "ContactName", "Balance", "CreditLimit", "OrderCount", "UnpaidOrderCount"]
+   show_columns = ["CompanyName",  "Balance", "CreditLimit", "OrderCount", "UnpaidOrderCount", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Id"]
+   edit_columns = ["CompanyName",  "Balance", "CreditLimit",  "OrderCount", "UnpaidOrderCount", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Id"]
+   add_columns = ["CompanyName",  "Balance", "CreditLimit",  "OrderCount", "UnpaidOrderCount", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country", "Phone", "Fax", "Id"]
    related_views = [CustomerCustomerDemoModelView, OrderModelView]
 
 appbuilder.add_view(
