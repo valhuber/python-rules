@@ -47,16 +47,12 @@ from nw import nw_logic
 from nw.nw_logic import session  # opens db, activates logic listener <--
 
 def toggle_order_shipped():
-    """
-        toggle Shipped Date, to trigger
-            * balance adjustment
-            * cascade to OrderDetails
-            * and Product adjustment
-        also test join
-    """
+    """ toggle Shipped Date, to trigger balance adjustment """
 
     pre_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
+    pre_adjusted_product = session.query(models.Product).filter(models.Product.Id == 58).one()
     session.expunge(pre_cust)
+    session.expunge(pre_adjusted_product)
 
     print("")
     test_order = session.query(models.Order).filter(models.Order.Id == 11011).join(models.Employee).one()
@@ -92,7 +88,32 @@ def toggle_order_shipped():
         logic_row.log("Error - UnpaidOrderCount should be 2")
         assert False
 
+    post_adjusted_product = session.query(models.Product).filter(models.Product.Id == 58).one()
+    logic_row = LogicRow(row=post_adjusted_product, old_row=pre_adjusted_product, ins_upd_dlt="*", nest_level=0,
+                         a_session=session, row_sets=None)
+    if post_adjusted_product.UnitsShipped == pre_adjusted_product.UnitsShipped + 40:
+        logic_row.log("Product adjusted properly on ship order")
+    else:
+        logic_row.log("Product adjusted improperly on ship order")
+        assert False
+
 
 toggle_order_shipped()
-print("\nupd_order_shipped, ran to completion")
+pre_adjusted_product = session.query(models.Product).filter(models.Product.Id == 58).one()
+session.expunge(pre_adjusted_product)
+print("\ndlt_order, shipped... now delete")
+delete_cust = session.query(models.Customer).filter(models.Customer.Id == "ALFKI").one()
+session.delete(delete_cust)
+session.commit()
+
+post_adjusted_product = session.query(models.Product).filter(models.Product.Id == 58).one()
+logic_row = LogicRow(row=post_adjusted_product, old_row=pre_adjusted_product, ins_upd_dlt="*", nest_level=0, a_session=session, row_sets=None)
+if post_adjusted_product.UnitsShipped == pre_adjusted_product.UnitsShipped - 40:
+    logic_row.log("Product adjusted properly on delete customer")
+else:
+    logic_row.log("Product adjusted improperly on delete customer")
+    assert False
+
+print("\ndlt_order, shipped... deleted - check log")
+
 

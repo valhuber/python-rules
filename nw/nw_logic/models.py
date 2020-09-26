@@ -47,7 +47,11 @@ class Customer(Base):
     UnpaidOrderCount = Column(Integer)
 
     #  OrderList = relationship("Order", cascade_backrefs=True)  # backref="Customer", FIXME cleanup
-    OrderList = relationship("Order", cascade_backrefs=True, backref="Customer")
+    OrderList = relationship("Order",
+                             backref="Customer",
+                             cascade="all, delete",
+                             passive_deletes=True,  # means database RI will do the deleting
+                             cascade_backrefs=True)
 
 
 class CustomerDemographic(Base):
@@ -187,8 +191,11 @@ class Order(Base):
     ShipCountry = Column(String(8000))
     AmountTotal = Column(DECIMAL)
 
-    OrderDetailList = relationship("OrderDetail", backref="OrderHeader", cascade_backrefs=True)
-
+    OrderDetailList = relationship("OrderDetail",
+                                   backref="OrderHeader",
+                                   cascade="all, delete",
+                                   passive_deletes=True,  # means database RI will do the deleting
+                                   cascade_backrefs=True)
 
 class OrderDetail(Base):
     __tablename__ = 'OrderDetail'

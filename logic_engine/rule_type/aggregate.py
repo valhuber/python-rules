@@ -77,9 +77,8 @@ class Aggregate(Derivation):
                                   parent_adjustor: ParentRoleAdjuster,
                                   get_summed_field: Callable,
                                   get_old_summed_field: Callable):
-        raise Exception("sum / update deleted child not implemented")
         where = self._where_cond(parent_adjustor.child_logic_row.row)
-        delta = getattr(parent_adjustor.child_logic_row.row, self._child_summed_field)
+        delta = get_summed_field()
         if where and delta != 0.0:
             parent_role_name = self.get_parent_role_from_child_role_name(
                 child_logic_row=parent_adjustor.child_logic_row,
@@ -88,7 +87,7 @@ class Aggregate(Derivation):
             parent_adjustor.parent_logic_row = \
                 parent_adjustor.child_logic_row.get_parent_logic_row(role_name=self._parent_role_name)
             curr_value = get_summed_field()
-            setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value + delta)
+            setattr(parent_adjustor.parent_logic_row.row, self._column, curr_value - delta)
             # print(f'adjust_from_deleted/abandoned_child adjusts {str(self)}')
 
     def adjust_from_updated_child(self,
