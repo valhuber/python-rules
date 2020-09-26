@@ -1,7 +1,6 @@
 import sqlalchemy
-import sqlalchemy_utils
 from sqlalchemy.ext.declarative import base
-from sqlalchemy.engine.reflection import inspection, Inspector
+from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import object_mapper, session, relationships
 
 import logic_engine
@@ -195,6 +194,29 @@ class LogicRow:
                     child_role_name = each_parent_relationship.key
                     return child_role_name
         raise Exception("unable to find child role corresponding to: " + parent_role_name)
+
+    def cascade_delete_children(self):
+        """
+        Find child relationships that are cascade delete, and delete the children.
+
+        This recursive descent is required to adjust dependent sums/counts.
+        """
+        parent_mapper = object_mapper(self.row)
+        my_relationships = parent_mapper.relationships
+        for each_relationship in my_relationships:  # eg, cust has child OrderDetail
+            if each_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # eg, OrderDetail
+                child_role_name = each_relationship.key  # eg, OrderList
+                if each_relationship.cascade.delete:
+                    child_rows = getattr(self.row, child_role_name)
+                    for each_child_row in child_rows:
+                        old_child = self.make_copy(each_child_row)
+                        each_child_logic_row = LogicRow(row=each_child_row,
+                                                        old_row=old_child,
+                                                        ins_upd_dlt="dlt",
+                                                        nest_level=1 + self.nest_level,
+                                                        a_session=self.session,
+                                                        row_sets=self.row_sets)
+                        each_child_logic_row.delete(reason="Cascade Delete - " + child_role_name)
 
     def cascade_to_children(self):
         """
@@ -406,36 +428,23 @@ class LogicRow:
             self.constraints()
             # self.cascade_to_children()
 
-    def delete(self, reason: str = None):  # TODO major
-        self.reason = reason
-        self.log("delete - " + reason)
-        self.early_row_events()
-        self.adjust_parent_aggregates()
-        self.constraints()
-        self.cascade_delete_children()
-
-    def cascade_delete_children(self):
+    def delete(self, reason: str = None, row: base = None):
         """
-        Find child relationships that are cascade delete, and delete the children.
+        make updates - with logic - in events, for example
 
-        This recursive descent is required to adjust dependent sums/counts.
+        row = sqlalchemy read
+        logic_row.update(row=row, msg="my log message")
         """
-        parent_mapper = object_mapper(self.row)
-        my_relationships = parent_mapper.relationships
-        for each_relationship in my_relationships:  # eg, cust has child OrderDetail
-            if each_relationship.direction == sqlalchemy.orm.interfaces.ONETOMANY:  # eg, OrderDetail
-                child_role_name = each_relationship.key  # eg, OrderList
-                if each_relationship.cascade.delete:
-                    child_rows = getattr(self.row, child_role_name)
-                    for each_child_row in child_rows:
-                        old_child = self.make_copy(each_child_row)
-                        each_child_logic_row = LogicRow(row=each_child_row,
-                                                        old_row=old_child,
-                                                        ins_upd_dlt="dlt",
-                                                        nest_level=1 + self.nest_level,
-                                                        a_session=self.session,
-                                                        row_sets=self.row_sets)
-                        each_child_logic_row.delete(reason="Cascade Delete - " + child_role_name)
+        if row is not None:
+            user_logic_row = self.user_row_update(row=row, ins_upd_dlt="ins")
+            user_logic_row.insert(reason=reason)
+        else:
+            self.reason = reason
+            self.log("delete - " + reason)
+            self.early_row_events()
+            self.adjust_parent_aggregates()
+            self.constraints()
+            self.cascade_delete_children()
 
 
 class ParentRoleAdjuster:
