@@ -1,0 +1,73 @@
+Python Rules - Logic for SQLAlchemy
+===================================
+
+This package enables you to _declare rules_ that govern sqlalchemy
+update transaction logic (multi-table derivations, constraints,
+and actions such as sending mail or messages).  Logic is stated
+in Python, and over an order of magnitude more concise than code
+
+Logic is extensible using Python.  Logic is manageable,
+since you can use existing tools and procedures to create,
+edit, debug and manage code.
+
+
+Features
+--------
+
+Logic is declared in Python as shown below:
+
+- **Multi-table:** rules like `sum` automate multi-table transactions
+
+- **Scalable:** rules are pruned and optimized; for example, sums are processed as *1 row adjustment updates,* rather than expensive SQL aggregate queries
+
+- **Extensible:** use Python to implement any logic not addressed by rules
+
+- **Manageable:** develop and debug your rules in IDEs, manage it in SCS systems (such as `git`) using existing procedures
+
+
+Example:
+--------
+
+.. code-block:: Python
+
+    def activate_basic_check_credit_rules():
+        """ Check Credit Requirement:
+            * the balance must not exceed the credit limit,
+            * where the balance is the sum of the unshipped order totals
+            * which is the rollup of OrderDetail Price * Quantities:
+        """
+
+        Rule.constraint(validate=Customer, as_condition=lambda row: row.Balance <= row.CreditLimit,
+                        error_msg="balance ({row.Balance}) exceeds credit ({row.CreditLimit})")
+        Rule.sum(derive=Customer.Balance, as_sum_of=Order.AmountTotal,
+                 where=lambda row: row.ShippedDate is None)  # *not* a sql select sum
+
+        Rule.sum(derive=Order.AmountTotal, as_sum_of=OrderDetail.Amount)
+
+        Rule.formula(derive=OrderDetail.Amount, as_expression=lambda row: row.UnitPrice * row.Quantity)
+        Rule.copy(derive=OrderDetail.UnitPrice, from_parent=Product.UnitPrice)
+
+
+
+Depends on:
+-----------
+- SQLAlchemy
+
+
+More information:
+-----------------
+The `python-rules github <https://github.com/valhuber/python-rules/wiki>`_ for more information, and explore the code.
+
+
+Acknowledgements
+----------------
+Many thanks to
+
+- Tyler Band, for early testing
+
+
+
+Change Log
+----------
+
+Initial Version

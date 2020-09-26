@@ -4,11 +4,6 @@ import re
 
 from setuptools import find_packages, setup
 
-"""  FIXME
-with io.open("fab_quick_start_util/fab_quick_start.py", "rt", encoding="utf8") as f:
-    version = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
-"""
-
 def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
 
@@ -26,25 +21,22 @@ project_urls = {
 }
 
 setup(
-    name="fab-quick-start",
+    name="python-rules",
     version="0.0.1",  # TODO use the io_open
-    url="https://github.com/valhuber/fab-quick-start",
+    url="https://github.com/valhuber/python-rules",
     license="BSD",
     author="Val Huber",
     author_email="valjhuber@gmail.com",
     project_urls=project_urls,
     description=(
-        "Creates FAB view from model, for an instant multi-page, multi-table app."
-        "Apps are multi-page: 1 page per table, with page-page navigation for related data."
-        "Pages are multi-table: includes related_views, predictive joins."
+        "Declare multi-table rules for SQLAlchemy update logic."
+        "Invoke Python as required for extensibility."
     ),
     long_description=desc(),
     long_description_content_type="text/x-rst",
-    packages=find_packages(),
+    # packages=find_packages(include=['logic_engine']),
+    packages=['logic_engine'],
     package_data={"": ["LICENSE"]},
-    entry_points={
-        "console_scripts": ["fab-quick-start=fab_quick_start_util.fab_quick_start:start"]
-    },
     include_package_data=True,
     zip_safe=False,
     platforms="any",
