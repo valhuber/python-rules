@@ -14,7 +14,7 @@ def before_commit(a_session: session):
         * not called for auto-commit transactions
         * called prior to before_flush
     """
-    logic_engine.logic_logger.debug("\nBefore Commit Phase          \t\t\t\t\t")
+    logic_engine.logic_logger.debug("\nLogic Phase:\t\tBEFORE COMMIT          \t\t\t\t\t\t")
 
 
 def before_flush(a_session: session, a_flush_context, an_instances):
@@ -30,7 +30,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Logic Phase
     """
-    logic_engine.logic_logger.debug("Logic Phase (sqlalchemy before_flush)\t\t\t")
+    logic_engine.logic_logger.debug("Logic Phase:\t\tROW LOGIC (sqlalchemy before_flush)\t\t\t")
     # print("\n***************** sqlalchemy calls logic_engine\n")
 
     row_sets = RowSets()  # type : RowSet
@@ -57,7 +57,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Commit Logic Phase
     """
-    logic_engine.logic_logger.debug("Commit Logic Phase   \t\t\t")
+    logic_engine.logic_logger.debug("Logic Phase:\t\tCOMMIT   \t\t\t\t\t\t\t\t\t")
     for each_logic_row_key in row_sets.processed_rows:
         each_logic_row = row_sets.processed_rows[each_logic_row_key]
         logic_engine.engine_logger.debug("visit: " + each_logic_row.__str__())
@@ -69,7 +69,7 @@ def before_flush(a_session: session, a_flush_context, an_instances):
     """
     Proceed with sqlalchemy flush processing
     """
-    logic_engine.logic_logger.debug("Flush Phase          \t\t\t")
+    logic_engine.logic_logger.debug("Logic Phase:\t\tFLUSH   (sqlalchemy flush processing       \t")
 
 
 def temp_debug(a_session, bug_explore, row_cache):
