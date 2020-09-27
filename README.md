@@ -286,8 +286,7 @@ Essential functions running on 9/6/2020:
 multi-table transactions -
 key paths of copy, formula, constraint, sum and event rules. 
 
-Not complete, under active development.  Key remaining items include:
-* pip-able
+Not complete, under active development.
 
 Ready to explore and provide feedback
 on general value, and features.

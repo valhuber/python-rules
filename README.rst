@@ -1,7 +1,7 @@
 Python Rules - Logic for SQLAlchemy
 ===================================
 
-This package enables you to _declare rules_ that govern sqlalchemy
+This package enables you to declare rules that govern sqlalchemy
 update transaction logic (multi-table derivations, constraints,
 and actions such as sending mail or messages).  Logic is stated
 in Python, and over an order of magnitude more concise than code
