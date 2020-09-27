@@ -5,8 +5,8 @@ This package enables you to declare rules that govern SQLAlchemy
 update transaction logic (multi-table derivations, constraints,
 and actions such as sending mail or messages).
 
-Logic is stated in Python, and is over an 40X
-more concise than code.
+Logic is stated in Python, and is over an **40X
+more concise than code.**
 
 
 Features
@@ -72,4 +72,4 @@ Many thanks to
 Change Log
 ----------
 
-Initial Version
+0.0.2 - fix imports

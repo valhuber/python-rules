@@ -32,7 +32,11 @@ engine_logger.addHandler(handler)
 SECRET_KEY = "\2\1thisismyscretkey\1\2\e\y\y\h"
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "nw.db")
+db_dir = os.path.dirname(basedir)
+db_loc = db_dir +  "/nw/db/nw.db"
+
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + db_loc
+# SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "nw.db")
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'
 

@@ -22,7 +22,7 @@ project_urls = {
 
 setup(
     name="python-rules",
-    version="0.0.1",  # TODO use the io_open
+    version="0.0.2",
     url="https://github.com/valhuber/python-rules",
     license="BSD",
     author="Val Huber",

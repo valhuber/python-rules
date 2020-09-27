@@ -70,11 +70,13 @@ def nw_before_flush(a_session: session, a_flush_context, an_instances):
 2 - Register listeners (either hand-coded ones above, or the logic-engine listeners).
 """
 
+print("\n" + prt("nw/nw_logic/__init__.py BEGIN - setup logging, connect to db, register listeners\n"))
+
 # Initialize Logging
 import logging
 import sys
 
-logic_logger = logging.getLogger('logic_logger')  # for users
+logic_logger = logging.getLogger('logic_logger')  # for debugging user logic
 logic_logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
@@ -82,7 +84,7 @@ formatter = logging.Formatter('%(message)s - %(asctime)s - %(name)s - %(levelnam
 handler.setFormatter(formatter)
 logic_logger.addHandler(handler)
 
-do_engine_logging = False  # TODO move to config file, reconsider level
+do_engine_logging = False
 engine_logger = logging.getLogger('engine_logger')  # for internals
 if do_engine_logging:
     engine_logger.setLevel(logging.DEBUG)
@@ -96,11 +98,12 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 basedir = os.path.dirname(basedir)
 basedir = os.path.dirname(basedir)
 
-"""
-    IMPORTANT - create nw.db from a fresh copy
-"""
-nw_loc = os.path.join(basedir, "nw_app/nw.db")
-nw_source = os.path.join(basedir, "nw_app/nw.db copy")
+print("\n****************\n"
+      "  IMPORTANT - create nw.db from nw-gold.db in " + basedir + "/nw/db/" +
+      "\n****************")
+
+nw_loc = os.path.join(basedir, "nw/db/nw.db")
+nw_source = os.path.join(basedir, "nw/db/nw-gold.db")
 copyfile(src=nw_source, dst=nw_loc)
 
 conn_string = "sqlite:///" + nw_loc
@@ -118,35 +121,8 @@ if by_rules:
     activate_basic_check_credit_rules()
     rule_bank_setup.validate(session, engine)  # checks for cycles, etc
 else:
-    # target, modifier, function
+    # setup to illustrate hand-coding alternative - target, modifier, function
     event.listen(session, "before_commit", nw_before_commit)
     event.listen(session, "before_flush", nw_before_flush)
 
-print("\n" + prt("session created, listeners registered\n"))
-
-
-'''  *** Exploring alternate listener strategies - ignore ***
-@event.listens_for(models.Order.ShippedDate, 'modified')
-def receive_modified(target, initiator):
-    print('Order Modified (Decorator - __init__')
-'''
-
-'''
-@event.listens_for(Order, 'before_update')
-def before_update(mapper, connection, target):
-    state = db.inspect(target)
-    changes = {}
-
-    for attr in state.child_attrs:
-        hist = attr.load_history()
-
-        if not hist.has_changes():
-            continue
-
-        # hist.deleted holds old value
-        # hist.added holds new value
-        changes[attr.key] = hist.added
-
-    # now changes map keys to new values
-    print ("before update")
-'''
+print("\n" + prt("nw/nw_logic/__init__.py END - connected, session created, listeners registered\n"))
