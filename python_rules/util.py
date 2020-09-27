@@ -5,7 +5,6 @@ import os
 from sqlalchemy.exc import UnmappedColumnError
 from sqlalchemy.orm import attributes, object_mapper
 
-# from nw.nw_logic.models import Base
 from sqlalchemy.ext.declarative import base
 
 class ObjectView(object):
