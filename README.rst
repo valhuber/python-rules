@@ -1,20 +1,18 @@
 Python Rules - Logic for SQLAlchemy
 ===================================
 
-This package enables you to declare rules that govern sqlalchemy
+This package enables you to declare rules that govern SQLAlchemy
 update transaction logic (multi-table derivations, constraints,
-and actions such as sending mail or messages).  Logic is stated
-in Python, and over an order of magnitude more concise than code
+and actions such as sending mail or messages).
 
-Logic is extensible using Python.  Logic is manageable,
-since you can use existing tools and procedures to create,
-edit, debug and manage code.
+Logic is stated in Python, and is over an 40X
+more concise than code.
 
 
 Features
 --------
 
-Logic is declared in Python as shown below:
+Logic is declared in Python (example below), and is:
 
 - **Multi-table:** rules like `sum` automate multi-table transactions
 
@@ -27,6 +25,8 @@ Logic is declared in Python as shown below:
 
 Example:
 --------
+The following 5 rules represent the same logic as 200 lines
+of Python:
 
 .. code-block:: Python
 
@@ -52,11 +52,13 @@ Example:
 Depends on:
 -----------
 - SQLAlchemy
+- Python 3.8
 
 
 More information:
 -----------------
-The `python-rules github <https://github.com/valhuber/python-rules/wiki>`_ for more information, and explore the code.
+See the `python-rules github <https://github.com/valhuber/python-rules/wiki>`_
+for more information, and explore the code.
 
 
 Acknowledgements

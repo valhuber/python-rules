@@ -30,7 +30,7 @@ setup(
     project_urls=project_urls,
     description=(
         "Declare multi-table rules for SQLAlchemy update logic."
-        "Invoke Python as required for extensibility."
+        "  40X more concise.  Python for extensibility."
     ),
     long_description=desc(),
     long_description_content_type="text/x-rst",

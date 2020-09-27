@@ -1,4 +1,4 @@
-echo #
+echo #  FIXME this script is not verified or tested
 echo Removing old dist files
 echo #
 rm -Rf ./dist

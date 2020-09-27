@@ -260,26 +260,18 @@ Issues?  [Try here](https://github.com/valhuber/fab-quick-start/wiki/Mac-Python-
 
 Using your IDE or command line: 
 ```
-git fork / clone
-cd python-rules
+cd your-project
 virtualenv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -i https://test.pypi.org/simple/ python-rules
 ```
-The project includes:
-* the logic engine that executes the rules
-* the sample database (sqlite, so no db install is required)
-* business logic, both
+
+You can explore project contents here:
+* [Project contents](../../wiki/Explore-Python-Rules) - stand-alone examples will be available shortly.
+* Business logic comparisons, both
 [by-code](https://github.com/valhuber/python-rules/wiki/by-code) and
 [by-rules,](https://github.com/valhuber/python-rules/wiki/by-rules)
-to facilitate comparison
-   * control whether logic is via rules or code by altering`by_rules` in
-   [`__init__.py`](https://github.com/valhuber/python-rules/blob/master/nw/nw_logic/__init__.py)
-* a test folder that runs various sample transactions
 
-You can run the programs in the `nw/trans_tests` folder
-(note the generated log),
-and/or review this readme and the wiki.
 
 ## Status: Running, Under Development
 Essential functions running on 9/6/2020:
