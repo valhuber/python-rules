@@ -5,8 +5,8 @@ import os
 from sqlalchemy.exc import UnmappedColumnError
 from sqlalchemy.orm import attributes, object_mapper
 
-from nw.nw_logic.models import Base
-
+# from nw.nw_logic.models import Base
+from sqlalchemy.ext.declarative import base
 
 class ObjectView(object):
     """
@@ -66,12 +66,12 @@ def get_old_row(obj) -> ObjectView:  # FIXME design verify approach
     return ObjectView(old_row)
 
 
-def hydrate_row(a_row: Base) -> Base:
+def hydrate_row(a_row: base) -> base:
     get_old_row(a_row)
     return a_row
 
 
-def row2dict(row: Base) -> dict:
+def row2dict(row: base) -> dict:
     """
     convert sqlalchemy row to dict (e.g, for debug print)
     it's hard to type sqlalchemy
