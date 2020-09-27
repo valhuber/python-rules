@@ -43,7 +43,7 @@ debugging, code management, etc
 * Agile - iterate just by changing the rules; the system
 re-orders execution with automatic dependency management, and re-optimizes
 
-For more information, [see the Rules Engine Overview](../../wiki/Home).
+For more information, [**see the Rules Engine Overview**](../../wiki/Home).
 
 
 ## Architecture
@@ -245,6 +245,22 @@ the engine will reorganize execution order and database access, automatically
 
 ## Installation
 
+#### Contents
+This is the development project for `python-rules`:
+* Explore project contents [here](../../wiki/Explore-Python-Rules)
+* This project also includes a sample application
+used to test and illustrate rules.  Importantly,
+it inclues comparisons of Business logic, both
+[by-code](https://github.com/valhuber/python-rules/wiki/by-code) and
+[by-rules,](https://github.com/valhuber/python-rules/wiki/by-rules)
+
+Stand-alone projects illustrating how to _use_
+`python-rules` can be found
+[here](https://github.com/valhuber/python-rules-examples).
+These more closely resemble your use of `python-logic`,
+including usage of the `pip` mechanism to install.
+
+#### Installation Procedure
 To get started, you will need:
 
 * Python3.8 (Relies on `from __future__ import annotations`, so requires Python 3.8)
@@ -257,21 +273,16 @@ To get started, you will need:
 
 Issues?  [Try here](https://github.com/valhuber/fab-quick-start/wiki/Mac-Python-Install-Issues).
 
-
 Using your IDE or command line: 
 ```
 cd your-project
 virtualenv venv
 source venv/bin/activate
-pip install -i https://test.pypi.org/simple/ python-rules
 ```
 
-You can explore project contents here:
-* [Project contents](../../wiki/Explore-Python-Rules) - stand-alone examples will be available shortly.
-* Business logic comparisons, both
-[by-code](https://github.com/valhuber/python-rules/wiki/by-code) and
-[by-rules,](https://github.com/valhuber/python-rules/wiki/by-rules)
-
+#### Testing
+You can run the .py files under `nw/trans_tests`, and/or
+run the FAB application as described above.
 
 ## Status: Running, Under Development
 Essential functions running on 9/6/2020:
