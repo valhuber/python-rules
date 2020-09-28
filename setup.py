@@ -22,15 +22,15 @@ project_urls = {
 
 setup(
     name="python-rules",
-    version="0.0.2",
+    version="0.0.3",
     url="https://github.com/valhuber/python-rules",
     license="BSD",
     author="Val Huber",
     author_email="valjhuber@gmail.com",
     project_urls=project_urls,
     description=(
-        "Declare multi-table rules for SQLAlchemy update logic."
-        "  40X more concise.  Python for extensibility."
+        "Declare multi-table rules for SQLAlchemy update logic -- "
+        "40X more concise, Python for extensibility."
     ),
     long_description=desc(),
     long_description_content_type="text/x-rst",

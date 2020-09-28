@@ -154,7 +154,7 @@ def get_referring_children(parent_logic_row: LogicRow) -> dict:
     if result is not None:
        return result
     else:
-        # sigh, best to have build this in rule_bank_setup, but unable to get mapper
+        # sigh, best to have built this in rule_bank_setup, but unable to get mapper
         # FIXME design is this threadsafe?
         table_rules.referring_children = {}
         parent_mapper = object_mapper(parent_logic_row.row)
@@ -165,9 +165,11 @@ def get_referring_children(parent_logic_row: LogicRow) -> dict:
                 table_rules.referring_children[parent_role_name] = []
                 child_role_name = each_parent_relationship.key
                 child_class_name = get_child_class_name(each_parent_relationship)  # eg, OrderDetail
-                child_table_rules = rule_bank._tables[child_class_name].rules
-                search_for_rew_parent = "row." + parent_role_name
-                if child_table_rules is not None:
+                if child_class_name not in rule_bank._tables:
+                    pass  # eg, banking - ALERT is child of customer, has no rules, that's ok
+                else:
+                    child_table_rules = rule_bank._tables[child_class_name].rules
+                    search_for_rew_parent = "row." + parent_role_name
                     for each_rule in child_table_rules:
                         if isinstance(each_rule, (Formula, Constraint)):  # eg, OrderDetail.ShippedDate
                             rule_text = each_rule.get_rule_text()  #        eg, row.OrderHeader.ShippedDate
