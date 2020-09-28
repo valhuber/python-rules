@@ -170,4 +170,9 @@ class Aggregate(Derivation):
         if found_attr is None:
             raise Exception("Invalid 'as_sum_of' - not a reference to: " + self.table +
                             " in " + self.__str__())
-        return found_attr.back_populates
+        child_role_name = found_attr.back_populates
+        if child_role_name is None:
+            msg = "Invalid 'as_sum_of' - missing back_populates: " + self.table + " in " + self.__str__()
+            raise Exception("Invalid 'as_sum_of' - missing back_populates: " + self.table +
+                            " in " + self.__str__())
+        return child_role_name

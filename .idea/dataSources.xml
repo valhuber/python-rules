@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/nw_app/nw.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="banking.db" uuid="fe5129f7-981d-430e-ad7d-f129d00fc505">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/../python-rules-examples/banking/db/banking.db</jdbc-url>
+    </data-source>
   </component>
 </project>
