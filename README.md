@@ -1,3 +1,7 @@
+# Obsolete
+
+See [Logic Bank](https://github.com/valhuber/logic-bank)
+
 # Rules to Automate Business Logic 
 ##### Transaction Logic: half the system
 For most transaction-oriented database applications, backend database logic
